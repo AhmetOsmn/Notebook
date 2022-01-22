@@ -1,4 +1,4 @@
 # Notebook
 ---
 
-Kişisel gelişimimi güçlendirecek olduğunu düşündüğüm için not defteri oluşturuyorum. Derslerde, eğitimlerde veya yaptığım araştırmalardaki önemli yerleri buraya ekleyerek bir arşiv oluşturacağım.
+Kişisel gelişimimi güçlendirecek olduğunu düşündüğüm için bu not defterini oluşturuyorum. Derslerde, eğitimlerde veya yaptığım araştırmalarda önemli gördüğüm yerleri buraya ekleyerek bir arşiv oluşturacağım.
