@@ -16,41 +16,41 @@
     ## Çözüm
     ---
 
-    - İnsertion Sort için adımlar:
+    İnsertion Sort için adımlar:
 
-        0. [22,27,16,2,18,6]
+    0. [22,27,16,2,18,6]
 
-        1. [2,27,16,22,18,6]
+    1. [2,27,16,22,18,6]
 
-        2. [2,6,16,22,18,27]
+    2. [2,6,16,22,18,27]
 
-        3. [2,6,16,22,18,27]
+    3. [2,6,16,22,18,27]
 
-        4. [2,6,16,18,22,27] (Dizi sıralanmış oldu)
+    4. [2,6,16,18,22,27] (Dizi sıralanmış oldu)
 
-        Burada Patika eğitiminde anlatılan şekilde sıraladım. İnternetteki diğer kaynaklarda farklı işem yapılıyor. Eğer öyle sıralamış olsaydık adımlar:
+    Burada Patika eğitiminde anlatılan şekilde sıraladım. İnternetteki diğer kaynaklarda farklı işem yapılıyor. Eğer öyle sıralamış olsaydık adımlar:
 
-        0. [22,27,16,2,18,6]
+    0. [22,27,16,2,18,6]
 
-        1. [22,27,16,2,18,6]  
+    1. [22,27,16,2,18,6]  
 
-        2. [22,27,16,2,18,6]  
+    2. [22,27,16,2,18,6]  
 
-        3. [16,22,27,2,18,6]   
+    3. [16,22,27,2,18,6]   
 
-        4. [2,16,22,27,18,6]   
+    4. [2,16,22,27,18,6]   
 
-        5. [2,16,18,22,27,6] 
+    5. [2,16,18,22,27,6] 
 
-        6. [2,6,16,18,22,27]        
+    6. [2,6,16,18,22,27]        
 
-        Şeklinde olacaktır.
+    Şeklinde olacaktır.
 
     <br>    
 
-    - Big-O gösterimi: `O(n^2)`
+    Big-O gösterimi: `O(n^2)`
 
-    - Dizi sıralandıktan sonra 18 sayısı `Average Case`' e girer. Çünkü dizinin ortalarında-ortasında yer almaktadır.
+    Dizi sıralandıktan sonra 18 sayısı `Average Case`' e girer. Çünkü dizinin ortalarında-ortasında yer almaktadır.
 
 ---
 <br>
@@ -79,7 +79,7 @@
     2. [3,7,5,8,2,9,4,15,6]
 
     3. [3,5,7,8,2,9,4,15,6]
-    
+
     3. [3,5,7,8,2,9,4,15,6]
 
     Şeklinde olacaktır.
