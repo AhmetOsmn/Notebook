@@ -44,9 +44,8 @@
 
     6. [2,6,16,18,22,27]        
 
-    Şeklinde olacaktır.
-
-    <br>    
+    Şeklinde olacaktır.   
+    
 
     Big-O gösterimi: `O(n^2)`
 
