@@ -16,3 +16,7 @@ Container'ların çalıştığı yerlerde sadece bir işletim sistemi vardır ve
 
 Container türleri olarak ***LXC, LXD, LXCFS*** vardır. Docker bunlardan ***LXC*** türünü kullanmaktadır. Container'lar kullanılması ve kontrolü zor olan yapılardır. Docker bizlere bu container'ların kullanılmasını kolaylaştırır ve kontrol edilebilir hale getirir.
 
+Windows server üzerine Docker kurduğumuzda, Docker otomatik olarak bir Linux VM yükler ve container'ları VM üzerinden çalıştırır.
+
+VM'lerin container'lardan farkı olarak her bir VM'in kendine ait OS vardır. Container'lar üzerinde yüklü oldukları OS'u kullanılırlar. 
+
