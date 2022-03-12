@@ -57,15 +57,27 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 - `docker pull 'image_name'` - Image'i indirir.  
 
+  ![docker-pull](https://user-images.githubusercontent.com/44196434/158028781-08922038-53a6-4290-9760-c0f81fbb1a7e.png)
+
 - `docker run 'image_name'`	- Image'i çalıştırır. Eğer Image indirilmemişse, ilk önce indirir ardından çalıştırır. 
+
+  ![docker-run-with-pull](https://user-images.githubusercontent.com/44196434/158028818-c78ace81-e444-4529-9aec-4d760872f5a4.png)
 
 - `docker run -it ubuntu` yaparak ubuntunun içerisine gireriz. Normal çalıştırsaydık, process hemen çalışıp kapanacaktı. Ubuntu bir OS olduğu için bu şekildedir. Eğer Ubuntu'dan çıkmak istiyorsak, `exit` yazıp çıkabiliriz. `-it` Parametresi, kullanıcıdan girdi bekleyen uygulamaların hemen kapanmamasını sağlamak için kullanılır.
 
+  ![docker-run-it-ubuntu](https://user-images.githubusercontent.com/44196434/158028839-d8fa0271-4df9-407e-8cd5-f083bd3c1f1d.png)
+ 
 - `docker run -it --name 'name' ubuntu` - Image'i çalıştırır ve ismi 'name' olarak ayarlar. Eğer `--name` parametresini vermezsek otomatik olarak rastgele bir isim atanacaktır.
+
+  ![docker-run-it-ubuntu-with-name](https://user-images.githubusercontent.com/44196434/158028868-2064dc51-a661-4728-8fe3-d637acb6b9dd.png)
 
 - `docker images` - İndirmiş olduğumuz image'leri gösterir.
 
+  ![docker-images](https://user-images.githubusercontent.com/44196434/158028884-658e4f2f-a665-46da-9665-60d0e9eb4aa4.png)
+
 - `docker ps` - Çalışan container'ları gösterir. 
+
+  ![docker-ps](https://user-images.githubusercontent.com/44196434/158028891-8bc29425-9b9c-4bd3-98dd-e1506ef8114d.png)
 
 - `docker container ls` - Çalışan container'ları gösterir. 
 
@@ -73,15 +85,27 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 - `docker start 'container_name'` - Container'ı ismi ile çalıştırır.
 
+  ![docker-start-with-name](https://user-images.githubusercontent.com/44196434/158029134-c9741705-8fc4-470e-ae5b-77bd8883e7a2.png)
+
 - `docker stop 'container_name' || 'container_id'` - Container'ı ismi ile veya Id'si (en az 2 karakter) ile durdurur.
+
+  ![docker-start-stop](https://user-images.githubusercontent.com/44196434/158028929-774e8c9f-8441-4959-be0b-86038a64f16f.png)
 
 - `docker rm 'container_name' || 'container_id'` - Container'ı ismi ile veya Id'si (en az 2 karakter) ile kaldırır. Toplu silme işlemi için bir komut yok istersek kendimiz bir bash komutu yazabiliriz. Veya `docker rm id1 id2 id3..` şeklinde çoklu silme yapabiliriz.
 
+  ![docker-rm-multiple](https://user-images.githubusercontent.com/44196434/158028977-b0532199-6386-4285-8280-3339ec6de27f.png)
+
 - `docker run 'image_name':'tag'` - Tag etiketi, Image'in istenilen versiyonunun çalıştırılmasını sağlar. Eğer versiyon inmiş durumda değilse, versiyonu indirir ve çalıştırır.
+
+  ![docker-run-with-tag](https://user-images.githubusercontent.com/44196434/158028999-48c4fbfb-1296-4642-be91-1c02ada1a760.png)
 
 - `docker image tag 'image_name' 'new_tag'` - Image'ten bir tane daha yaratır ve verilen etiket ile etiketler.
 
+  ![docker-image-tag](https://user-images.githubusercontent.com/44196434/158029091-8e2ea1bd-246e-4e3a-ae2e-436665320e9b.png)
+
 - `docker run -d 'image_name'` - Bir Image'in arka planda çalışmasını istiyorsak, `-d` parametresini kullanırız.
+
+  ![docker-run-with-d](https://user-images.githubusercontent.com/44196434/158029109-94757efc-17ff-417d-a371-ce6f52a95641.png)
 
 - `docker attach 'image_id` - Arka planda çalışan Image'i ön tarafa çeker.
 
