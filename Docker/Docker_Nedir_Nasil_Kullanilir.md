@@ -203,6 +203,8 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 -     docker rmi image_name (veya) image_id
 
    Image'i kaldırır.
+   
+   ![docker-rmi](https://user-images.githubusercontent.com/44196434/158058113-815327db-5cb0-444d-8de9-de02fa66469e.png)
 
 <br>
 
@@ -257,6 +259,9 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 -     docker inspect container_id (veya) container_name
 
    *Container*'ların ve *Image*'lerin detaylı bilgilerini gösterir.
+   
+   ![docker-inspect](https://user-images.githubusercontent.com/44196434/158058080-827ea81c-9c77-41f8-aef8-130c4ee5246b.png)
+
 
 <br>
 
