@@ -1,7 +1,7 @@
 # Kaynak
 
 Burada yazdığım notları Youtube üzerindeki, [kablosuzkedi](https://www.youtube.com/channel/UCYT5QTr38bwp85Pka8YSVIg) kanalının [Docker Nedir Nasıl Kullanılır? | Part #1](https://www.youtube.com/watch?v=4XVfmGE1F_w&list=PL_f2F0Oyaj4_xkCDqnRWp4p5ypjDeC0kO) videosunu izleyerek çıkarttım. Daha detaylı incelemek için ve farklı içerikler için kanala bakabilirsiniz.
-# Docker
+# *Docker*
 
 Bir proje içerisinde farklı servisler kullanılabilir. Her servisin kendisine ait olan bağımlılıkları ve kullandığı kütüphaneler olacaktır. Bu servislerin kütüphaneleri ve bağımlılıkları birbirlerini etkileyebilir. Ayrıca servislerin çalışabilmesi için uygun işletim sistemi üzerinde olmaları gerekmektedir. 
 
@@ -16,9 +16,9 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 - *Container*'ların çalıştığı yerlerde sadece bir işletim sistemi vardır ve *container*'lar bu işletim sistemin kernel'ini (çekirdeğini) kullanırlar.
 
-- *Container* türleri olarak ***LXC, LXD, LXCFS*** vardır. Docker bunlardan ***LXC*** türünü kullanmaktadır. *Container*'lar kullanılması ve kontrolü zor olan yapılardır. Docker bizlere bu *container*'ların kullanılmasını kolaylaştırır ve kontrol edilebilir hale getirir.
+- *Container* türleri olarak ***LXC, LXD, LXCFS*** vardır. *Docker* bunlardan ***LXC*** türünü kullanmaktadır. *Container*'lar kullanılması ve kontrolü zor olan yapılardır. *Docker* bizlere bu *container*'ların kullanılmasını kolaylaştırır ve kontrol edilebilir hale getirir.
 
-- Windows server üzerine Docker kurduğumuzda, Docker otomatik olarak bir Linux VM yükler ve *container*'ları VM üzerinden çalıştırır.
+- Windows server üzerine *Docker* kurduğumuzda, *Docker* otomatik olarak bir Linux VM yükler ve *container*'ları VM üzerinden çalıştırır.
 
 - VM'lerin *container*'lardan farkı olarak her bir VM'in kendine ait OS vardır. *Container*'lar üzerinde yüklü oldukları OS'u kullanılırlar. Ayrıca VM'ler ***Hypervisor*** ile birlikte çalışırlar.
 
@@ -30,19 +30,19 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
  
  <br>
 
-# Image Nedir?
+# *Image* Nedir?
 
 - İçerisinde bir çok farklı yapıyı barındıran yapılardır (İşletim sistemi, application vb.). Aslında *Container*'ların nasıl çalışacağının planını söyleyer. *"Bu Mysql'dir ve Mysql şu şekilde çalıştırılacak."* gibi bilgileri verir. Akılda kalması için, *Image'leri geliştirdiğimiz projelerin kaynak kodlarına benzetebiliriz.*
 
-- *Container*'i tekrar açıklarsak, Image'i çalıştırdığımızda elde ettiğimiz proses (process) olarak düşünebiliriz. Mesela bilgisayarda çalıştırdığımız uygulamalar da process olarak çalışır. Örnek olarak Spotify'ı çalıştırdığımızda bilgisayarımızda bir process olarak çalışır. Docker'da bu şekilde çalışmaktadır.
+- *Container*'i tekrar açıklarsak, *Image*'i çalıştırdığımızda elde ettiğimiz proses (process) olarak düşünebiliriz. Mesela bilgisayarda çalıştırdığımız uygulamalar da process olarak çalışır. Örnek olarak Spotify'ı çalıştırdığımızda bilgisayarımızda bir process olarak çalışır. *Docker*'da bu şekilde çalışmaktadır.
 
-- **Docker Hub** aslında bir nevi Image havuzudur diyebiliriz. *Container* olarak çalıştırmak istediğimiz uygulamaları, OS'ları, kütüphaneleri her neyse **Docker Hub** üzerinden indirebiliriz. Örnek olarak biz Windows veya MAC OS bilgisayarımızda Ubuntu'yu *container* olarak çalıştırmak istiyorsak:
+- **Docker Hub** aslında bir nevi *Image* havuzudur diyebiliriz. *Container* olarak çalıştırmak istediğimiz uygulamaları, OS'ları, kütüphaneleri her neyse **Docker Hub** üzerinden indirebiliriz. Örnek olarak biz Windows veya MAC OS bilgisayarımızda Ubuntu'yu *container* olarak çalıştırmak istiyorsak:
 
       docker pull ubuntu
   
    Komutu ile Ubuntu'yu indirebiliriz.
 
-- İndirdiğimiz bir Image'i çalıştırmak istersek:
+- İndirdiğimiz bir *Image*'i çalıştırmak istersek:
         
       docker run image_name
  
@@ -54,15 +54,15 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
    
       docker run ubuntu
    
-   komutunu çalıştırırsak, ayrı bir process olarak bir tane daha Ubuntu çalışmaya başalyacaktı. Docker'ın güzel ve önemli özelliklerinden birisi de budur.  
+   komutunu çalıştırırsak, ayrı bir process olarak bir tane daha Ubuntu çalışmaya başalyacaktı. *Docker*'ın güzel ve önemli özelliklerinden birisi de budur.  
    
       docker run ubuntu
    
-   Komutunu çalıştırdığımızda, ilk önce local'de Ubuntu Image'ini arayacaktır. Eğer local'de bu Image yoksa, Docker Hub'a istekte bulunur ve bu Image'i otomatik olarak indirir.
+   Komutunu çalıştırdığımızda, ilk önce local'de Ubuntu *Image*'ini arayacaktır. Eğer local'de bu *Image* yoksa, *Docker* Hub'a istekte bulunur ve bu *Image*'i otomatik olarak indirir.
 
 <br>
 
-# Docker ne işimize yarayacak?
+# *Docker* ne işimize yarayacak?
 
 - Process'ler birbirinden izole edilmiş olacak.
 
@@ -70,9 +70,9 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 - Geliştiricile ile DevOPS arasında bir iletişim olmadan projeler çalıştırılabilir.
 
-- Test kısımlarında, testleri yapan kişilerin projenin çalışması için gerekli olan her şeyi kurmasına gerek kalmamış olur. Docker üzerinden çalıştırarak testleri yapabiliriz.
+- Test kısımlarında, testleri yapan kişilerin projenin çalışması için gerekli olan her şeyi kurmasına gerek kalmamış olur. *Docker* üzerinden çalıştırarak testleri yapabiliriz.
 
-- Gelişticiler oluşturdukları projelerin içerisine bir DockerFile ekler ve içerisinde tanımlamaları yapar. Ardından yönetici,test yapan kişi veya her kimse, geliştirilmiş olan projeyi çalıştırmak için sadece bu DockerFile dosyasını built eder ve çalıştırır. 
+- Gelişticiler oluşturdukları projelerin içerisine bir *DockerFile* ekler ve içerisinde tanımlamaları yapar. Ardından yönetici,test yapan kişi veya her kimse, geliştirilmiş olan projeyi çalıştırmak için sadece bu *DockerFile* dosyasını built eder ve çalıştırır. 
 
 <br>
 
@@ -84,11 +84,11 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
  
     şeklinde bir *container* çalıştırdığımızda, bu *container* ***Docker Host*** üzerinde çalışmaya başlar. Bu şekilde *Docker* ile ayağa kaldırdığımız bütün *container*'lar birer IP'ye sahip olur. Otomatik olarak IP atama işlemi engellenebilir, ileriki adımlarda bundan bahsedilecek. Ayrıca çalışan tüm Webb App'lerin birer port numarası vardır. Bu port üzerinden servis edilirler. 
 
- - Biz bir *container*'a bağlanmak istediğimizde yapacağımız işlem ilk önce Docker Host'a bağlanmak olacak, ondan sonra içerideki *container*'lardan bağlanmak istediğimiz *container*'ın portu ile mapping yapılacak ve bağltantı kurulacak. Docker komutları kısmında bu komutu yazacağım zaten ama burada 'mapping yapılacak' kısmı daha anlaşılır olsun diye şu komuta bakabiliriz:
+ - Biz bir *container*'a bağlanmak istediğimizde yapacağımız işlem ilk önce *Docker* Host'a bağlanmak olacak, ondan sonra içerideki *container*'lardan bağlanmak istediğimiz *container*'ın portu ile mapping yapılacak ve bağltantı kurulacak. *Docker* komutları kısmında bu komutu yazacağım zaten ama burada 'mapping yapılacak' kısmı daha anlaşılır olsun diye şu komuta bakabiliriz:
 
         docker run -p DIS_PORT:IC_PORT image_name
 
-   Burada verilen ***DIS_PORT*** bizim Docker Host'a bağlanmak için kullanacağımız port, ***IC_PORT*** ise içerideki bağlanmak istediğimiz *container*'ın portu.
+   Burada verilen ***DIS_PORT*** bizim *Docker Host*'a bağlanmak için kullanacağımız port, ***IC_PORT*** ise içerideki bağlanmak istediğimiz *container*'ın portu.
 
 <br>
 
@@ -108,7 +108,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
         docker run -v /opt/data:/data/db mongo
 
-- Bu kısımda Host üzerindeki klasörün, Docker tarafından tanınıyor ve izin verilmiş bir klasör olması lazım. Bunu *Docer Desktop* üzerinden, **settings** içerisindeki, **resources** kısmında, **file sharing** içerisindeki izin verilmiş olan klasörlerden kontrol edebilirsiniz. Eğer kayıt etmek istediğiniz klasör burada yoksa, bu ekrandan ekleyebilirsiniz.
+- Bu kısımda Host üzerindeki klasörün, *Docker* tarafından tanınıyor ve izin verilmiş bir klasör olması lazım. Bunu *Docer Desktop* üzerinden, **settings** içerisindeki, **resources** kısmında, **file sharing** içerisindeki izin verilmiş olan klasörlerden kontrol edebilirsiniz. Eğer kayıt etmek istediğiniz klasör burada yoksa, bu ekrandan ekleyebilirsiniz.
 
   *Docker Desktop -> Settings -> Resources -> File Sharing -> Add a new folder*
 
@@ -118,7 +118,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker pull image_name
     
-    Image'i indirir.  
+    *Image*'i indirir.  
 
   ![docker-pull](https://user-images.githubusercontent.com/44196434/158028781-08922038-53a6-4290-9760-c0f81fbb1a7e.png)
 
@@ -126,7 +126,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker run image_name
 
-    Image'i çalıştırır. Eğer Image indirilmemişse, ilk önce indirir ardından çalıştırır. 
+    *Image*'i çalıştırır. Eğer *Image* indirilmemişse, ilk önce indirir ardından çalıştırır. 
 
   ![docker-run-with-pull](https://user-images.githubusercontent.com/44196434/158028818-c78ace81-e444-4529-9aec-4d760872f5a4.png)
 
@@ -142,7 +142,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker run -it --name new_name ubuntu
 
-   Image'i çalıştırır ve ismi 'new_name' olarak ayarlar. Eğer `--name` parametresini kullanmadan çalıştırırsak otomatik olarak rastgele bir isim atanacaktır.
+   *Image*'i çalıştırır ve ismi 'new_name' olarak ayarlar. Eğer `--name` parametresini kullanmadan çalıştırırsak otomatik olarak rastgele bir isim atanacaktır.
 
   ![docker-run-it-ubuntu-with-name](https://user-images.githubusercontent.com/44196434/158028868-2064dc51-a661-4728-8fe3-d637acb6b9dd.png)
 
@@ -150,7 +150,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker images
 
-   İndirmiş olduğumuz image'leri gösterir.
+   İndirmiş olduğumuz *image*'leri gösterir.
 
   ![docker-images](https://user-images.githubusercontent.com/44196434/158028884-658e4f2f-a665-46da-9665-60d0e9eb4aa4.png)
 
@@ -202,7 +202,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker rmi image_name (veya) image_id
 
-   Image'i kaldırır.
+   *Image*'i kaldırır.
    
    ![docker-rmi](https://user-images.githubusercontent.com/44196434/158058113-815327db-5cb0-444d-8de9-de02fa66469e.png)
 
@@ -210,7 +210,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker run image_name:tag
   
-   Tag etiketi, Image'in istenilen versiyonunun çalıştırılmasını sağlar. Eğer versiyon inmiş durumda değilse, versiyonu indirir ve çalıştırır.
+   Tag etiketi, *Image*'in istenilen versiyonunun çalıştırılmasını sağlar. Eğer versiyon inmiş durumda değilse, versiyonu indirir ve çalıştırır.
 
   ![docker-run-with-tag](https://user-images.githubusercontent.com/44196434/158028999-48c4fbfb-1296-4642-be91-1c02ada1a760.png)
 
@@ -218,7 +218,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker image tag image_name new_tag 
 
-   Image'ten bir tane daha yaratır ve girilen 'new_tag' ile etiketler.
+   *Image*'ten bir tane daha yaratır ve girilen 'new_tag' ile etiketler.
 
   ![docker-image-tag](https://user-images.githubusercontent.com/44196434/158029091-8e2ea1bd-246e-4e3a-ae2e-436665320e9b.png)
 
@@ -226,7 +226,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker run -d image_name
 
-   Bir Image'in arka planda çalışmasını istiyorsak, `-d` parametresini kullanırız.
+   Bir *Image*'in arka planda çalışmasını istiyorsak, `-d` parametresini kullanırız.
 
   ![docker-run-with-d](https://user-images.githubusercontent.com/44196434/158029109-94757efc-17ff-417d-a371-ce6f52a95641.png)
 
@@ -234,7 +234,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker attach image_id 
 
-   Arka planda çalışan Image'i ön tarafa çeker.
+   Arka planda çalışan *Image*'i ön tarafa çeker.
 
 <br>
 
@@ -246,13 +246,13 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker run -p DIS_PORT:IC_PORT image_name
 
-   ***DIS_PORT*** bizim Docker Host'a bağlanmak için kullanacağımız port, ***IC_PORT*** içerideki bağlanmak istediğimiz *container*'ın portu.
+   ***DIS_PORT*** bizim *Docker Host*'a bağlanmak için kullanacağımız port, ***IC_PORT*** içerideki bağlanmak istediğimiz *container*'ın portu.
 
 <br>
 
 -     docker run -v /opt/data:/data/db mongo
 
-  *Container*'ın içerisindeki /data/db klasörünün içerisindeki verileri, Docker Host içerisindeki /opt/data klasörünün içerisine kopyalar. mongo *container*'ı kapatılsa da artık *Host*'un içerisinde veriler kaydedilmiş olur.
+  *Container*'ın içerisindeki /data/db klasörünün içerisindeki verileri, *Docker* Host içerisindeki /opt/data klasörünün içerisine kopyalar. mongo *container*'ı kapatılsa da artık *Host*'un içerisinde veriler kaydedilmiş olur.
 
 <br>
 
@@ -267,9 +267,9 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker run --name pmyadmin -p 8000:80 --link mysql-server:db -d phpmyadmin/phpmyadmin
 
-   -p 8000:80 ile portlarınızı ayarlıyoruz.
+   -p 8000:80 ile portları ayarlıyoruz.
 
-   -d ile container'ın çalışmasını sağlıyoruz.
-   
-   -l mysql-server:db ile mysql-server container'ının portlarını link ile bağlıyoruz.
+   -d ile container'ın arka planda çalışmasını sağlıyoruz.
+
+   --link mysql-server:db ile mysql-server container'ının portlarını link ile bağlıyoruz.
 
