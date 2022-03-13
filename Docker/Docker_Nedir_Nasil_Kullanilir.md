@@ -1,3 +1,6 @@
+# Kaynak
+
+Burada yazdığım notları Youtube üzerindeki, [kablosuzkedi](https://www.youtube.com/channel/UCYT5QTr38bwp85Pka8YSVIg) kanalının [Docker Nedir Nasıl Kullanılır? | Part #1](https://www.youtube.com/watch?v=4XVfmGE1F_w&list=PL_f2F0Oyaj4_xkCDqnRWp4p5ypjDeC0kO) videosunu izleyerek çıkarttım. Daha detaylı incelemek için ve farklı içerikler için kanala bakabilirsiniz.
 # Docker
 
 Bir proje içerisinde farklı servisler kullanılabilir. Her servisin kendisine ait olan bağımlılıkları ve kullandığı kütüphaneler olacaktır. Bu servislerin kütüphaneleri ve bağımlılıkları birbirlerini etkileyebilir. Ayrıca servislerin çalışabilmesi için uygun işletim sistemi üzerinde olmaları gerekmektedir. 
@@ -249,8 +252,17 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
   *Container*'ın içerisindeki /data/db klasörünün içerisindeki verileri, Docker Host içerisindeki /opt/data klasörünün içerisine kopyalar. mongo *container*'ı kapatılsa da artık *Host*'un içerisinde veriler kaydedilmiş olur.
 
-  <br>
+<br>
 
 -     docker inspect container_id (veya) container_name
 
    *Container*'ların ve *Image*'lerin detaylı bilgilerini gösterir.
+
+<br>
+
+-     docker run --name pmyadmin -p 8000:80 --link mysql-server:db -d phpmyadmin/phpmyadmin
+
+   -p 8000:80 ile portlarınızı ayarlıyoruz.
+   -d ile container'ın çalışmasını sağlıyoruz.
+   -l mysql-server:db ile mysql-server container'ının portlarını link ile bağlıyoruz.
+
