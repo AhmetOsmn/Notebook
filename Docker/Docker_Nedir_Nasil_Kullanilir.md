@@ -51,11 +51,11 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
    
       docker run ubuntu
    
-   komutunu çalıştırırsak, ayrı bir process olarak bir tane daha Ubuntu çalışmaya başalyacaktı. Docker'ın güzel ve önemli özelliklerinden birisi de budur. Eğer 
+   komutunu çalıştırırsak, ayrı bir process olarak bir tane daha Ubuntu çalışmaya başalyacaktı. Docker'ın güzel ve önemli özelliklerinden birisi de budur.  
    
       docker run ubuntu
    
-   komutunu çalıştırdığımızda, ilk önce local'de Ubuntu Image'ini arayacaktır. Eğer local'de bu Image yoksa, Docker Hub'a istekte bulunur ve bu Image'i otomatik olarak indirir.
+   Komutunu çalıştırdığımızda, ilk önce local'de Ubuntu Image'ini arayacaktır. Eğer local'de bu Image yoksa, Docker Hub'a istekte bulunur ve bu Image'i otomatik olarak indirir.
 
 <br>
 
