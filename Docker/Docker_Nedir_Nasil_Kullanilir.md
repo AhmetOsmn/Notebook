@@ -5,19 +5,19 @@ Bir proje içerisinde farklı servisler kullanılabilir. Her servisin kendisine 
 Bizim istediğimiz en iyi durum, bütün servislerin kütüphanelerinin ve bağımlılıklarının birbirinden ayrı olması ve birbirlerini etkilememesidir.
 Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer paket içerisinde olursa aslında istediğimiz durumu elde ediyoruz.
 
-# Container Nedir?
+# *Container* Nedir?
 
 - Kendilerine ait ***Processleri***, Servisleri ve Ağları vardır. Aynı işletim sistemi veya VM üzerinde çalışırlar. İzole edilmiş ortamlardır.
 
-- Elimizde 2 Adet componentimiz olsun, ikisine de kendilerine ait olan bağımlılıkları ve kütüphaneleri koyduğumuzda bunlar birerer ***Container*** olarak düşünülebilir. Bunun sonucunda bu iki component-container birbirlerine etki etmezler, aslında izole edilmiş olurlar.
+- Elimizde 2 Adet componentimiz olsun, ikisine de kendilerine ait olan bağımlılıkları ve kütüphaneleri koyduğumuzda bunlar birerer ***Container*** olarak düşünülebilir. Bunun sonucunda bu iki *component*-*container* birbirlerine etki etmezler, aslında izole edilmiş olurlar.
 
-- Container'ların çalıştığı yerlerde sadece bir işletim sistemi vardır ve container'lar bu işletim sistemin kernel'ini (çekirdeğini) kullanırlar.
+- *Container*'ların çalıştığı yerlerde sadece bir işletim sistemi vardır ve *container*'lar bu işletim sistemin kernel'ini (çekirdeğini) kullanırlar.
 
-- Container türleri olarak ***LXC, LXD, LXCFS*** vardır. Docker bunlardan ***LXC*** türünü kullanmaktadır. Container'lar kullanılması ve kontrolü zor olan yapılardır. Docker bizlere bu container'ların kullanılmasını kolaylaştırır ve kontrol edilebilir hale getirir.
+- *Container* türleri olarak ***LXC, LXD, LXCFS*** vardır. Docker bunlardan ***LXC*** türünü kullanmaktadır. *Container*'lar kullanılması ve kontrolü zor olan yapılardır. Docker bizlere bu *container*'ların kullanılmasını kolaylaştırır ve kontrol edilebilir hale getirir.
 
-- Windows server üzerine Docker kurduğumuzda, Docker otomatik olarak bir Linux VM yükler ve container'ları VM üzerinden çalıştırır.
+- Windows server üzerine Docker kurduğumuzda, Docker otomatik olarak bir Linux VM yükler ve *container*'ları VM üzerinden çalıştırır.
 
-- VM'lerin container'lardan farkı olarak her bir VM'in kendine ait OS vardır. Container'lar üzerinde yüklü oldukları OS'u kullanılırlar. Ayrıca VM'ler ***Hypervisor*** ile birlikte çalışırlar.
+- VM'lerin *container*'lardan farkı olarak her bir VM'in kendine ait OS vardır. *Container*'lar üzerinde yüklü oldukları OS'u kullanılırlar. Ayrıca VM'ler ***Hypervisor*** ile birlikte çalışırlar.
 
  -  |Docker|VM|
     |---|---|
@@ -29,11 +29,11 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 # Image Nedir?
 
-- İçerisinde bir çok farklı yapıyı barındıran yapılardır (İşletim sistemi, application vb.). Aslında Container'ların nasıl çalışacağının planını söyleyer. *"Bu Mysql'dir ve Mysql şu şekilde çalıştırılacak."* gibi bilgileri verir. Akılda kalması için, *Image'leri geliştirdiğimiz projelerin kaynak kodlarına benzetebiliriz.*
+- İçerisinde bir çok farklı yapıyı barındıran yapılardır (İşletim sistemi, application vb.). Aslında *Container*'ların nasıl çalışacağının planını söyleyer. *"Bu Mysql'dir ve Mysql şu şekilde çalıştırılacak."* gibi bilgileri verir. Akılda kalması için, *Image'leri geliştirdiğimiz projelerin kaynak kodlarına benzetebiliriz.*
 
-- Container'i tekrar açıklarsak, Image'i çalıştırdığımızda elde ettiğimiz proses (process) olarak düşünebiliriz. Mesela bilgisayarda çalıştırdığımız uygulamalar da process olarak çalışır. Örnek olarak Spotify'ı çalıştırdığımızda bilgisayarımızda bir process olarak çalışır. Docker'da bu şekilde çalışmaktadır.
+- *Container*'i tekrar açıklarsak, Image'i çalıştırdığımızda elde ettiğimiz proses (process) olarak düşünebiliriz. Mesela bilgisayarda çalıştırdığımız uygulamalar da process olarak çalışır. Örnek olarak Spotify'ı çalıştırdığımızda bilgisayarımızda bir process olarak çalışır. Docker'da bu şekilde çalışmaktadır.
 
-- **Docker Hub** aslında bir nevi Image havuzudur diyebiliriz. Container olarak çalıştırmak istediğimiz uygulamaları, OS'ları, kütüphaneleri her neyse **Docker Hub** üzerinden indirebiliriz. Örnek olarak biz Windows veya MAC OS bilgisayarımızda Ubuntu'yu container olarak çalıştırmak istiyorsak:
+- **Docker Hub** aslında bir nevi Image havuzudur diyebiliriz. *Container* olarak çalıştırmak istediğimiz uygulamaları, OS'ları, kütüphaneleri her neyse **Docker Hub** üzerinden indirebiliriz. Örnek olarak biz Windows veya MAC OS bilgisayarımızda Ubuntu'yu *container* olarak çalıştırmak istiyorsak:
 
       docker pull ubuntu
   
@@ -79,13 +79,35 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
  
         docker run image_name
  
-    şeklinde bir container çalıştırdığımızda, bu container ***Docker Host*** üzerinde çalışmaya başlar. Bu şekilde *Docker* ile ayağa kaldırdığımız bütün container'lar birer IP'ye sahip olur. Otomatik olarak IP atama işlemi engellenebilir, ileriki adımlarda bundan bahsedilecek. Ayrıca çalışan tüm Webb App'lerin birer port numarası vardır. Bu port üzerinden servis edilirler. 
+    şeklinde bir *container* çalıştırdığımızda, bu *container* ***Docker Host*** üzerinde çalışmaya başlar. Bu şekilde *Docker* ile ayağa kaldırdığımız bütün *container*'lar birer IP'ye sahip olur. Otomatik olarak IP atama işlemi engellenebilir, ileriki adımlarda bundan bahsedilecek. Ayrıca çalışan tüm Webb App'lerin birer port numarası vardır. Bu port üzerinden servis edilirler. 
 
- - Biz bir container'a bağlanmak istediğimizde yapacağımız işlem ilk önce Docker Host'a bağlanmak olacak, ondan sonra içerideki container'lardan bağlanmak istediğimiz container'ın portu ile mapping yapılacak ve bağltantı kurulacak. Docker komutları kısmında bu komutu yazacağım zaten ama burada 'mapping yapılacak' kısmı daha anlaşılır olsun diye şu komuta bakabiliriz:
+ - Biz bir *container*'a bağlanmak istediğimizde yapacağımız işlem ilk önce Docker Host'a bağlanmak olacak, ondan sonra içerideki *container*'lardan bağlanmak istediğimiz *container*'ın portu ile mapping yapılacak ve bağltantı kurulacak. Docker komutları kısmında bu komutu yazacağım zaten ama burada 'mapping yapılacak' kısmı daha anlaşılır olsun diye şu komuta bakabiliriz:
 
         docker run -p DIS_PORT:IC_PORT image_name
 
-   Burada verilen ***DIS_PORT*** bizim Docker Host'a bağlanmak için kullanacağımız port, ***IC_PORT*** ise içerideki bağlanmak istediğimiz container'ın portu.
+   Burada verilen ***DIS_PORT*** bizim Docker Host'a bağlanmak için kullanacağımız port, ***IC_PORT*** ise içerideki bağlanmak istediğimiz *container*'ın portu.
+
+<br>
+
+# Volume Kavramı
+
+- *Docker Host* üzerinde *container*'lar ***stateless*** olarak çalışırlar. Yani bu *containerler* içerisinde herhangi bir bilgi kaydetme işlemi yapılmaz. Bir *container*'ı durdurduğumuzda içerisindeki bilgiler tamamen silinir.
+
+- Geliştirdiğimiz projelerde bizim istediğimiz şey genelde bilgilerin tutulması, kayıt edilmesi şeklinde olacağından bir şekilde *container*'ların içerisindeki verileri kaydedebiliyor olmamız gerekiyor. Bu işlemi ***volume*** kavramı ile yapabiliriz.
+
+- Bu işlemi şu şekilde yapabiliriz. Bir *container*'ı çalıştırdığımızda kayıt edilecek klasörün *Docker Host* üzerindeki adresini belirtiriz. Yani *container* içerisindeki bir lokasyonu, host üzerindeki bir lokasyona map'lememiz gerekiyor. Bu işleme ***Volume Mapping*** denir.
+
+- Bu işlemi yaptığımızda *container* içerisinde yazılmış olan verileri, *Docker Engine* alır ve mapping yaptığımız klasörün içerisine kaydeder. Bu işlemden sonra biz *container*'ı durdursap bile veriler *Docker Host* üzerinde biz silene kadar kalacaktır.
+
+- Bu işlemi şu komut ile örnekleyebiliriz.
+
+        docker run -v host_icerisindeki_klasorun_adresi:container_icerisindeki_klasorun_adresi image_name
+
+        docker run -v /opt/data:/data/db mongo
+
+- Bu kısımda Host üzerindeki klasörün, Docker tarafından tanınıyor ve izin verilmiş bir klasör olması lazım. Bunu *Docer Desktop* üzerinden, **settings** içerisindeki, **resources** kısmında, **file sharing** içerisindeki izin verilmiş olan klasörlerden kontrol edebilirsiniz. Eğer kayıt etmek istediğiniz klasör burada yoksa, bu ekrandan ekleyebilirsiniz.
+
+  *Docker Desktop -> Settings -> Resources -> File Sharing -> Add a new folder*
 
 <br>
 
@@ -133,7 +155,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker ps
 
-   Çalışan container'ları gösterir. 
+   Çalışan *container*'ları gösterir. 
 
   ![docker-ps](https://user-images.githubusercontent.com/44196434/158028891-8bc29425-9b9c-4bd3-98dd-e1506ef8114d.png)
 
@@ -141,7 +163,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker container ls 
 
-  Çalışan container'ları gösterir. 
+  Çalışan *container*'ları gösterir. 
 
 <br>
 
@@ -153,7 +175,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker start container_name
 
-   Container'ı ismi ile çalıştırır.
+   *Container*'ı ismi ile çalıştırır.
 
   ![docker-start-with-name](https://user-images.githubusercontent.com/44196434/158029134-c9741705-8fc4-470e-ae5b-77bd8883e7a2.png)
 
@@ -161,7 +183,7 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker stop container_name (veya) container_id
 
-   Container'ı ismi ile veya Id'si (en az 2 karakter) ile durdurur.
+   *Container*'ı ismi ile veya Id'si (en az 2 karakter) ile durdurur.
 
   ![docker-start-stop](https://user-images.githubusercontent.com/44196434/158028929-774e8c9f-8441-4959-be0b-86038a64f16f.png)
 
@@ -169,9 +191,15 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker rm container_name (veya) container_id
 
-   Container'ı ismi ile veya Id'si (en az 2 karakter) ile kaldırır. Toplu silme işlemi için bir komut yok istersek kendimiz bir bash komutu yazabiliriz. Veya `docker rm id1 id2 id3..` şeklinde çoklu silme yapabiliriz.
+   *Container*'ı ismi ile veya Id'si (en az 2 karakter) ile kaldırır. Toplu silme işlemi için bir komut yok istersek kendimiz bir bash komutu yazabiliriz. Veya `docker rm id1 id2 id3..` şeklinde çoklu silme yapabiliriz.
 
   ![docker-rm-multiple](https://user-images.githubusercontent.com/44196434/158028977-b0532199-6386-4285-8280-3339ec6de27f.png)
+
+<br>
+
+-     docker rmi image_name (veya) image_id
+
+   Image'i kaldırır.
 
 <br>
 
@@ -207,4 +235,22 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
 -     docker container logs container_id
 
-   Container'ın başladığı andan itibaren, bu komutun çalıştırıldığı ana kadar olan logları gösterir.
+   *Container*'ın başladığı andan itibaren, bu komutun çalıştırıldığı ana kadar olan logları gösterir.
+
+<br>
+
+-     docker run -p DIS_PORT:IC_PORT image_name
+
+   ***DIS_PORT*** bizim Docker Host'a bağlanmak için kullanacağımız port, ***IC_PORT*** içerideki bağlanmak istediğimiz *container*'ın portu.
+
+<br>
+
+-     docker run -v /opt/data:/data/db mongo
+
+  *Container*'ın içerisindeki /data/db klasörünün içerisindeki verileri, Docker Host içerisindeki /opt/data klasörünün içerisine kopyalar. mongo *container*'ı kapatılsa da artık *Host*'un içerisinde veriler kaydedilmiş olur.
+
+  <br>
+
+-     docker inspect container_id (veya) container_name
+
+   *Container*'ların ve *Image*'lerin detaylı bilgilerini gösterir.
