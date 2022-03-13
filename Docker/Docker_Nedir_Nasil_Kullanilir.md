@@ -77,13 +77,13 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 
  - Local'de *Docker* kullanırken, 
  
-        docker run image
+        docker run image_name
  
     şeklinde bir container çalıştırdığımızda, bu container ***Docker Host*** üzerinde çalışmaya başlar. Bu şekilde *Docker* ile ayağa kaldırdığımız bütün container'lar birer IP'ye sahip olur. Otomatik olarak IP atama işlemi engellenebilir, ileriki adımlarda bundan bahsedilecek. Ayrıca çalışan tüm Webb App'lerin birer port numarası vardır. Bu port üzerinden servis edilirler. 
 
  - Biz bir container'a bağlanmak istediğimizde yapacağımız işlem ilk önce Docker Host'a bağlanmak olacak, ondan sonra içerideki container'lardan bağlanmak istediğimiz container'ın portu ile mapping yapılacak ve bağltantı kurulacak. Docker komutları kısmında bu komutu yazacağım zaten ama burada 'mapping yapılacak' kısmı daha anlaşılır olsun diye şu komuta bakabiliriz:
 
-        docker run -p DIS_PORT:IC_PORT image
+        docker run -p DIS_PORT:IC_PORT image_name
 
    Burada verilen ***DIS_PORT*** bizim Docker Host'a bağlanmak için kullanacağımız port, ***IC_PORT*** ise içerideki bağlanmak istediğimiz container'ın portu.
 
