@@ -268,6 +268,8 @@ Eğer her servis kullandığı kütüphaneler ve bağımlılıkları ile birer p
 -     docker run --name pmyadmin -p 8000:80 --link mysql-server:db -d phpmyadmin/phpmyadmin
 
    -p 8000:80 ile portlarınızı ayarlıyoruz.
+
    -d ile container'ın çalışmasını sağlıyoruz.
+   
    -l mysql-server:db ile mysql-server container'ının portlarını link ile bağlıyoruz.
 
