@@ -8,3 +8,5 @@ Derslerde, eğitimlerde veya yaptığım araştırmalarda ve çalışmalarda ön
 # İçerik
 
 - [Docker](https://github.com/AhmetOsmn/Notebook/tree/main/Docker)
+
+- [C#](https://github.com/AhmetOsmn/Notebook/tree/main/C%23)
