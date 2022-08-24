@@ -1,65 +1,65 @@
--- String Fonksiyonlarý
-select left(FirstName, 2) from Employees -- personellerin isimlerinin soldan baþlayarak 2 karakterlerini getirir.
-select right(FirstName, 2) from Employees -- personellerin isimlerinin soldan baþlayarak 2 karakterlerini getirir.
-select upper(FirstName) from Employees -- personellerin isimlerini büyük harflere çevirerek getirir.
-select lower(FirstName) from Employees -- personellerin isimlerini küçük harflere çevirerek getirir.
-select substring(FirstName,1,4) from Employees -- personellerin isimlerinin 1. indexten baþlayarak 4 karakterini getirir.
-select ltrim('         Ahmet') -- soldan boþluklarý keser.
-select rtrim('Ahmet        ') -- saðdan boþluklarý keser.
-select reverse('ahmet') -- verilen deðeri tersine çevirir: temha.
-select replace('ahmet osman','osman','sezgin') -- verilen deðeri, verilen 2. deðer ile deðiþtirir.
-select charindex('t','ahmet osman sezgin') -- arnan karakterin, verilen ifadedeki yerini getirir (saymaya 1den baþlar): 5.
-select FirstName, charindex('a',FirstName) from Employees -- çalýþanlarýn isimlerinde 'a' karakterinin yerini getirir.
+-- String Fonksiyonlarï¿½
+select left(FirstName, 2) from Employees -- personellerin isimlerinin soldan baï¿½layarak 2 karakterlerini getirir.
+select right(FirstName, 2) from Employees -- personellerin isimlerinin soldan baï¿½layarak 2 karakterlerini getirir.
+select upper(FirstName) from Employees -- personellerin isimlerini bï¿½yï¿½k harflere ï¿½evirerek getirir.
+select lower(FirstName) from Employees -- personellerin isimlerini kï¿½ï¿½ï¿½k harflere ï¿½evirerek getirir.
+select substring(FirstName,1,4) from Employees -- personellerin isimlerinin 1. indexten baï¿½layarak 4 karakterini getirir.
+select ltrim('         Ahmet') -- soldan boï¿½luklarï¿½ keser.
+select rtrim('Ahmet        ') -- saï¿½dan boï¿½luklarï¿½ keser.
+select reverse('ahmet') -- verilen deï¿½eri tersine ï¿½evirir: temha.
+select replace('ahmet osman','osman','sezgin') -- verilen deï¿½eri, verilen 2. deï¿½er ile deï¿½iï¿½tirir.
+select charindex('t','ahmet osman sezgin') -- arnan karakterin, verilen ifadedeki yerini getirir (saymaya 1den baï¿½lar): 5.
+select FirstName, charindex('a',FirstName) from Employees -- ï¿½alï¿½ï¿½anlarï¿½n isimlerinde 'a' karakterinin yerini getirir.
 select ContactName from Customers
-select substring(ContactName,1,charindex(' ', ContactName))  from Customers -- þirket temsilcilerinin sadece isimlerini getirir.
-select substring(ContactName, charindex(' ', ContactName), len(ContactName) - (charindex(' ', ContactName) - 1)) from Customers -- þirket temsilcilerinin sadece soyisimlerini getirir.
+select substring(ContactName,1,charindex(' ', ContactName))  from Customers -- ï¿½irket temsilcilerinin sadece isimlerini getirir.
+select substring(ContactName, charindex(' ', ContactName), len(ContactName) - (charindex(' ', ContactName) - 1)) from Customers -- ï¿½irket temsilcilerinin sadece soyisimlerini getirir.
 
--- Sayýsal deðer iþlemleri
+-- Sayï¿½sal deï¿½er iï¿½lemleri
 select 5+5
 select 5*5
 select 5-5
 select 5/5
 
-select pi() -- sayýsal iþlemlerde kullanmak için pi sayýsýný getirir
-select sin(90) -- içerisine girilen deðerin sin deðerini getirir
-select power(2,3) -- verilen deðerin, verilen üssünü alýr: 2 üzeri 3
-select abs(-158) -- verilen deðerin mutlak deðerini alýr
-select rand() -- her çaðrýldýðýnda 0-1 aralýðýnda rastgele bir sayý üretir
-select floor(12.9) -- küsüratlý sayýlarý tam sayýlara yuvarlar: 12.9 -> 12
+select pi() -- sayï¿½sal iï¿½lemlerde kullanmak iï¿½in pi sayï¿½sï¿½nï¿½ getirir
+select sin(90) -- iï¿½erisine girilen deï¿½erin sin deï¿½erini getirir
+select power(2,3) -- verilen deï¿½erin, verilen ï¿½ssï¿½nï¿½ alï¿½r: 2 ï¿½zeri 3
+select abs(-158) -- verilen deï¿½erin mutlak deï¿½erini alï¿½r
+select rand() -- her ï¿½aï¿½rï¿½ldï¿½ï¿½ï¿½nda 0-1 aralï¿½ï¿½ï¿½nda rastgele bir sayï¿½ ï¿½retir
+select floor(12.9) -- kï¿½sï¿½ratlï¿½ sayï¿½larï¿½ tam sayï¿½lara yuvarlar: 12.9 -> 12
 
--- Tarih fonksiyonlarý
-select GETDATE() -- güncel olarak tarihi ve saati getirir
-select DATEADD(DAY, 999, GETDATE()) -- verilen tarihe 999 gün ekler oluþan tarihi getirir
-select DATEADD(MONTH, 2, GETDATE()) -- verilen tarihe 2 ay ekler ve oluþan tarihi getirir
-select DATEADD(YEAR, 10, GETDATE()) -- verilen tarihe 10 yýl ekler ve oluþan tarihi getirir
+-- Tarih fonksiyonlarï¿½
+select GETDATE() -- gï¿½ncel olarak tarihi ve saati getirir
+select DATEADD(DAY, 999, GETDATE()) -- verilen tarihe 999 gï¿½n ekler oluï¿½an tarihi getirir
+select DATEADD(MONTH, 2, GETDATE()) -- verilen tarihe 2 ay ekler ve oluï¿½an tarihi getirir
+select DATEADD(YEAR, 10, GETDATE()) -- verilen tarihe 10 yï¿½l ekler ve oluï¿½an tarihi getirir
 
-select DATEDIFF(DAY, '2022-08-10 17:30:00', GETDATE()) -- iki tarih arasýndaki gün farkýný getirir
-select DATEDIFF(MONTH, '2016-09-15 17:30:00', GETDATE()) -- iki tarih arasýndaki ay farkýný getirir
-select DATEDIFF(YEAR, '2016-09-15 17:30:00', GETDATE()) -- iki tarih arasýndaki yýl farkýný getirir
+select DATEDIFF(DAY, '2022-08-10 17:30:00', GETDATE()) -- iki tarih arasï¿½ndaki gï¿½n farkï¿½nï¿½ getirir
+select DATEDIFF(MONTH, '2016-09-15 17:30:00', GETDATE()) -- iki tarih arasï¿½ndaki ay farkï¿½nï¿½ getirir
+select DATEDIFF(YEAR, '2016-09-15 17:30:00', GETDATE()) -- iki tarih arasï¿½ndaki yï¿½l farkï¿½nï¿½ getirir
  
-select DATEPART(DW, GETDATE()) -- verilen tarihteki günün, haftanýn kaçýncý günü olduðunu verir
-select DATEPART(MONTH, GETDATE()) -- verilen tarihteki ayýn, yýlýn kaçýncý ayý olduðunu verir
-select DATEPART(DAY, GETDATE()) --verilen tarihteki günün, ayýn kaçýncý günü olduðunu verir
+select DATEPART(DW, GETDATE()) -- verilen tarihteki gï¿½nï¿½n, haftanï¿½n kaï¿½ï¿½ncï¿½ gï¿½nï¿½ olduï¿½unu verir
+select DATEPART(MONTH, GETDATE()) -- verilen tarihteki ayï¿½n, yï¿½lï¿½n kaï¿½ï¿½ncï¿½ ayï¿½ olduï¿½unu verir
+select DATEPART(DAY, GETDATE()) --verilen tarihteki gï¿½nï¿½n, ayï¿½n kaï¿½ï¿½ncï¿½ gï¿½nï¿½ olduï¿½unu verir
  
  -- Top komutu
 select top 2 * from Employees -- personeller tablosundaki ilk 2 personeli getirir
 
 -- Distinct komutu
--- Örnek olarak personeller tablosunda 4 adet London bulunuyorken, distinct kullandýðýmýzda London sadece bir kez gelecektir.
-select distinct City from Employees -- personeller tablosunda olan þehirleri birerkez olacak þekilde getirir.
+-- ï¿½rnek olarak personeller tablosunda 4 adet London bulunuyorken, distinct kullandï¿½ï¿½ï¿½mï¿½zda London sadece bir kez gelecektir.
+select distinct City from Employees -- personeller tablosunda olan ï¿½ehirleri birerkez olacak ï¿½ekilde getirir.
 
--- Group By iþlemi
--- eðer select sorgusunda bir adet normal sutun ve bir aggregate fonksiyon çaðrýlýyorsa, sutunun gruplanmasý gerekecektir.
-select CategoryID, COUNT(*) from Products group by CategoryID -- ürünler tablosunda CategoryID'leri gruplayarak hangi ID'den kaçar tane var onu getirir.
-select CategoryID, COUNT(*) from Products where CategoryID > 3 group by CategoryID -- Üstteki sorgunun -where- ile þartlandýrýlmýþ hali.
-select EmployeeID, COUNT(*) from  Orders group by EmployeeID -- hangi çalýþanýn kaç adet sipariþi var onu getirir. 
-select EmployeeID, SUM(Freight) from Orders group by EmployeeID -- hangi çalýþan toplam ne kadar nakliye ücreti ödemiþ
+-- Group By iï¿½lemi
+-- eï¿½er select sorgusunda bir adet normal sutun ve bir aggregate fonksiyon ï¿½aï¿½rï¿½lï¿½yorsa, sutunun gruplanmasï¿½ gerekecektir.
+select CategoryID, COUNT(*) from Products group by CategoryID -- ï¿½rï¿½nler tablosunda CategoryID'leri gruplayarak hangi ID'den kaï¿½ar tane var onu getirir.
+select CategoryID, COUNT(*) from Products where CategoryID > 3 group by CategoryID -- ï¿½stteki sorgunun -where- ile ï¿½artlandï¿½rï¿½lmï¿½ï¿½ hali.
+select EmployeeID, COUNT(*) from  Orders group by EmployeeID -- hangi ï¿½alï¿½ï¿½anï¿½n kaï¿½ adet sipariï¿½i var onu getirir. 
+select EmployeeID, SUM(Freight) from Orders group by EmployeeID -- hangi ï¿½alï¿½ï¿½an toplam ne kadar nakliye ï¿½creti ï¿½demiï¿½
 
 -- Having Komutu
--- -where- ile aralarýndaki fark: -where- tablo sutunlarý için þartlandýrma yaparken kullanýlýr. -having- ise aggregate fonksiyonlar üzerinde þartlandýrma yaparken kullanýlýr.
--- -where- group by'dan önce yazýlýr, -having- group by'dan sonra yazýlýr.
+-- -where- ile aralarï¿½ndaki fark: -where- tablo sutunlarï¿½ iï¿½in ï¿½artlandï¿½rma yaparken kullanï¿½lï¿½r. -having- ise aggregate fonksiyonlar ï¿½zerinde ï¿½artlandï¿½rma yaparken kullanï¿½lï¿½r.
+-- -where- group by'dan ï¿½nce yazï¿½lï¿½r, -having- group by'dan sonra yazï¿½lï¿½r.
 select CategoryID, COUNT(*) from Products where CategoryID > 3 group by CategoryID having COUNT(*) > 6
 
--- Tablolarý ilkel yöntemler ile birleþtirme
-select * from Employees, Orders -- böyle birleþtirme yapýldýðýnda iki tablo arasýnda satýr farký olduðunda, satýr sayýsý az olan tabloya diðer tablonun satýr sayýsýna eþitleninceye kadar yeni satýr eklenir ve bu satýrlara NULL deðerler atanýr.
-select * from Employees e, Orders o where e.EmployeeID = o.EmployeeID -- tablolara alians atayarak tablolarýn sutunlarýna kolaylýk eriþebiliriz.
+-- Tablolarï¿½ ilkel yï¿½ntemler ile birleï¿½tirme
+select * from Employees, Orders -- bï¿½yle birleï¿½tirme yapï¿½ldï¿½ï¿½ï¿½nda iki tablo arasï¿½nda satï¿½r farkï¿½ olduï¿½unda, satï¿½r sayï¿½sï¿½ az olan tabloya diï¿½er tablonun satï¿½r sayï¿½sï¿½na eï¿½itleninceye kadar yeni satï¿½r eklenir ve bu satï¿½rlara NULL deï¿½erler atanï¿½r.
+select * from Employees e, Orders o where e.EmployeeID = o.EmployeeID -- tablolara alians atayarak tablolarï¿½n sutunlarï¿½na kolaylï¿½k eriï¿½ebiliriz.

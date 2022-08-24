@@ -7,6 +7,8 @@ Derslerde, eğitimlerde veya yaptığım araştırmalarda ve çalışmalarda ön
 
 # İçerik
 
+- [C#](https://github.com/AhmetOsmn/Notebook/tree/main/C%23)
+
 - [Docker](https://github.com/AhmetOsmn/Notebook/tree/main/Docker)
 
-- [C#](https://github.com/AhmetOsmn/Notebook/tree/main/C%23)
+- [TSQL - SQL Server](https://github.com/AhmetOsmn/Notebook/tree/main/TSQL%20-%20SQL%20Server)
