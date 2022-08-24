@@ -1,65 +1,120 @@
--- String Fonksiyonlari
-select left(FirstName, 2) from Employees -- personellerin isimlerinin soldan baslayarak 2 karakterlerini getirir.
-select right(FirstName, 2) from Employees -- personellerin isimlerinin soldan baslayarak 2 karakterlerini getirir.
-select upper(FirstName) from Employees -- personellerin isimlerini buyuk harflere cevirerek getirir.
-select lower(FirstName) from Employees -- personellerin isimlerini kucuk harflere cevirerek getirir.
-select substring(FirstName,1,4) from Employees -- personellerin isimlerinin 1. indexten baslayarak 4 karakterini getirir.
-select ltrim('         Ahmet') -- soldan bosluklari keser.
-select rtrim('Ahmet        ') -- sagdan bosluklari keser.
-select reverse('ahmet') -- verilen degeri tersine cevirir: temha.
-select replace('ahmet osman','osman','sezgin') -- verilen degeri, verilen 2. deger ile degistirir.
-select charindex('t','ahmet osman sezgin') -- arnan karakterin, verilen ifadedeki yerini getirir (saymaya 1den baslar): 5.
-select FirstName, charindex('a',FirstName) from Employees -- calisanlarin isimlerinde 'a' karakterinin yerini getirir.
-select ContactName from Customers
-select substring(ContactName,1,charindex(' ', ContactName))  from Customers -- sirket temsilcilerinin sadece isimlerini getirir.
-select substring(ContactName, charindex(' ', ContactName), len(ContactName) - (charindex(' ', ContactName) - 1)) from Customers -- sirket temsilcilerinin sadece soyisimlerini getirir.
+use NORTHWND
+--## INNER JOIN ##--
 
--- Sayisal deger islemleri
-select 5+5
-select 5*5
-select 5-5
-select 5/5
+	-- Hangi personel hangi satislari yapmistir
+	select * from Employees e inner join Orders o on o.EmployeeID = e.EmployeeID
 
-select pi() -- sayisal islemlerde kullanmak icin pi sayisini getirir
-select sin(90) -- icerisine girilen degerin sin degerini getirir
-select power(2,3) -- verilen degerin, verilen ussunu alir: 2 uzeri 3
-select abs(-158) -- verilen degerin mutlak degerini alir
-select rand() -- her cagirildiginda 0-1 araliginda rastgele bir sayi uretir
-select floor(12.9) -- kusuratli sayilari tam sayilara yuvarlar: 12.9 -> 12
+	-- Hangi urun hangi kategoride
+	select p.ProductName Urun, c.CategoryName Kategori from Products p 
+	inner join Categories c 
+	on c.CategoryID=p.CategoryID
 
--- Tarih fonksiyonlari
-select GETDATE() -- guncel olarak tarihi ve saati getirir
-select DATEADD(DAY, 999, GETDATE()) -- verilen tarihe 999 gun ekler olusan tarihi getirir
-select DATEADD(MONTH, 2, GETDATE()) -- verilen tarihe 2 ay ekler ve olusan tarihi getirir
-select DATEADD(YEAR, 10, GETDATE()) -- verilen tarihe 10 yil ekler ve olusan tarihi getirir
+	-- Beverages kategorisindeki urunler
+	select p.ProductName Urun, c.CategoryName Kategori from Products P 
+	inner join Categories c 
+	on c.CategoryID = p.CategoryID where c.CategoryName='Beverages' 
 
-select DATEDIFF(DAY, '2022-08-10 17:30:00', GETDATE()) -- iki tarih arasindaki gun farkini getirir
-select DATEDIFF(MONTH, '2016-09-15 17:30:00', GETDATE()) -- iki tarih arasindaki ay farkini getirir
-select DATEDIFF(YEAR, '2016-09-15 17:30:00', GETDATE()) -- iki tarih arasindaki yil farkini getirir
- 
-select DATEPART(DW, GETDATE()) -- verilen tarihteki gunun, haftanin kacinci gunu oldugunu verir
-select DATEPART(MONTH, GETDATE()) -- verilen tarihteki ayin, yilin kacinci ayi oldugunu verir
-select DATEPART(DAY, GETDATE()) --verilen tarihteki gunun, ayin kacinci gunu oldugunu verir
- 
- -- Top komutu
-select top 2 * from Employees -- personeller tablosundaki ilk 2 personeli getirir
+	-- Beverages kategorisindeki urunlerin sayisi
+	select COUNT(p.ProductName) from Products p 
+	inner join Categories c 
+	on c.CategoryID = p.CategoryID where c.CategoryName='Beverages' 
 
--- Distinct komutu
--- Ornek olarak personeller tablosunda 4 adet London bulunuyorken, distinct kullandigimizda London sadece bir kez gelecektir.
-select distinct City from Employees -- personeller tablosunda olan sehirleri birerkez olacak sekilde getirir.
+	-- Seafood kategorisindeki urunler
+	select p.ProductName Urun, c.CategoryName Kategori from Products P 
+	inner join Categories c 
+	on c.CategoryID = p.CategoryID where c.CategoryName='Seafood' 
 
--- Group By islemi
--- eger select sorgusunda bir adet normal sutun ve bir aggregate fonksiyon cagiriliyorsa, sutunun gruplanmasi gerekecektir.
-select CategoryID, COUNT(*) from Products group by CategoryID -- urunler tablosunda CategoryID'leri gruplayarak hangi ID'den kacar tane var onu getirir.
-select CategoryID, COUNT(*) from Products where CategoryID > 3 group by CategoryID -- ustteki sorgunun -where- ile sartlandirilmis hali.
-select EmployeeID, COUNT(*) from  Orders group by EmployeeID -- hangi calisanin kac adet siparisi var onu getirir. 
-select EmployeeID, SUM(Freight) from Orders group by EmployeeID -- hangi calisan toplam ne kadar nakliye ucreti odemis
+	-- Hangi satisi hangi calisan yapmis
+	select o.OrderID ID, (e.FirstName+' '+e.LastName) Calisan  from Orders o 
+	inner join Employees e 
+	on e.EmployeeID = o.EmployeeID
 
--- Having Komutu
--- -where- ile aralarindaki fark: -where- tablo sutunlari icin sartlandirma yaparken kullanilir. -having- ise aggregate fonksiyonlar uzerinde sartlandirma yaparken kullanilir.
--- -where- group by'dan once yazilir, -having- group by'dan sonra yazilir.
-select CategoryID, COUNT(*) from Products where CategoryID > 3 group by CategoryID having COUNT(*) > 6
+	-- Hangi calisan kac satis yapmis
+	select (e.FirstName+' '+e.LastName) Calisan, COUNT(o.OrderID)  from Orders o 
+	inner join Employees e 
+	on e.EmployeeID = o.EmployeeID group by (e.FirstName+' '+e.LastName)
 
--- Tablolari ilkel yontemler ile birlestirme
-select * from Employees, Orders -- boyle birlestirme yapildiginda iki tablo arasinda satir farki oldugunda, satir sayisi az olan tabloya diger tablonun satir sayisina esitleninceye kadar yeni satir eklenir ve bu satirlara NULL degerler atanir.
-select * from Employees e, Orders o where e.EmployeeID = o.EmployeeID -- tablolara alians atayarak tablolarin sutunlarina kolaylikla erisebiliriz.
+	-- Faks numarasi NULL olmayan tedarikcilerden alinan urunler
+	select s.CompanyName Tedarikci, p.ProductName Urun, s.Fax FaksNo from Suppliers s 
+	inner join Products p 
+	on p.SupplierID=s.SupplierID where s.Fax is not null
+
+	-- Yukaridaki sorgu ile ayni islemi yapar
+	select s.CompanyName Tedarikci, p.ProductName Urun, s.Fax FaksNo from Suppliers s 
+	inner join Products p 
+	on p.SupplierID=s.SupplierID where s.Fax <> 'Null' 
+
+	-- Ikiden fazla tabloyu birlestirmek --
+
+	-- 1997 Yilinda ve sonrasinda Nancy'nin satis yaptigi firmalarin isimleri
+	select (e.FirstName+' '+e.LastName) Calisan, c.CompanyName SatisYapilanFirma, o.OrderDate SatisTarihi from Orders o 
+	inner join Customers c on c.CustomerID = o.CustomerID
+	inner join Employees e on e.EmployeeID = o.EmployeeID where e.FirstName='Nancy' and YEAR(o.OrderDate) > 1996
+
+	-- Limited olan tedarikcilerden alinmis olan Seafood kategorisindeki urunlerin toplam satis tutari
+	select SUM(p.UnitPrice * p.UnitsInStock) ToplamTutar from Products p
+	inner join Suppliers s on s.SupplierID = p.SupplierID
+	inner join Categories c on c.CategoryID = p.CategoryID where c.CategoryName = 'Seafood' and s.CompanyName like '%Ltd.%'
+
+	-- Ayni tabloyu birlestirme --
+
+	-- Personeller ve rapor verdigi kisiler
+	select (e.FirstName+' '+e.LastName) RaporVeren, (emp.FirstName+' '+emp.LastName) RaporAlan from Employees e 
+	inner join Employees emp on emp.EmployeeID = e.ReportsTo
+
+	-- Hangi kategoride kac adet urun var
+	select c.CategoryName Kategori, COUNT(p.ProductName) UrunMiktari  from Products p 
+	inner join Categories c on p.CategoryID = c.CategoryID
+	group by c.CategoryName
+
+	-- Hangi calisan kac adet satis yapmis, satis adedi 100'den fazla olanlar ve personelin adinin bas harfi M olan kayitlar gelsin.
+	select (e.FirstName+' '+e.LastName) Calisan, COUNT(*) SatisSayisi from Orders o 
+	inner join Employees e on o.EmployeeID = e.EmployeeID where  e.FirstName like 'M%'
+	group by (e.FirstName+' '+e.LastName) having COUNT(*) > 100  -- group by islemlerinde -where- group by'dan once gelir, having group by'dan sonra gelir.
+
+	-- Seafood kategorisindeki urunlerin sayisi
+	select c.CategoryName Kategori, COUNT(*) UrunSayisi from Products p 
+	inner join Categories c on p.CategoryID = c.CategoryID where c.CategoryName = 'Seafood'
+	group by c.CategoryName
+
+	-- En cok satis yapan personel
+	select top 1 (e.FirstName + ' ' + e.LastName) Calisan, COUNT(o.OrderID) SatisSayisi  from Orders o
+	inner join Employees e on e.EmployeeID = o.EmployeeID
+	group by (e.FirstName + ' ' + e.LastName)
+	order by SatisSayisi desc
+
+	-- Adinda 'a' harfi olan personellerin satis id'si 10500'den buyuk olan satislarinin toplam tutari (miktar * birim fiyati) ve bu satislarin yapildigi tarihler
+	select (e.FirstName + ' ' + e.LastName) Calisan, SUM(od.Quantity * od.UnitPrice) Tutar, o.OrderDate Tarih from Orders o
+	inner join Employees e on o.EmployeeID = e.EmployeeID 
+	inner join [Order Details] od on o.OrderID = od.OrderID where o.OrderID > 10500 and e.FirstName like '%a%'
+	group by (e.FirstName + ' ' + e.LastName), o.OrderDate
+
+-- OUTER JOIN -- 
+-- Inner Join'de eslesen veriler getiriliyordu. Outer Join'de ise eslesmeyen veriler getirilir.
+
+	-- Left Join
+	-- join ifadesinin solundaki tablodan butun verileri getirir. Sagindaki talodan eslesenleri yan yana, eslesmeyenleri NULL olarak getirir.
+	select * from Oyuncu o left outer join Film f on f.FilmID = o.FilmID
+	select * from Film f left outer join Oyuncu o on f.FilmID = o.FilmID
+	-- veya 
+	select * from Oyuncu o left join Film f on f.FilmID = o.FilmID
+	select * from Film f left join Oyuncu o on f.FilmID = o.FilmID
+
+	-- Right Join
+	-- join ifadesinin sagindaki tablodan butun verileri getirir. Solundaki talodan eslesenleri yan yana, eslesmeyenleri NULL olarak getirir.
+	select * from Oyuncu o right join Film f on f.FilmID = o.FilmID
+	select * from Film f right join Oyuncu o on f.FilmID = o.FilmID
+	select * from Film f left join Oyuncu o on f.FilmID = o.FilmID
+
+	-- Full Join
+	-- join ifadesinin iki yanindaki tablolardan veri esleslerde eslesmeselerde getirir
+	select * from Oyuncu o full join Film f on f.FilmID = o.FilmID
+
+	-- Cross Join
+	-- iki tablo arasinda kartezyen carpimi yapar. Yani iki tablo arasindaki verileri tek tek birbirleri ile birlestirir.
+	select COUNT(*) from Oyuncu
+	select COUNT(*) from Film
+	select COUNT(*) from Oyuncu o cross join Film f
+
+	select o.Adi Oyuncu, f.FilmAdi Film from Oyuncu o cross join Film f -- cross join ile olusturulan tabloya -where- ile sart koyulamaz.
+
