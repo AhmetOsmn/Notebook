@@ -89,7 +89,7 @@ use NORTHWND
 	inner join [Order Details] od on o.OrderID = od.OrderID where o.OrderID > 10500 and e.FirstName like '%a%'
 	group by (e.FirstName + ' ' + e.LastName), o.OrderDate
 
--- OUTER JOIN -- 
+--## OUTER JOIN ##-- 
 -- Inner Join'de eslesen veriler getiriliyordu. Outer Join'de ise eslesmeyen veriler getirilir.
 
 	-- Left Join
