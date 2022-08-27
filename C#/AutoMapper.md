@@ -76,4 +76,6 @@
     }
     ```
 
-    
+# Kaynak
+
+[Gençay Yıldız - AutoMapper](https://www.gencayyildiz.com/blog/asp-net-coreda-automapper-kullanimi/)
