@@ -1,5 +1,10 @@
 # Auto Mapper Kütüphanesi
 
+- Kurulmasi gereken 2 adet paket alt kisimdadir:
+
+    ![image](https://user-images.githubusercontent.com/44196434/187048071-d84af6e7-b374-48cc-9d50-dfdcc6e3731f.png)
+
+
 - Yazdigimiz projelerde proje disarisindan veri alirken, veya elimizdeki veri setinden verileri gosterirken DTO, View Model'ler vb. yapilari kullaniriz. Bu tur yapilarin amaclarindan birisi sudur:
 
     Ornek olarak elimizde bir **Urun** tablosu olsun. Bir kullanicinin sisteme urun ekleme islemi yapmasi gerektigi bir durumda oldugumuzu dusunelim. Bizim db icerisindeki **Urun** tablomuzdaki ozelliklerden sadece sinirlandirdigimiz kisimlarin kullanici tarafindan doldurulmasini isteriz. 
