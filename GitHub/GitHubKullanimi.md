@@ -9,31 +9,22 @@
 - [GitHub Nedir?](#github-nedir)
 - [GitHub Üzerinden Neler Yapılabilir?](#github-üzerinden-neler-yapılabilir)
 - [GitHub'ı Kullanalım](#githubı-kullanalım)
+- [Git Bash](#git-bash)
+- [Visual Studio](#visual-studio)
 
 <br>
 
 # Git Nedir?
 
-- Git bir versiyon kontrol sistemidir. Yani basit olarak açacak olursak: Projenin geliştirilme sürecinde işaretlenen tarihteki haline erişme ihtiyacımız olabilir. Örnek olarak bir proje geliştirdiğimizi düşünelim. Proje zaman ilerledikçe büyüyecek, değişecek ve daha karmaşık hale gelecektir. Bu süreç içerisinde bazı nedenlerden dolayı projenin `x` gün önceki haline dönmemiz veya bir kod parçasının `x` gün önceki haline erişmemiz gerekebilir. Git teknolojisi aslında bizim bu ihtiyacımız karşılamak için çok uygun bir teknolojidir. İlerleyen kısımlarda bahsedilecek olan `commit`ler sayesinde, projenin geçmişte `commit` atılmış haline kolayca erişebiliyoruz. Eğer Git'i kullanmıyorsak böyle bir ihtiyacı giderebilmek için projeyi geliştirme aşamasında v1, v2, v3, vb. şekilde klasörlememiz gerekecektir.
+- Git bir versiyon kontrol sistemidir. Projenin versiyonlarını sürekli olarak klasörleyerek tutmak yerine, bu ihtiyacı Git üzerinden karşılayabiliriz.
+
+-  Örnek olarak bir proje geliştirdiğimizi düşünelim. Proje zaman ilerledikçe büyüyecek, değişecek ve daha karmaşık hale gelecektir. Bu süreç içerisinde bazı nedenlerden dolayı projenin `x` gün önceki haline dönmemiz veya bir kod parçasının `x` gün önceki haline erişmemiz gerekebilir. Git teknolojisi aslında bizim bu ihtiyacımız karşılamak için çok uygun bir teknolojidir. İlerleyen kısımlarda bahsedilecek olan `commit`'ler sayesinde, projenin geçmişte `commit` atılmış anlarına kolayca erişebiliyoruz. Eğer Git'i kullanmıyorsak böyle bir ihtiyacı giderebilmek için projeyi geliştirme aşamasında v1, v2, v3, vb. şekilde klasörlememiz gerekecektir.
 
 - Git kullanımının başka bir güzel avantajı projeyi takım olarak geliştirmeyi kolaylaştırır. Örnek olarak 4 modülden oluşan bir proje geliştirdiğimizi düşünelim. Takımdaki 4 kişi birer modül seçer ve geliştirmeye başlar. Git içerisinde bulunan `branch` yapısı ile oldukça basit bir şekilde ayrı çalışmalar yapılabilir ve en son modüller tamamlandıkça `merge` edilerek proje içerisinde birleştirilirler ve proje tamamlanmış olur. 
 
+- Son olarak ilk başlarda GitHub ile Git'in aynı şey olduğu sanılsa da aslında Git başlı başına bir teknolojidir, GitHub ise bu teknolojiyi kullanıcılar için hazırlanan arayüzler ile kolay kullanılabilir yapmayı hedefleyen bir servistir. 
 
-- Son olarak ilk başlarda GitHub ile Git'in aynı şey olduğu sanılsa da aslında Git başlı başına bir teknolojidir, GitHub ise bu teknolojiyi kullanıcıların kullanımı için hazırlanan arayüzler ile Git kullanımını kolaylaştırmayı hedefleyen bir servistir. Bunu şu şekilde görebiliriz, GitHub ve GitLab ortak olarak Git teknolojisini kullanır ama kendileri ayrı servislerdir. İkisininde kendilerine göre avantajları vardır ve kullanıcı ihtiyacına göre Git teknolojisini istediği servis üzerinden kullanabilir.
-
-<br>
-
-# GitHub Nedir?
-
-- Yukarıda bahsedildiği gibi GitHub, Git teknolojisini kullanıcının arayüzler ile kullanmasını sağlayan bir bulut servisidir. Projeleri uzak depolarda geliştirmemizi sağlar. 
-
-- Üst kısımda verilen 2 örnek tahmin edileceği üzere GitHub ile rahatça gerçekleştirilebilir. 
-
-- GitHub içerisinde eklediğimiz projeleri gizli veya herkese açık olarak paylaşabiliriz. Bu tamamen kullanıcının isteğine bağlıdır. Eğer kullanıcı geliştirdiği projeyi diğer insanların görmesini istemiyorsa, GitHub servisini sadece versiyon kontrol sistemi olarak istiyorsa projeyi gizli olarak servise ekleyebilir.
-
-    Kullanıcı geliştirdiği projeyi herkese açık olarak ta paylaşabilir. İnsanların kendisinin geliştirdiği projeleri görmesini, bu projelere katkıda bulunulmasını isteyebilir. Bu kısımda Açık Kaynak (Open Source) Proje kavramı giriyor. Açık Kaynak konusu ayrı bir konu olduğu için detaylarına girmiyoruz.
-
-- GitHub üzerinde herkese açık olarak bir proje paylaştığımız zaman, diğer kullanıcılar bu projeyi kendi bilgisayarlarına kolaylıkla indirebilirler.
+    Bunu şu şekilde görebiliriz, GitHub ve GitLab ortak olarak Git teknolojisini kullanır ama kendileri ayrı servislerdir. İkisininde kendilerine göre avantajları vardır ve kullanıcı ihtiyacına göre Git teknolojisini istediği servis üzerinden kullanabilir.
 
 <br>
 
@@ -45,15 +36,15 @@
 
     Eğer bir Repo'yu beğendiysek *Star* kısmını işaretleyebiliriz. Profilimizden yıldız verdiğimiz Repo'ları tekrar tekrar inceleyecebiliriz.
 
-- `Dal (branch): ` Bu kısım aslında geliştiricileri ilgilendiren kısımdır. Projeyi yukarıda örneklendirdiğimiz şekilde, takım olarak proje geliştirirken dallar üzerinde çalışmak aynı anda geliştirme yaparken kodların çakışmasını önler. Bu çakışma olayı `conflict` olarak adlandırılır. 
+- `Dal (branch): ` Bu kısım aslında geliştiricileri ilgilendiren kısımdır. Projeyi yukarıda örneklendirdiğimiz şekilde, takım olarak proje geliştirirken dallar üzerinde çalışmak aynı anda geliştirme yaparken kodların çakışmasını azaltır. Bu çakışma olayı `conflict` olarak adlandırılır. 
 
-    Genelde projelerde sabit,kararlı olan bir dal olur, geliştiriciler tamamladıkları kendi dallarını bu kararlı dal ile birleştirirler. Birleştirme işleminden önce kararlı dala gelen yan dal önce kontrollerden geçer ve onaylandığı zaman kararlı dal ile birleştirilir.
+    Genelde projelerde sabit,kararlı olan bir dal olur, geliştiriciler tamamladıkları kendi dallarını bu kararlı dal ile birleştirirler. Birleştirme işleminden önce kararlı dala gelen yan dal önce kontrollerden geçer, onaylandığı zaman kararlı dal ile birleştirilir.
 
     Dallanmaları kullanılan IDE üzerinden veya GitHub'ın kendi içerisinden takip edip, dallar arasında işlemler yapabiliriz.
 
 - `Commit'ler: `Commit'leri projenin geliştirme sürecinde proje içerisine atılan işaretler olarak düşünebiliriz. Proje üzerinde değişikliker yaptığımızda commit'ler atarak kendizmiz için veya takımımız için projede geriye dönüş noktaları oluşturmuş oluruz. Ayrıca commit sistemi projenin gelişimini daha okunabilir ve daha takip edilebilir hale getirir.
 
-- `Pull Requests: ` Projedeki kararlı dala birleştirilmeye hazır bir yan dal eklenmek isteniyorsa *pull request* oluşturulur. Buradan anlaşılacağı üzere takımdaki herhangi birisinin bitirdiği dalı direkt olarak kararlı dal'a birleştirmesi engellenir (Bunun için **Onay Gerekli** olarak ayarlanmalıdır).
+- `Pull Requests: ` Projedeki kararlı dala, birleştirilmeye hazır bir yan dal eklenmek isteniyorsa *pull request* oluşturulur. Buradan anlaşılacağı üzere takımdaki herhangi birisinin bitirdiği dalı direkt olarak kararlı dal'a birleştirmesi engellenir (Bunun için **Onay Gerekli** olarak ayarlanmalıdır).
 
      Kararlı dal'a olabildiğince herhangi bir sorun çıkartmayacağını düşündüğümüz ve testlerden geçmiş, kontrol edilmiş kodların eklenmesini istiyoruz. Bu nedenle yan dallar kararlı dal ile birleştirilmeden önce (genelde takım liderleri tarafından veya projeye hakim bir kişi tarafından) kontrollerden geçer. 
 
@@ -199,7 +190,7 @@
 
     Projenin güncel halini yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alandaki gibi *git pull* komutunu çalıştrarak elde edebiliriz.
     
-### Dallar (Branchs)
+### Dallar (Branches)
 
 - Git Bash ile yeni bir branch oluşturmak istiyorsak 2 şekilde yapabiliriz. 
 
@@ -213,7 +204,9 @@
 
         yapmalıyız.
 
-    - İkinci yöntemde ilk önce branch oluşturulur sonrasında direkt
+    - İkinci yöntemde ilk önce branch oluşturulur sonrasında direkt olarak geçiş yapılır:
+
+            git checkout -b [branch adı]
 
 <br>
 
@@ -247,45 +240,45 @@
 
 - VS ile bir proje oluşturup GitHub'a yüklemek istiyorsak öncelikle normal bir proje oluşturmalıyız.
 
-    resim000
+    ![000](https://user-images.githubusercontent.com/44196434/189361789-91b87245-f6b1-4b17-865c-dc6a93862043.png)
 
-    resim 00
+    ![00](https://user-images.githubusercontent.com/44196434/189361751-a9c39c78-6f37-4489-827e-3ab4164498ee.png)
 
 - Sonraki adımda projeyi geliştirdiğimizi düşünelim. İşlemler tamamlanmış olsun ve artık projeyi GitHub'a yüklemek istiyoruz. VS içerisindeki `View` sekmesinden `Git Changes`'ı açalım. Burada ve sonrasında yapacağımız işlemleri VS içerisinde farklı yollarla da yapabiliriz. Ben örnek olarak `Git Changes` üzerinden göstereceğim.
 
-    resim01
+    ![01](https://user-images.githubusercontent.com/44196434/189361662-a35ebd4d-76ea-442e-98b5-6e6cea449651.png)
 
 - *Git Changes* seçeneğine tıkladığımızda *Solution Explorer*'ın yanına *Git Changes* alanı gelecektir.
 
-    resim02
+    ![02](https://user-images.githubusercontent.com/44196434/189361633-b6833eaa-352f-455f-bbc3-e77fb6188810.png)
 
 - Yukarıda kırmızı olarak işaretlenen *Create Git Repository* seçeneğine tıkladığımızda projeyi GitHub'ta paylaşırken yapacağımız bazı ayarları seçeceğimiz alt kısımdaki ekran açılacaktır.
 
-    resim03
+    ![03](https://user-images.githubusercontent.com/44196434/189361604-a0928268-58fe-4fd5-9594-5bb4038756b1.png)
 
     Projeyi paylaşırken yapmak istediğimiz ayarları da düzenledikten sonra kırmızı olarak seçilen *Create and Push* seçeneğine tıkladığımızda artık proje GitHub'ta paylaşılmış olacaktır. İşlemin bilgilendirme mesajını ve daha falza detayını ekranda açılan alanlardan inceleyebiliriz.
 
-    resim04
+    ![04](https://user-images.githubusercontent.com/44196434/189361554-dc02a552-57db-423b-949d-375a06fe4bf7.png)
 
-    resim05
+    ![05](https://user-images.githubusercontent.com/44196434/189361533-4600afdf-e8ad-4daf-b449-82b29522dc04.png)
 
 - Projeyi GitHub'ta paylaştıktan sonra geliştirme yaptığımızda, değişiklikleri GitHub'a göndermek için de *Git Changes* menüsünü kullanabiliriz. 
     
     Projenin GitHub'ta olan halinin sonrasında yaptığınız değişiklikler alt kısımdaki gibi *Git Changes* içerisindeki *Changes* alanından görülecektir. Burada değişiklik yapılan dosyaları, bu dosyalarda nelerin değiştirildiğini eski hali ile birlikte kıyaslama yaparak görebiliriz. Bunun dışında yaptığımız değişiklikleri komle geri alabiliriz vb. bir çok detaylı işlemi buradan gerçekleştirebiliriz.
 
-    resim06
+    ![06](https://user-images.githubusercontent.com/44196434/189361505-f3c69943-aa19-4ebe-8d95-00cfb4ccc070.png)
 
 - Projenin üzerinde yapacağımız değişiklikler tamamlandığında, GitHub'a atmak için hazır hale geldiğinde alt kısımdaki gibi *Commit* alanına değişiklikler ile ilgili açıklayıcı bir commit yazarız. Daha sonrasında yaptığımız bütün değişiklikleri commitlemek için, commit alanının hemen altındaki *Commit All* butonunu kullanırız.
 
-    resim07
+    ![07](https://user-images.githubusercontent.com/44196434/189361469-b83fb4fa-6023-447b-9d98-605b0c712239.png)
 
     Commit işlemi tamamlandığında biz bir bilgilendirme mesajı veriliyor. Daha sonrasında Commitlediğimiz dosyaları GitHub'a göndermek için yapmamız gereken sadece alt kısımda kırmızı olarak seçilen alandaki *Push* butonuna (yukarı ok, ↑) basmamız yeterlidir.
 
-    resim09
+    ![09](https://user-images.githubusercontent.com/44196434/189361450-3d229168-596e-4cda-ac71-9868e6244317.png)
 
 - GitHub'a gelip projenin içerisine girdiğimizde yaptığımız değişiklikleri ve commit mesajlarımızı görebiliriz.
 
-    resim10
+    ![10](https://user-images.githubusercontent.com/44196434/189361435-a5d1601f-fdf6-4bd9-ba3d-6f473fac277b.png)
 
 <br>
 
@@ -295,15 +288,15 @@
 
     Örnek olarak bir takı arkadaşımız `Test.cs` adında bir dosya oluşturmuş olsun.
     
-    resim11
+    ![11](https://user-images.githubusercontent.com/44196434/189361402-99989f6e-b219-430c-ba4c-43ca54189bc1.png)
 
     Bu dosya bizim kendi bilgisayarımızdaki projede yer almıyor. Bilgisayarımızdaki projeyi güncellemek için *Git Changes* alanındaki *Pull* butonuna (aşağı ok, ↓) basmamız yeterlidir.
 
-    resim12
+    ![12](https://user-images.githubusercontent.com/44196434/189361380-8bdadd0b-e1c6-48fc-87ac-8fd1afd9b4c9.png)
 
     İşlem tamamlandığında artık projemizin içerisinde yeni gelen dosyaları görebiliriz. Örnekteki `Test.cs` dosyası artık bizim projemizin içine gelmiş oldu.
 
-    resim13
+    ![13](https://user-images.githubusercontent.com/44196434/189361357-b758297d-b991-4c0e-937d-482ad0d0c0f1.png)
 
 <br>
 
@@ -313,11 +306,11 @@
 
     İlk olarak VS' açtığımızda karşımıza çıkan ekranda *Clone a Repository* seçeneğine tıklayalım. Alt kısımdaki ekran görüntüsünde yeşi olarak işaretlenen kısım.
 
-    resim000c
+    ![000 - Copy](https://user-images.githubusercontent.com/44196434/189361310-bf1bb533-6522-4ce8-b4d1-a3dde8f0b111.png)
 
     Daha sonrasında bizi çekeceğimiz Repo'ile ilgili yolların (path'lerin) düzenlendiği alt kısımdaki gibi bir sayfa karşılıyor.
 
-    resim001
+    ![001](https://user-images.githubusercontent.com/44196434/189361260-b9f1988e-1a15-48e4-8a7d-e169e087732c.png)
 
     Yukarıdaki örnekte 2 farklı durum için gösterim mevcut. 
 
@@ -342,13 +335,13 @@
 
 - VS üzerinde dallar arasında geçişler için de farklı yöntemler vardır. Örnek bir yol olarak ekranın sağ alt kısmında bulunan *main* butonuna tıkladığımızda alt kısmıdaki bir bir pencere açılacaktır.
 
-    00
+    ![00](https://user-images.githubusercontent.com/44196434/189366759-7dab90d6-078d-4519-8f9a-6c1f553aa73e.png)
 
     Burada daha önce açılmış ve silinmemiş branch'leri görebiliriz ve bu branch'ler arasında geçişler yapabiliriz. Örnek olarak yeni bir branch açmak istersek kırmızı olarak işaretlenmiş alandeki *New Branch* butonuna basmalıyız.
 
     Butona bastığımızda alt kısımdaki pencere açılacaktır.
 
-    01
+    ![01](https://user-images.githubusercontent.com/44196434/189366793-e01a8bff-4da3-45da-b768-7b15db14e2e2.png)
 
     Açılan ekranda *Branch Name* yazan kısma oluşturacağımız branch'ın ismini giriyoruz. Alt kısımdaki *Based ON* yazan kısımda ise hangi branch üzerinde yeni branch açacağımızı seçiyoruz. 
 
@@ -356,10 +349,12 @@
 
     Gerekli işlemleri yaptıktan sonra *Create* butonuna basarak branch'i oluşturmuş oluruz ve *checkout branch* seçeneği seçili olduğundan direkt olarak yeni branch üzerinden geliştirmeye devam ederiz. 
 
-    02
+    ![02](https://user-images.githubusercontent.com/44196434/189366828-1d0d2537-0389-48bd-8a4c-63f9701c8019.png)
 
     Yukarıdaki ekran görüntüsünden de görüldüğü gibi artık *main* yazan alanlarda yeni açtığımız branch'in ismi var. 
 
     Son olarak branch'ler arasında geçişler yapacaksak tekrar branch ismine tıkladığımızda açılan pencerelerden bunu gerçekleştirebiliriz.
 
-    03
+    ![03](https://user-images.githubusercontent.com/44196434/189366853-600f397b-87bf-4e5a-8762-33c4c893c7ca.png)
+
+
