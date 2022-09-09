@@ -46,7 +46,7 @@ create table OrnekTablo3
 	Kolon2 nvarchar(50)
 )
 
----- Alter ----
+---- ALTER ----
 -- Db nesnelerini guncellemek icin kullanilir.
 -- Kullanim sekli: CREATE [NESNE] [NESNE ADI]
 
@@ -61,3 +61,24 @@ alter Column Kolon4 int
 -- Var olan bir tablonun kolonunu silmek
 alter table OrnekTablo
 drop Column Kolon4 
+
+-- Alter ile tabloya Constraint eklemek --
+alter table OrnekTablo 
+add constraint OrnekConstraint Default 'Bos' for Kolon2
+
+-- Alter ile tabloya Constraint silmek --
+alter table OrnekTablo 
+drop constraint OrnekConstraint 
+
+-- Alter gibi bir tablonun ismini SP_RENAME ile degistirmek --
+sp_rename 'OrnekTablo', 'YeniTablo'
+
+-- sp_rename ile kolon ismi guncelleme --
+sp_rename 'YeniTablo.Kolon1','KolonNew','Column'
+
+
+---- DROP ----
+-- Create ile olusturulan db nesnelerini siler.
+-- Kullanimi Drop Nesne NesneAdi
+
+Drop table YeniTablo
