@@ -87,7 +87,7 @@
 
     Git Bash ile projenin olduğu klasörün içerisine girmek için (eğer kurulumda bu seçeneği seçtiyseniz) klasör içerisinde mouse ile sağ tıklayıp `GitBash Here` seçeneğine basabiliriz. 
 
-    RESİM 00
+    ![00](https://user-images.githubusercontent.com/44196434/189336712-401524a1-445c-4b7b-8181-54787bf2aa33.png)
 
     Eğer sizde bu seçenek gelmiyorsa temel CLI komutları ile GitBash içerisinde ilgili klasöre girmeniz gerekecektir. İsterseniz Git'in kurulum ayarlarını güncelleyerek bu özelliği aktif edebilirisiniz.
 
@@ -97,7 +97,7 @@
 
     Bu komutu çalıştırdığımızda artık klasör içerisinde gizli klasör olarak tutulan bir `.git` klasörü oluşacaktır. Eğer sizde bu klasör görünmüyor ise *File Explorer* ayarlarından bu özelliği açabilirsiniz. 
 
-    RESİM 01
+   ![01](https://user-images.githubusercontent.com/44196434/189336726-4f2853f0-a990-436f-a41e-048e0089c9ce.png)
 
     Artık bu klasör içerisindeki değişiklikler Git tarafından takip edilebilir, Git'in hizmetlerinden faydalanılabilir hale geldi. Git'in projeyi arka planda bu klasörde neler yaptığı ve hizmetleri nasıl sağladığı detaylı bir konu olduğu için o kısmı geçiyoruz.
 
@@ -105,8 +105,7 @@
 
     Örnek olarak projemizin içerisine alt kısımda yeşil alan ile gösterilen gibi bir `txt` dosyasının eklendiğini düşünelim. 
 
-
-    RESİM 02
+    ![02](https://user-images.githubusercontent.com/44196434/189336738-3700d9c6-f050-4fbf-9338-4d1cb7ee5f05.png)
 
     Proje içerisinde değişiklikler yapıldığında Git üzerinden bu durumları şu komut ile takip edebiliriz:
 
@@ -128,7 +127,7 @@
 
     şeklinde kullanabiliriz. Örnek olarak:
 
-    RESİM 03
+    ![03](https://user-images.githubusercontent.com/44196434/189336768-cb21ec00-48da-48e2-ad5f-d9366d9ef02f.png)
 
     Yukarıdaki ekran görüntüsünde olduğu gibi (1) komutundan sonra (2) komutunu çalıştırdığımızda artık farklı bir rapor oluşuyor. Turuncu olarak işaretlenen alanda artık farklir uyarı mesajı var ve görüldüğü gibi dosya ismi kırmızı renkten yeşil renge dönüş durumda, yani artık *example.txt* dosyası takip ediliyor.
 
@@ -138,7 +137,7 @@
 
     Commit komutu ile artık dosyamızı gönderilebilir olarak işaretledik ve kaydettik. İleriki zamanlardan dosyanın şuan commit'lediğimiz haline erişilebilir bir nokta da oluşturmuş olduk.
 
-    RESİM 04 
+    ![04](https://user-images.githubusercontent.com/44196434/189336789-fd497b22-b8b6-4415-8924-95a865618eca.png)
 
     Genel olarak Git komutlarını çalıştırmadan önce *git status* komutu ile dosyaların durumlarını kontrol etmemiz faydalı olacaktır. Yukarıdaki ekran görüntüsünde görüldüğü gibi (1) komutunu çalıştırdıktan sonra alt kısmındaki turuncu alandan dosyaları kontrol ettik. Sonrasında (2) komutu ile dosyalar üzerinde yaptığımız değişiklikleri işaretledik ve (2)'nin alt kısmındaki turuncu alandan gerçekleştirilen işlemlerin detayları gördük. 
 
@@ -147,7 +146,7 @@
     
 - Commit işleminden sonra projemizi uzak depomuza göndermek için GitHub üzerinde bir *Repository* oluşturmamız gerekiyor. Bu işlem de Git Bash üzerinden yapılabilir fakat örnekte GitHub üzerinden yeni bir Repo oluşturacağız.
 
-    RESİM 05
+    ![05](https://user-images.githubusercontent.com/44196434/189336799-84305672-76b6-4f4e-84f4-de380d5a3582.png)
 
     Bu sayfada Repo için bazı ayarlar yapılabilir ve istenirse Repo'ya açıklama eklenebilir. Şimdilik yukarıdaki ekran görüntüsündeki gibi default şekilde Repo'yu oluşturalım.
 
@@ -159,7 +158,7 @@
 
     Komutunu kullanacağız. *git push* komutuna bazı parametreler vermemiz ve bu komuttan önce bazı işlemler yapmamız gerekecek. Bu işlemler için örnek bir ekran görüntüsü olarak:
 
-    RESİM 06
+    ![06](https://user-images.githubusercontent.com/44196434/189336821-f418f852-178c-4532-849c-603ad33e8cba.png)
 
     İlk önce yukarıdaki ekran görüntüsünde olduğu gibi (1) komutu ile *main* dalına geçiş yapalım. 
 
@@ -174,7 +173,7 @@
 
 - Gönderme işlemi tamamlandıktan sonra GitHub üzerinden ilgili Repo içerisine girip değişikliklerin gelip gelmediğine bakabiliriz. 
 
-    RESİM 07
+    ![07](https://user-images.githubusercontent.com/44196434/189336838-6c923834-f258-4060-abfe-59ca634232c3.png)
 
     Burada (1) ile gösterilen alan anlaşılacağı üzere, *git push* öncesinde ara işlem olarak söylediğimiz *git commit -m "commit mesajı"* kısmındaki commit mesajıdır.
 
@@ -184,17 +183,18 @@
 
 - GitHub üzerinde paylaşılmış bir projeyi kendi bilgisayarımıza indirmek istiyorsak ve bunu Git Bash ile yapacaksak ilk olarak ilgili Reponun adresini almamız gerekiyor.
 
-    RESİM 00
+    ![00](https://user-images.githubusercontent.com/44196434/189336860-cf5ee15a-58de-4715-b52e-ee94b16da73c.png)
 
 - Daha sonra Git Bash ile projeyi indireceğimiz klasörün içerisine girmemiz gerekiyor.
 
-    REİSM 01
+    ![01](https://user-images.githubusercontent.com/44196434/189336881-ddcb34fc-4265-4c68-9f9c-60f37dc3c1b3.png)
+
 
 - Son olarak alt kısımda kırmızı olarak gösterilen alandaki gibi şu komutu çalıştırmalıyız:
 
         git clone [projenin github adresi]
 
-    RESİM 02
+    ![02](https://user-images.githubusercontent.com/44196434/189336903-cb9acb0d-642e-40bf-ba1f-1eca25005976.png)
 
     Ekran görüntüsünde yeşil olarak gösterilen alanda görüldüğü üzere indirme işlemi tamamlandıktan sonra proje bilgisayarımıza indirilmiş olacaktır.
 
