@@ -1,6 +1,6 @@
 # Kaynaklar
 
-- [Github Nedir?](https://docs.microsoft.com/tr-tr/training/modules/introduction-to-github/2-what-is-github)
+- [Github Nedir? - Microsoft](https://docs.microsoft.com/tr-tr/training/modules/introduction-to-github/2-what-is-github)
 - [GitHub'a Giriş](https://github.com/skills/introduction-to-github)
 
 # İçincekiler
@@ -87,7 +87,7 @@
 
     Git Bash ile projenin olduğu klasörün içerisine girmek için (eğer kurulumda bu seçeneği seçtiyseniz) klasör içerisinde mouse ile sağ tıklayıp `GitBash Here` seçeneğine basabiliriz. 
 
-    ![00](https://user-images.githubusercontent.com/44196434/189329196-b9466ad7-b25f-480e-bf93-123008d214a9.png)
+    RESİM 00
 
     Eğer sizde bu seçenek gelmiyorsa temel CLI komutları ile GitBash içerisinde ilgili klasöre girmeniz gerekecektir. İsterseniz Git'in kurulum ayarlarını güncelleyerek bu özelliği aktif edebilirisiniz.
 
@@ -97,7 +97,7 @@
 
     Bu komutu çalıştırdığımızda artık klasör içerisinde gizli klasör olarak tutulan bir `.git` klasörü oluşacaktır. Eğer sizde bu klasör görünmüyor ise *File Explorer* ayarlarından bu özelliği açabilirsiniz. 
 
-    ![01](https://user-images.githubusercontent.com/44196434/189329219-774c98b6-5481-48df-9ec2-c87957615c36.png)
+    RESİM 01
 
     Artık bu klasör içerisindeki değişiklikler Git tarafından takip edilebilir, Git'in hizmetlerinden faydalanılabilir hale geldi. Git'in projeyi arka planda bu klasörde neler yaptığı ve hizmetleri nasıl sağladığı detaylı bir konu olduğu için o kısmı geçiyoruz.
 
@@ -105,7 +105,8 @@
 
     Örnek olarak projemizin içerisine alt kısımda yeşil alan ile gösterilen gibi bir `txt` dosyasının eklendiğini düşünelim. 
 
-    ![02](https://user-images.githubusercontent.com/44196434/189329371-24c3757c-5349-40dc-8c13-0679d4a4e179.png)
+
+    RESİM 02
 
     Proje içerisinde değişiklikler yapıldığında Git üzerinden bu durumları şu komut ile takip edebiliriz:
 
@@ -127,7 +128,7 @@
 
     şeklinde kullanabiliriz. Örnek olarak:
 
-   ![03](https://user-images.githubusercontent.com/44196434/189329398-eb8b70a8-3022-42c2-8ea0-724c2a309e59.png)
+    RESİM 03
 
     Yukarıdaki ekran görüntüsünde olduğu gibi (1) komutundan sonra (2) komutunu çalıştırdığımızda artık farklı bir rapor oluşuyor. Turuncu olarak işaretlenen alanda artık farklir uyarı mesajı var ve görüldüğü gibi dosya ismi kırmızı renkten yeşil renge dönüş durumda, yani artık *example.txt* dosyası takip ediliyor.
 
@@ -137,7 +138,7 @@
 
     Commit komutu ile artık dosyamızı gönderilebilir olarak işaretledik ve kaydettik. İleriki zamanlardan dosyanın şuan commit'lediğimiz haline erişilebilir bir nokta da oluşturmuş olduk.
 
-    ![04](https://user-images.githubusercontent.com/44196434/189329428-ee41a8c7-c4b9-431f-b08a-771866611fdb.png)
+    RESİM 04 
 
     Genel olarak Git komutlarını çalıştırmadan önce *git status* komutu ile dosyaların durumlarını kontrol etmemiz faydalı olacaktır. Yukarıdaki ekran görüntüsünde görüldüğü gibi (1) komutunu çalıştırdıktan sonra alt kısmındaki turuncu alandan dosyaları kontrol ettik. Sonrasında (2) komutu ile dosyalar üzerinde yaptığımız değişiklikleri işaretledik ve (2)'nin alt kısmındaki turuncu alandan gerçekleştirilen işlemlerin detayları gördük. 
 
@@ -146,7 +147,7 @@
     
 - Commit işleminden sonra projemizi uzak depomuza göndermek için GitHub üzerinde bir *Repository* oluşturmamız gerekiyor. Bu işlem de Git Bash üzerinden yapılabilir fakat örnekte GitHub üzerinden yeni bir Repo oluşturacağız.
 
-    ![05](https://user-images.githubusercontent.com/44196434/189329449-07f28d3d-a9f0-4cc8-8841-4ab6c2afb64b.png)
+    RESİM 05
 
     Bu sayfada Repo için bazı ayarlar yapılabilir ve istenirse Repo'ya açıklama eklenebilir. Şimdilik yukarıdaki ekran görüntüsündeki gibi default şekilde Repo'yu oluşturalım.
 
@@ -158,7 +159,7 @@
 
     Komutunu kullanacağız. *git push* komutuna bazı parametreler vermemiz ve bu komuttan önce bazı işlemler yapmamız gerekecek. Bu işlemler için örnek bir ekran görüntüsü olarak:
 
-    ![06](https://user-images.githubusercontent.com/44196434/189329482-8091e9b3-71ed-4d0d-b6e9-5dd70ba6d269.png)
+    RESİM 06
 
     İlk önce yukarıdaki ekran görüntüsünde olduğu gibi (1) komutu ile *main* dalına geçiş yapalım. 
 
@@ -173,7 +174,7 @@
 
 - Gönderme işlemi tamamlandıktan sonra GitHub üzerinden ilgili Repo içerisine girip değişikliklerin gelip gelmediğine bakabiliriz. 
 
-    ![07](https://user-images.githubusercontent.com/44196434/189329510-45f3dd64-f0cc-48c8-9e08-e44ebbe323ad.png)
+    RESİM 07
 
     Burada (1) ile gösterilen alan anlaşılacağı üzere, *git push* öncesinde ara işlem olarak söylediğimiz *git commit -m "commit mesajı"* kısmındaki commit mesajıdır.
 
@@ -183,16 +184,38 @@
 
 - GitHub üzerinde paylaşılmış bir projeyi kendi bilgisayarımıza indirmek istiyorsak ve bunu Git Bash ile yapacaksak ilk olarak ilgili Reponun adresini almamız gerekiyor.
 
-    ![00](https://user-images.githubusercontent.com/44196434/189329525-91e2ecf3-96b0-4dd0-9e82-c7b51568bddc.png)
+    RESİM 00
 
 - Daha sonra Git Bash ile projeyi indireceğimiz klasörün içerisine girmemiz gerekiyor.
 
-    ![01](https://user-images.githubusercontent.com/44196434/189329596-81c2bd89-1294-49dc-b626-805e0abdfeee.png)
+    REİSM 01
 
 - Son olarak alt kısımda kırmızı olarak gösterilen alandaki gibi şu komutu çalıştırmalıyız:
 
         git clone [projenin github adresi]
 
-    ![02](https://user-images.githubusercontent.com/44196434/189329610-0ad7a5f4-2a35-4af9-a0ec-0061649cfabe.png)
+    RESİM 02
 
     Ekran görüntüsünde yeşil olarak gösterilen alanda görüldüğü üzere indirme işlemi tamamlandıktan sonra proje bilgisayarımıza indirilmiş olacaktır.
+
+
+<br>
+
+### Ortak Çalışılan Bir Projede Başkasının Yaptığı Değişiklikler
+
+-  Takım halinde çalıştığımız zaman projeye bizim dışımızda diğer arkadaşlarımız da eklemeler, çıkartmalar ve güncellemeler yapıyor. Böyle durumlarda projenin güncel halini elde etmek için sürekli yeni bir klasöre *git clone* komutu ile projeyi çekmeyiz. Bunun yerine 
+
+        git pull
+
+    komutunu kullanırız. Bu komut farklı parametreler ile daha detaylı da kullanılabilir fakat şimdilik sadece işlevini öğrnememiz yeterlidir. 
+
+    Örnek olarak alt kısımdaki ekran görüntüsünde olduğu gibi projeye bizde olmayan bir dosya eklenmiş olsun.
+
+    resim01
+
+    Yapmamız gereken şey projenin güncel halini GitHub üzerinden çekmektir. Burada dikkat edilmesi gereken bir nokta vardır. Projenin son halini çekmeden, kendi bilgisayarınızda proje üzerinde değişiklikler yaptıysanız ve GitHub'taki proje ile aynı alanlarda ise bu değişiklikler *conflict*'ler meydana gelebilir. Bu nedenle geliştirmeye başlamadan önce projenin son halini bilgisayarımıza çekip ondan sonra ayrı bir dal üzerinden çalışmaya devam etmeliyiz.
+
+    resim02
+
+    Projenin güncel halini yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alandaki gibi *git pull* komutunu çalıştrarak elde edebiliriz.
+
