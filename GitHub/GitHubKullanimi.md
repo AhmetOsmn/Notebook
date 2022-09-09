@@ -211,11 +211,14 @@
 
     Örnek olarak alt kısımdaki ekran görüntüsünde olduğu gibi projeye bizde olmayan bir dosya eklenmiş olsun.
 
-    resim01
+    ![01](https://user-images.githubusercontent.com/44196434/189336158-3369d648-9b34-45e7-a786-9e8cdc19fd5b.png)
+
 
     Yapmamız gereken şey projenin güncel halini GitHub üzerinden çekmektir. Burada dikkat edilmesi gereken bir nokta vardır. Projenin son halini çekmeden, kendi bilgisayarınızda proje üzerinde değişiklikler yaptıysanız ve GitHub'taki proje ile aynı alanlarda ise bu değişiklikler *conflict*'ler meydana gelebilir. Bu nedenle geliştirmeye başlamadan önce projenin son halini bilgisayarımıza çekip ondan sonra ayrı bir dal üzerinden çalışmaya devam etmeliyiz.
 
-    resim02
+    ![02](https://user-images.githubusercontent.com/44196434/189336179-410a66c8-7d44-47c2-b1e8-bd834c76840e.png)
+
 
     Projenin güncel halini yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alandaki gibi *git pull* komutunu çalıştrarak elde edebiliriz.
+    
 
