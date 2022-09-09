@@ -346,13 +346,13 @@
 
 - VS üzerinde dallar arasında geçişler için de farklı yöntemler vardır. Örnek bir yol olarak ekranın sağ alt kısmında bulunan *main* butonuna tıkladığımızda alt kısmıdaki bir bir pencere açılacaktır.
 
-    00
+    ![00](https://user-images.githubusercontent.com/44196434/189366759-7dab90d6-078d-4519-8f9a-6c1f553aa73e.png)
 
     Burada daha önce açılmış ve silinmemiş branch'leri görebiliriz ve bu branch'ler arasında geçişler yapabiliriz. Örnek olarak yeni bir branch açmak istersek kırmızı olarak işaretlenmiş alandeki *New Branch* butonuna basmalıyız.
 
     Butona bastığımızda alt kısımdaki pencere açılacaktır.
 
-    01
+    ![01](https://user-images.githubusercontent.com/44196434/189366793-e01a8bff-4da3-45da-b768-7b15db14e2e2.png)
 
     Açılan ekranda *Branch Name* yazan kısma oluşturacağımız branch'ın ismini giriyoruz. Alt kısımdaki *Based ON* yazan kısımda ise hangi branch üzerinde yeni branch açacağımızı seçiyoruz. 
 
@@ -360,10 +360,11 @@
 
     Gerekli işlemleri yaptıktan sonra *Create* butonuna basarak branch'i oluşturmuş oluruz ve *checkout branch* seçeneği seçili olduğundan direkt olarak yeni branch üzerinden geliştirmeye devam ederiz. 
 
-    02
+    ![02](https://user-images.githubusercontent.com/44196434/189366828-1d0d2537-0389-48bd-8a4c-63f9701c8019.png)
 
     Yukarıdaki ekran görüntüsünden de görüldüğü gibi artık *main* yazan alanlarda yeni açtığımız branch'in ismi var. 
 
     Son olarak branch'ler arasında geçişler yapacaksak tekrar branch ismine tıkladığımızda açılan pencerelerden bunu gerçekleştirebiliriz.
 
-    03
+    ![03](https://user-images.githubusercontent.com/44196434/189366853-600f397b-87bf-4e5a-8762-33c4c893c7ca.png)
+
