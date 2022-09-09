@@ -222,3 +222,102 @@
     Projenin güncel halini yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alandaki gibi *git pull* komutunu çalıştrarak elde edebiliriz.
     
 
+
+<br>
+
+## Visual Studio
+
+<br>
+
+### GitHub'a Proje Yüklemek
+
+- VS ile bir proje oluşturup GitHub'a yüklemek istiyorsak öncelikle normal bir proje oluşturmalıyız.
+
+    resim000
+
+    resim 00
+
+- Sonraki adımda projeyi geliştirdiğimizi düşünelim. İşlemler tamamlanmış olsun ve artık projeyi GitHub'a yüklemek istiyoruz. VS içerisindeki `View` sekmesinden `Git Changes`'ı açalım. Burada ve sonrasında yapacağımız işlemleri VS içerisinde farklı yollarla da yapabiliriz. Ben örnek olarak `Git Changes` üzerinden göstereceğim.
+
+    resim01
+
+- *Git Changes* seçeneğine tıkladığımızda *Solution Explorer*'ın yanına *Git Changes* alanı gelecektir.
+
+    resim02
+
+- Yukarıda kırmızı olarak işaretlenen *Create Git Repository* seçeneğine tıkladığımızda projeyi GitHub'ta paylaşırken yapacağımız bazı ayarları seçeceğimiz alt kısımdaki ekran açılacaktır.
+
+    resim03
+
+    Projeyi paylaşırken yapmak istediğimiz ayarları da düzenledikten sonra kırmızı olarak seçilen *Create and Push* seçeneğine tıkladığımızda artık proje GitHub'ta paylaşılmış olacaktır. İşlemin bilgilendirme mesajını ve daha falza detayını ekranda açılan alanlardan inceleyebiliriz.
+
+    resim04
+
+    resim05
+
+- Projeyi GitHub'ta paylaştıktan sonra geliştirme yaptığımızda, değişiklikleri GitHub'a göndermek için de *Git Changes* menüsünü kullanabiliriz. 
+    
+    Projenin GitHub'ta olan halinin sonrasında yaptığınız değişiklikler alt kısımdaki gibi *Git Changes* içerisindeki *Changes* alanından görülecektir. Burada değişiklik yapılan dosyaları, bu dosyalarda nelerin değiştirildiğini eski hali ile birlikte kıyaslama yaparak görebiliriz. Bunun dışında yaptığımız değişiklikleri komle geri alabiliriz vb. bir çok detaylı işlemi buradan gerçekleştirebiliriz.
+
+    resim06
+
+- Projenin üzerinde yapacağımız değişiklikler tamamlandığında, GitHub'a atmak için hazır hale geldiğinde alt kısımdaki gibi *Commit* alanına değişiklikler ile ilgili açıklayıcı bir commit yazarız. Daha sonrasında yaptığımız bütün değişiklikleri commitlemek için, commit alanının hemen altındaki *Commit All* butonunu kullanırız.
+
+    resim07
+
+    Commit işlemi tamamlandığında biz bir bilgilendirme mesajı veriliyor. Daha sonrasında Commitlediğimiz dosyaları GitHub'a göndermek için yapmamız gereken sadece alt kısımda kırmızı olarak seçilen alandaki *Push* butonuna (yukarı ok, ↑) basmamız yeterlidir.
+
+    resim09
+
+- GitHub'a gelip projenin içerisine girdiğimizde yaptığımız değişiklikleri ve commit mesajlarımızı görebiliriz.
+
+    resim10
+
+<br>
+
+### Ortak Çalışılan Bir Projede Başkasının Yaptığı Değişiklikler
+
+- Geliştirdiğimiz proje üzerinde takım arkadaşlarımız değişiklik yaptığında kendi bilgisayarımızdaki projeye güncellemeleri alıp sonrasında geliştirmeye devam etmeliyiz. GitHub üzerinden projenin güncel halini bilgisayarımıza çekmek istiyorsal alt kısımdaki örneğe bakabiliriz. 
+
+    Örnek olarak bir takı arkadaşımız `Test.cs` adında bir dosya oluşturmuş olsun.
+    
+    resim11
+
+    Bu dosya bizim kendi bilgisayarımızdaki projede yer almıyor. Bilgisayarımızdaki projeyi güncellemek için *Git Changes* alanındaki *Pull* butonuna (aşağı ok, ↓) basmamız yeterlidir.
+
+    resim12
+
+    İşlem tamamlandığında artık projemizin içerisinde yeni gelen dosyaları görebiliriz. Örnekteki `Test.cs` dosyası artık bizim projemizin içine gelmiş oldu.
+
+    resim13
+
+<br>
+
+### GitHub Üzerinden Proje Çekmek
+
+- GitHub üzerindeki bir proje VS içerisinden nasıl kendi bilgisayarımıza çekmenin birden fazla yöntemi vardır. Biz burada biraz daha basit olarak görebileceğimiz adımları göstereceğiz. Eğer VS açıldığında alt kısımdaki pencere sizde gelmiyor ise VS içerisindeki yukarıda gösterdiğimiz *View* sekmesinin yanındaki *Git* sekmesinden de bu işlemleri yapabilirsiniz.
+
+    İlk olarak VS' açtığımızda karşımıza çıkan ekranda *Clone a Repository* seçeneğine tıklayalım. Alt kısımdaki ekran görüntüsünde yeşi olarak işaretlenen kısım.
+
+    resim000c
+
+    Daha sonrasında bizi çekeceğimiz Repo'ile ilgili yolların (path'lerin) düzenlendiği alt kısımdaki gibi bir sayfa karşılıyor.
+
+    resim001
+
+    Yukarıdaki örnekte 2 farklı durum için gösterim mevcut. 
+
+    - Direkt Repo Adresi İle Repo Çekmek:
+
+        - Bir projeyi direkt olarak adresini vererek çekmek istiyosak mavi alan ile işaretlelen kısımda üst alana çekilecek olan Repo'nun adresini yapıştırıyoruz.
+        - Alt kısımdaki alanda ise projeyi kendi bilgisayarımızda nere kurmak istediğimizi seçiyoruz. 
+        - Daha sonra sağ alt kısımdaki *Clone* butonuna basıp projeyi çekebiliriz.
+
+    - VS ile bağladığımız GitHub Hesabımızdaki Bir Repoyu Çekmek:
+
+        - Profilimizdeki bir projeyi bilgisayarımıza çekmek için yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alanları kullabiliriz. 
+        - Öncelikle *Browse a repository* alanından *GitHub* seçeneğine tıklıyoruz. 
+        - Daha sonra yanda açılan pencerede, sağ üst kısımdan istediğimiz GitHub hesabının seçili olduğundan emin oluyoruz.
+        - Alt kısımda seçili olan GitHub hesabının içerisinde var olan Repo'lar gelecektir. Buradan bilgisayarımıza çekmek istediğimiz Repo'yu seçiyoruz.
+        - *Local path: * alanında Repo'yu bilgisyarımızda nereye kurmak istediğimizi belirtiyoruz.
+        - Son olarak *Clone* butonuna basarak projeyi çekebiliriz.
