@@ -78,7 +78,8 @@
 
     Git Bash ile projenin olduğu klasörün içerisine girmek için (eğer kurulumda bu seçeneği seçtiyseniz) klasör içerisinde mouse ile sağ tıklayıp `GitBash Here` seçeneğine basabiliriz. 
 
-    ![00](https://user-images.githubusercontent.com/44196434/189336712-401524a1-445c-4b7b-8181-54787bf2aa33.png)
+    ![00](Images/00.png)
+    ![00](Images/01.png)
 
     Eğer sizde bu seçenek gelmiyorsa temel CLI komutları ile GitBash içerisinde ilgili klasöre girmeniz gerekecektir. İsterseniz Git'in kurulum ayarlarını güncelleyerek bu özelliği aktif edebilirisiniz.
 
