@@ -40,6 +40,10 @@ Merhaba, bu yazı içerisinde GitHub ve nasıl kullanıldığı hakkında bilgil
 
 - `Sorunlar Alanı: ` Projenin kullanıcıları ile projenin geliştiricileri arasındaki iletişim genelde bu alan üzerinden olur. Kullanıcılar projeye eklenmesini istedikleri özellikleri, gördükleri hataları vb. durumları bu alandan projeyi geliştiren kişilere belirtirler. 
 
+- `Fork ve Star: ` GitHub üzerindeki diğer kullanıcıların yaptığı projeleri, paylaştığı notları veya dökümanları kendi takibimize almak istiyorsak, o projeyi alıp geliştirme yapmak istiyorsak *Fork* işlemi yapabiliriz. Fork'ladığımız Repo'lar bizim Repo'larımızın arasında görülecek ama alt kısmında Repo'nun sahibi belirtilecektir.
+
+    Eğer bir Repo'yu beğendiysek *Star* kısmını işaretleyebiliriz. Profilimizden yıldız verdiğimiz Repo'ları tekrar tekrar inceleyecebiliriz.
+
 - `Dal (branch): ` Bu kısım aslında geliştiricileri ilgilendiren kısımdır. Projeyi yukarıda örneklendirdiğimiz şekilde, takım olarak proje geliştirirken dallar üzerinde çalışmak aynı anda geliştirme yaparken kodların çakışmasını önler. Bu çakışma olayı `conflict` olarak adlandırılır. 
 
     Genelde projelerde sabit,kararlı olan bir dal olur, geliştiriciler tamamladıkları kendi dallarını bu kararlı dal ile birleştirirler. Birleştirme işleminden önce kararlı dala gelen yan dal önce kontrollerden geçer ve onaylandığı zaman kararlı dal ile birleştirilir.
@@ -58,10 +62,137 @@ Merhaba, bu yazı içerisinde GitHub ve nasıl kullanıldığı hakkında bilgil
 
 # GitHub'ı Kullanalım
 
-- Projelerde GitHub hizmetlerini kullanmanın farklı yolları vardır. Git Bash kullanarak, Git Desktop kullanarak, Visual Studio veya VS Code gibi programları kullanarak, eğer Linux tabanlı bir işletim sisteminiz var ise direkt console üzerinden vb. yollar ile GitHub hizmetlerini kullanabiliriz. Şimdilik `Git Bash` ve `Visual Studio` örneklerini göstereceğiz.
+- Projelerde GitHub hizmetlerini kullanmanın farklı yolları vardır. Git Bash kullanarak, Git Desktop kullanarak, Visual Studio veya VS Code gibi programları kullanarak, eğer Linux tabanlı bir işletim sisteminiz var ise direkt console üzerinden vb. yollar ile GitHub hizmetlerini kullanabiliriz. Şimdilik `Git Bash` ve `Visual Studio` örneklerini Windows cihaz üzerinden göstereceğiz.
+
+- Git teknolojisini kullanmak istiyorsak ilk önce bilgisayarımıza Git'i kurmamız gerekiyor. Hedefimiz kullanımı gösterebilmek olduğundan kurulumu detaylı anlatmayacağız. Alt kısımdaki link üzerinden kurulumları yapabilirsiniz.
+
+    [Git İndir](https://git-scm.com/downloads)
 
 <br>
 
-### Git Bash
+## Git Bash
 
-- 
+<br>
+
+### GitHub'a Proje Yüklemek
+
+- Öncelikle GitHub hesabımızı bilgisayarımıza indirdiğimiz Git'e tanıtmamız gerekiyor. Bunun için  
+
+        git config --global user.name "userName"
+
+    şeklinde işlem yapmamız gerekiyor. Daha detaylı anlatımı için [buraya](https://docs.github.com/en/get-started/getting-started-with-git/setting-your-username-in-git) bakabilirsiniz.
+
+- Örnek olarak sıfırdan bir projeye başladığımızı düşünelim. Farklı senaryolarda bazı adımlar değişebilir ama genel anlamda benzer süreçlerden geçilir. Öncelikle GitHub'a yüklemek istediğimiz projenin bulunduğu klasöre girmemiz gerekiyor. Bu klasör içinde yapılan değişiklikleri Git'in takip edebilmesi için ve hizmetlerinden faydalanabilmemiz içn bir komut çalıştırmamız gerekiyor.
+
+    Git Bash ile projenin olduğu klasörün içerisine girmek için (eğer kurulumda bu seçeneği seçtiyseniz) klasör içerisinde mouse ile sağ tıklayıp `GitBash Here` seçeneğine basabiliriz. 
+
+    RESİM 00
+
+    Eğer sizde bu seçenek gelmiyorsa temel CLI komutları ile GitBash içerisinde ilgili klasöre girmeniz gerekecektir. İsterseniz Git'in kurulum ayarlarını güncelleyerek bu özelliği aktif edebilirisiniz.
+
+    Açılan Git Bash ekranında çalıştırmamız gereken komut:
+    
+        git init -b main
+
+    Bu komutu çalıştırdığımızda artık klasör içerisinde gizli klasör olarak tutulan bir `.git` klasörü oluşacaktır. Eğer sizde bu klasör görünmüyor ise *File Explorer* ayarlarından bu özelliği açabilirsiniz. 
+
+    RESİM 01
+
+    Artık bu klasör içerisindeki değişiklikler Git tarafından takip edilebilir, Git'in hizmetlerinden faydalanılabilir hale geldi. Git'in projeyi arka planda bu klasörde neler yaptığı ve hizmetleri nasıl sağladığı detaylı bir konu olduğu için o kısmı geçiyoruz.
+
+- Artık Git hizmetlerinden faydalanabildiğimize göre projeye yeni bir dosya eklendiğinde, güncellendiğinde veya silindiğinde nasıl adımlar gerçekleştirilir onları inceleyelim. 
+
+    Örnek olarak projemizin içerisine alt kısımda yeşil alan ile gösterilen gibi bir `txt` dosyasının eklendiğini düşünelim. 
+
+
+    RESİM 02
+
+    Proje içerisinde değişiklikler yapıldığında Git üzerinden bu durumları şu komut ile takip edebiliriz:
+
+        git status
+
+    Bu komut, Git içerisinde yer alan **Working Tree** kavramından faydalanarak dosyaların durumları hakkında bizlere rapor verir. Örnek olarak yukarıdaki ekran görüntüsünde *turuncu* olarak işaretlenen alanda bir uyarı veriliyor. Projeye eklediğimiz *example.txt* dosyasını `Untracked file` olarak tanımlıyor ve hemen üstünde yönlendirici bir bilgi mesajı veriyor. 
+
+    Proje içerisine eklediğimiz dosyaların Git'tarafından takibe alınmasını istiyorsak bu dosyaları şu komut ile işaretleriz:
+
+        git add
+
+    Bu komutu farklı şekillderde farklı parametreler ile kullanabiliriz. Örnek olarak projeye eklenen dosyalar içerisinde sadece *example.txt* dosyasının takip edilmesini istiyorsak:
+
+        git add example.txt
+
+    şeklinde kullanabiliriz. Eğer proje içerisindeki bütün dosyaları Git'in takip etmesini istiyorsak yukarıdaki ekran görüntüsünde yapıldığı gibi:
+
+        git add .
+
+    şeklinde kullanabiliriz. Örnek olarak:
+
+    RESİM 03
+
+    Yukarıdaki ekran görüntüsünde olduğu gibi (1) komutundan sonra (2) komutunu çalıştırdığımızda artık farklı bir rapor oluşuyor. Turuncu olarak işaretlenen alanda artık farklir uyarı mesajı var ve görüldüğü gibi dosya ismi kırmızı renkten yeşil renge dönüş durumda, yani artık *example.txt* dosyası takip ediliyor.
+
+- Sonraki adımda projeye eklenen ve Git tarafından takibe alınan dosyaları GitHub üzerindeki uzak depomuza göndermek istersek şu şekilde bir ara komut çalıştırmamız gerekiyor:
+
+        git commit -m "commit mesajı"
+
+    Commit komutu ile artık dosyamızı gönderilebilir olarak işaretledik ve kaydettik. İleriki zamanlardan dosyanın şuan commit'lediğimiz haline erişilebilir bir nokta da oluşturmuş olduk.
+
+    RESİM 04 
+
+    Genel olarak Git komutlarını çalıştırmadan önce *git status* komutu ile dosyaların durumlarını kontrol etmemiz faydalı olacaktır. Yukarıdaki ekran görüntüsünde görüldüğü gibi (1) komutunu çalıştırdıktan sonra alt kısmındaki turuncu alandan dosyaları kontrol ettik. Sonrasında (2) komutu ile dosyalar üzerinde yaptığımız değişiklikleri işaretledik ve (2)'nin alt kısmındaki turuncu alandan gerçekleştirilen işlemlerin detayları gördük. 
+
+    Commit işleminden sonra tekrar *git status* ile dosyalarının durumlarına bakalım (3). Görüldüğü gibi (3)'ün alt kısmındaki turuncu alan bizlere Git tarafından takip edilen dosyalardan üzerinde değişiklik yapılmış bir dosya olmadığını söyüyor. 
+    
+    
+- Commit işleminden sonra projemizi uzak depomuza göndermek için GitHub üzerinde bir *Repository* oluşturmamız gerekiyor. Bu işlem de Git Bash üzerinden yapılabilir fakat örnekte GitHub üzerinden yeni bir Repo oluşturacağız.
+
+    RESİM 05
+
+    Bu sayfada Repo için bazı ayarlar yapılabilir ve istenirse Repo'ya açıklama eklenebilir. Şimdilik yukarıdaki ekran görüntüsündeki gibi default şekilde Repo'yu oluşturalım.
+
+    Yeni bir Repo oluşturduğumuzda, GitHub bizlere örnek bir GitHub kullanım klavuzu veriyor. İsterseniz o kısmı da inceleyebilirsiniz. 
+
+- GitHub üzerinde bir Repo oluşturduğumuza göre artık projeyi gönderebiliriz. Gönderme işlemi için:
+
+        git push
+
+    Komutunu kullanacağız. *git push* komutuna bazı parametreler vermemiz ve bu komuttan önce bazı işlemler yapmamız gerekecek. Bu işlemler için örnek bir ekran görüntüsü olarak:
+
+    RESİM 06
+
+    İlk önce yukarıdaki ekran görüntüsünde olduğu gibi (1) komutu ile *main* dalına geçiş yapalım. 
+
+        git branch -M main
+
+    Ardından projeyi göndereceğimiz GitHub Repo'sunun adresini Git'e belirtmemiz gerekiyor. Bu işlemi de yukarıda olduğu gibi (2) komutu ile yapabiliriz:
+
+        git remote add origin https://github.com/AhmetOsmn/ExampleRepo.git
+
+    Burada verdiğimiz adres GitHub üzerinde projeyi yüklemek istediğimiz Repo'nun adresi olmalıdır. Artık projeyi göndermeye hazır hale geldik. Yapmamız gereken ekran görüntüsündeki gibi (3) komutunu çalıştırmaktır.
+    Gönderme işlemi tamamlandıktan sonra, (3)'ün hemen alt kısımdaki turuncu alan gibi bilgi veren bir alan gelecektir. Eğer projeyi gönderirken bir sorun yaşanırsa buradan görülebilir. Bu alan içerisinde Yapılan işlemler ve proje hakkında bazı detay açıklamalar yer alır.
+
+- Gönderme işlemi tamamlandıktan sonra GitHub üzerinden ilgili Repo içerisine girip değişikliklerin gelip gelmediğine bakabiliriz. 
+
+    RESİM 07
+
+    Burada (1) ile gösterilen alan anlaşılacağı üzere, *git push* öncesinde ara işlem olarak söylediğimiz *git commit -m "commit mesajı"* kısmındaki commit mesajıdır.
+
+<br>
+
+### GitHub Üzerinden Proje Çekmek
+
+- GitHub üzerinde paylaşılmış bir projeyi kendi bilgisayarımıza indirmek istiyorsak ve bunu Git Bash ile yapacaksak ilk olarak ilgili Reponun adresini almamız gerekiyor.
+
+    RESİM 00
+
+- Daha sonra Git Bash ile projeyi indireceğimiz klasörün içerisine girmemiz gerekiyor.
+
+    REİSM 01
+
+- Son olarak alt kısımda kırmızı olarak gösterilen alandaki gibi şu komutu çalıştırmalıyız:
+
+        git clone [projenin github adresi]
+
+    RESİM 02
+
+    Ekran görüntüsünde yeşil olarak gösterilen alanda görüldüğü üzere indirme işlemi tamamlandıktan sonra proje bilgisayarımıza indirilmiş olacaktır.
