@@ -179,28 +179,6 @@
 
 <br>
 
-### GitHub Üzerinden Proje Çekmek
-
-- GitHub üzerinde paylaşılmış bir projeyi kendi bilgisayarımıza indirmek istiyorsak ve bunu Git Bash ile yapacaksak ilk olarak ilgili Reponun adresini almamız gerekiyor.
-
-    ![00](https://user-images.githubusercontent.com/44196434/189336860-cf5ee15a-58de-4715-b52e-ee94b16da73c.png)
-
-- Daha sonra Git Bash ile projeyi indireceğimiz klasörün içerisine girmemiz gerekiyor.
-
-    ![01](https://user-images.githubusercontent.com/44196434/189336881-ddcb34fc-4265-4c68-9f9c-60f37dc3c1b3.png)
-
-
-- Son olarak alt kısımda kırmızı olarak gösterilen alandaki gibi şu komutu çalıştırmalıyız:
-
-        git clone [projenin github adresi]
-
-    ![02](https://user-images.githubusercontent.com/44196434/189336903-cb9acb0d-642e-40bf-ba1f-1eca25005976.png)
-
-    Ekran görüntüsünde yeşil olarak gösterilen alanda görüldüğü üzere indirme işlemi tamamlandıktan sonra proje bilgisayarımıza indirilmiş olacaktır.
-
-
-<br>
-
 ### Ortak Çalışılan Bir Projede Başkasının Yaptığı Değişiklikler
 
 -  Takım halinde çalıştığımız zaman projeye bizim dışımızda diğer arkadaşlarımız da eklemeler, çıkartmalar ve güncellemeler yapıyor. Böyle durumlarda projenin güncel halini elde etmek için sürekli yeni bir klasöre *git clone* komutu ile projeyi çekmeyiz. Bunun yerine 
@@ -221,6 +199,44 @@
 
     Projenin güncel halini yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alandaki gibi *git pull* komutunu çalıştrarak elde edebiliriz.
     
+### Dallar (Branchs)
+
+- Git Bash ile yeni bir branch oluşturmak istiyorsak 2 şekilde yapabiliriz. 
+
+    - İlk yöntemde branch oluşturulur fakat geçiş yapılmaz:
+
+            git branch [branch adı]
+
+        Yukarıda oluşturduğumuz branch'e geçmek için:
+
+            git checkout [branch adı]
+
+        yapmalıyız.
+
+    - İkinci yöntemde ilk önce branch oluşturulur sonrasında direkt olarak geçiş yapılır:
+
+            git checkout -b [branch adı]
+
+<br>
+
+### GitHub Üzerinden Proje Çekmek
+
+- GitHub üzerinde paylaşılmış bir projeyi kendi bilgisayarımıza indirmek istiyorsak ve bunu Git Bash ile yapacaksak ilk olarak ilgili Reponun adresini almamız gerekiyor.
+
+    ![00](https://user-images.githubusercontent.com/44196434/189336860-cf5ee15a-58de-4715-b52e-ee94b16da73c.png)
+
+- Daha sonra Git Bash ile projeyi indireceğimiz klasörün içerisine girmemiz gerekiyor.
+
+    ![01](https://user-images.githubusercontent.com/44196434/189336881-ddcb34fc-4265-4c68-9f9c-60f37dc3c1b3.png)
+
+
+- Son olarak alt kısımda kırmızı olarak gösterilen alandaki gibi şu komutu çalıştırmalıyız:
+
+        git clone [projenin github adresi]
+
+    ![02](https://user-images.githubusercontent.com/44196434/189336903-cb9acb0d-642e-40bf-ba1f-1eca25005976.png)
+
+    Ekran görüntüsünde yeşil olarak gösterilen alanda görüldüğü üzere indirme işlemi tamamlandıktan sonra proje bilgisayarımıza indirilmiş olacaktır.
 
 
 <br>
@@ -321,3 +337,31 @@
         - Alt kısımda seçili olan GitHub hesabının içerisinde var olan Repo'lar gelecektir. Buradan bilgisayarımıza çekmek istediğimiz Repo'yu seçiyoruz.
         - *Local path: * alanında Repo'yu bilgisyarımızda nereye kurmak istediğimizi belirtiyoruz.
         - Son olarak *Clone* butonuna basarak projeyi çekebiliriz.
+
+<br>
+
+### Dallar (Branchs)
+
+- VS üzerinde dallar arasında geçişler için de farklı yöntemler vardır. Örnek bir yol olarak ekranın sağ alt kısmında bulunan *main* butonuna tıkladığımızda alt kısmıdaki bir bir pencere açılacaktır.
+
+    00
+
+    Burada daha önce açılmış ve silinmemiş branch'leri görebiliriz ve bu branch'ler arasında geçişler yapabiliriz. Örnek olarak yeni bir branch açmak istersek kırmızı olarak işaretlenmiş alandeki *New Branch* butonuna basmalıyız.
+
+    Butona bastığımızda alt kısımdaki pencere açılacaktır.
+
+    01
+
+    Açılan ekranda *Branch Name* yazan kısma oluşturacağımız branch'ın ismini giriyoruz. Alt kısımdaki *Based ON* yazan kısımda ise hangi branch üzerinde yeni branch açacağımızı seçiyoruz. 
+
+    Bu seçeneklerin alt kısmında bulunan *Checkout branch* seçeneğinin seçili olması, yeni branch oluşturulduktan sonra açılan branch üzerinden geliştirmeye devam etmemizi sağlar. Eğer bu seçeneği seçmezsek branch oluşturulacaktır fakat *main* branch'inde kalmaya devam edeceğiz ve daha sonrasında tekrar yeni açtığımız branch'e tıklayıp manuel olarak *checkout* yapmamız gerekecektir.
+
+    Gerekli işlemleri yaptıktan sonra *Create* butonuna basarak branch'i oluşturmuş oluruz ve *checkout branch* seçeneği seçili olduğundan direkt olarak yeni branch üzerinden geliştirmeye devam ederiz. 
+
+    02
+
+    Yukarıdaki ekran görüntüsünden de görüldüğü gibi artık *main* yazan alanlarda yeni açtığımız branch'in ismi var. 
+
+    Son olarak branch'ler arasında geçişler yapacaksak tekrar branch ismine tıkladığımızda açılan pencerelerden bunu gerçekleştirebiliriz.
+
+    03
