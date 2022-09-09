@@ -201,7 +201,7 @@
 
     Projenin güncel halini yukarıdaki ekran görüntüsünde kırmızı olarak işaretlenen alandaki gibi *git pull* komutunu çalıştrarak elde edebiliriz.
     
-### Dallar (Branchs)
+### Dallar (Branches)
 
 - Git Bash ile yeni bir branch oluşturmak istiyorsak 2 şekilde yapabiliriz. 
 
