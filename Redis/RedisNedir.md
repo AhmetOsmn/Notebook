@@ -2,23 +2,6 @@
 
 - Açılımı *Remote Dictionart Service*'tir.
 
-- Redis'in amacı db'den yükü alıp client'a verileri hızlı vermektir.
-
-- Anlık verilerimiz çok fazla değişiyorsa Redis ile cache işlemi tercih edilmeyebilir. Bunun yerine daha stabil veri setleri için kullanılır.
-
-- Redis kullanılırken dikkat edilmesi gereken en önemli noktalardan birisi, Redis üzerinde bir sorun oluştuğu zaman projenin ayakta kalması, çalışmaya devam etmesidir. Redis çalışmıyorsa db'den veri getirerek veya db'ye veri götürerek programın çalışmaya devam etmesi sağlanmalıdır.
-
-- Redis içerisinde verileri ':' ile gruplayabiliriz.
-
-- Programımıza veri geldiğinde, silindiğinde veya güncellendiğinde Redis içerisindeki verileri güncellemeyi unutmamalıyız. Örnek olarak daha öncesinde güncellenen bir veriyi redis içerisinde güncellememişsek, sonraki sorgularda veriyi redis üzerinden getirdiğimiz zaman yanlış veri getirmiş olacağız.
-
-
-- Redis'i öne çıkartan özelliği hızlı çalışmasıdır.
-
-- Temel olarak `Key:Value` olacak şekilde hazırlanan bir `NoSQL` veri tabanıdır diyebiliriz.
-
-- In Memory Database yaklaşımını benimseyerek çalışır, eğer tercih edersek opsiyonel olarak disk üzerine yazılabilme özelliği de vardır.
-
 - Redis'in desteklediği veri türleri şunlardır:
 
     - String
@@ -29,55 +12,70 @@
     - Geospatial Index
     - HyperLogLog
 
-- Redis sakladığı verileri disk üzerine yazabildiği için db olarak kullanılabilir fakat asıl amacı bu değildir.
+- Redis içerisinde verileri `:` ile gruplayabiliriz.
+
+- Redis kullanılırken dikkat edilmesi gereken en önemli noktalardan birisi, Redis üzerinde bir sorun oluştuğu zaman projenin ayakta kalması, çalışmaya devam etmesidir. Redis çalışmıyorsa db'den veri getirerek veya db'ye veri götürerek programın çalışmaya devam etmesi sağlanmalıdır.
+
+- Redis normalde asenkron olarak çalışmaz. Gönderilen işlemleri sırayla tamamlayarak devam eder. Eğer Redis içerisindeki *Pipelined* özelliği aktif edilip kullanılırsa Redis'in işemleri tamamlama hızı ortalama 3 kat artar. Pipelined özelliği ise şunu yapar: Gönderilen işlemleri toplar ve  hepsini bir anda yapar.
+
+- Eğer Redis üzerinde *Durability* aktif edilmemiş ise, sunucu kapandığı anda veriler silinir. *Durability* aktif edilmiş ise sunucu kapandığında RAM içerisindeki veriler disk'e yazılır.
+
+- Programımıza veri geldiğinde, silindiğinde veya güncellendiğinde Redis içerisindeki verileri güncellemeyi unutmamalıyız. Örnek olarak daha öncesinde güncellenen bir veriyi redis içerisinde güncellememişsek, sonraki sorgularda veriyi redis üzerinden getirdiğimiz zaman yanlış veri getirmiş olacağız.
+
+- Temel olarak `Key:Value` olacak şekilde hazırlanan bir `NoSQL` veri tabanıdır diyebiliriz.
+
+- NoSQL Veri Tabanı: 
+
+- In Memory Database yaklaşımını benimseyerek çalışır, eğer tercih edersek opsiyonel olarak disk üzerine yazılabilme özelliği de vardır.
+
+- Oluşturulan instance'lardan bir tane **Master** olarak ayarlanır. Geriye kalan diğer instance'lar **Slave** olarak kalır ve bunlar *Master*'in kopyalarıdır.
+
+- Slave instance'ler default olarak sadece okuma işlemi yaparlar. Eğer yazma işlemi yapılacak ise Master instance kullanılır.
+
+- Redis'i kullanıcak olan client bu instance'lardan (slave ya da master farketmez) birisine bağlanır.
+
+<br>
+
+# Redis Ne İçin Kullanılır?
+
+- Redis'in amacı db'den yükü alıp client'a verileri hızlı vermektir.
 
 - Redis'in en çok kullanıldığı alanlardan birisi `Caching` işlemleridir. Bunun önemli bir nedeni Redis'in bize sunmuş olduğu hızdır.
 
 - Eğer istenilirse *RabbirMQ* gibi veya *Apachi Kafka* gibi `Messsage Broker` olarak kullanılabilir.
 
-- Eğer Redis üzerinde *Durability* aktif edilmemiş ise, sunucu kapandığı anda veriler silinir. *Durability* aktif edilmiş ise sunucu kapandığında RAM içerisindeki veriler disk'e yazılır.
-
-- Redis normalde asenkron olarak çalışmaz. Gönderilen işlemleri sırayla tamamlayarak devam eder. Eğer Redis içerisindeki *Pipelined* özelliği aktif edilip kullanılırsa Redis'in işemleri tamamlama hızı ortalama 3 kat artar. Pipelined özelliği ise şunu yapar: Gönderilen işlemleri toplar ve  hepsini bir andar yapar.
-
-<br>
-
-# Redis İçerisinde Ölçeklendirme (Scaling)
-
-- Persistance (Süreklilik) için iki yol sunar:
-
-    1. RDB (Redis Database Snapshots): Db'nin direkt olarak kopyası alınır.
-    2. AOF (Append Only Files):  
-
-- Replication:
-
-    - Oluşturulan instance'lardan bir tane **Master** olarak ayarlanır. Geriye kalan diğer instance'lar **Slave** olarak kalır ve bunlar *Master*'in kopyalarıdır.
-    - Slave instance'ler default olarak sadece okuma işlemi yaparlar. Eğer yazma işlemi yapılacak ise Master instance kullanılır.
-    - Redis'i kullanıcak olan client bu instance'lardan (slave ya da master farketmez) birisine bağlanır.
-
-- Partitioning:
-
-    - Redis içerisinde ki verilerimizi bölebiliriz ve paylaştırabiliriz.
-
-- Failover: Veri akışının istenmeyen bir şekilde kesilme durumlarında devreye giren sistemlerdir.
-
-    - Manuel: 
-    - Redis Sentinel
-    - Redis Cluster
-
-# Use Case'ler
-
-- Cache mekanizmalarında kullanılabilir.
+- Redis sakladığı verileri disk üzerine yazabildiği için db olarak kullanılabilir fakat asıl amacı bu değildir.
 
 - Oturum kontrollerinde kullanılabilir.
 
 - Filtreleme işlemleri yapan bir servis içerisinde kullanılabilir.
 
+<br>
+
+# Redis'in avantajları nelerdir?
+
+- Redis'i öne çıkartan özelliği hızlı çalışmasıdır.
+
+- Veri akışının istenmeyen bir şekilde kesilme durumlarında devreye giren sistemleri vardır. Bunlar:
+
+    - Manuel 
+    - Redis Sentinel
+    - Redis Cluster
+
+- RDB (Redis Database Snapshots): Db'nin direkt olarak kopyası alabiliriz.
+
 
 <br>
 
-# Windows İle Redis Kullanmak
+# Redis'in dezavantajları nelerdir?
 
-1. Redis'i *Docker* ile de kullanabiliriz fakat şimdilik tercih etmiyoruz.
+- Anlık verilerimiz çok fazla değişiyorsa Redis ile cache işlemi tercih edilmeyebilir. Bunun yerine daha stabil veri setleri için kullanılır.
+
+<br>
+
+# Redis'i Kullanmak
+
+1. Redis'i *Docker* ile de kullanabiliriz, sonraki başlığın içeriği o konu hakkında.
 
     İlk olarak *Windows* içerisinde *Ubuntu* ile işlemler yapabilmek için bir düzenleme yapmamız gerekecek. Alt kısımda gösterilen alandan *Winodws Subsystem for Linux* seçeneğini açalım.
 
@@ -143,26 +141,43 @@
 
     Eğer server aktif ise `ping` komutumuzda bize `PONG` yanıtı gelecektir. Eğer serfer aktif değil ise mavi olarak işaretlenen kısımlarda görüldüğü gibi bağlantı olmadığına dair yanıt dönecektir.
 
-## Çok Kullanılan Redis CLI Komutları
+<br>
 
-- KEYS *: Var olan Key'leri listeler.
+# Docker İle Redis Kullanmak
 
-- SET name Ahmet: name isimli bir key oluşturur ve değer olarak Ahmet atar. 
-- GET name: name isimli key'in içerisindeki değeri getirir.
-- EXISTS name: name isimli key mevcut ise 1 (int), mevcut değil ise 0 (int) döndürür. 
-- DEL name: name isimli key'i siler ise 1 (int), silemezse (örnek olarak name key'i mevcut değilse) 0 (int) döndürür.
-- APPEND name Ahmet: name isimli key mevcut değilse içerisinde Ahmet verisi olan name isimli bir key oluşturur. Eğer name isimli key mevcut ise, key'in içerisindeki değerin sonuna Ahmet değerini ekleyerek birleştirir. Geriye oluşan yeni değerin karakter uzunluğunu döndürür.
-- HSET kedi cins tekir: kedi isimli bir nesne üretmemizi, kedi nesnesinin içerisinde cins property'si üretmemizi ve property'e tekir değerini atamamızı sağlar. Bu şekilde nesneler tanımlayıp tutabiliriz.
-- HGET kedi cins: Oluşturulan kedi nesnesinin cins property'sinde tutulan değeri getirir.
-- HGETALL kedi: Oluşturulan kedi nesnesinin bütün property'lerini property ismi ve içerisindeki değer şeklinde sıralayarak getirir.
 
-- SET geciciKediIsmi maya EX 5: 5 saniye sonra otomatik olarak yok olacak bir geciciKediIsmi key'i oluşturur. 5 saniye sonra key otomatik olarak silinir.
 
-- PUBLISH HufflePuff "redis ogreniyoruz": HufflePuff kanalının üyelerine "redis ogreniyoruz" mesajı gönderir.
-- SUBSCRIBE HufflePuff: HufflePuff kanalına abone oluruz. Kanal içerisinde mesaj yayınlandığında aboneler tarafından mesaj görüntülenir.
+<br>
+
+# Çok Kullanılan Redis CLI Komutları
+
+- `KEYS *`: Var olan Key'leri listeler.
+
+- `SET name Ahmet`: name isimli bir key oluşturur ve değer olarak Ahmet atar. 
+- `GET name`: name isimli key'in içerisindeki değeri getirir.
+- `EXISTS name`: name isimli key mevcut ise 1 (int), mevcut değil ise 0 (int) döndürür. 
+- `DEL name`: name isimli key'i siler ise 1 (int), silemezse (örnek olarak name key'i mevcut değilse) 0 (int) döndürür.
+- `APPEND name Ahmet`: name isimli key mevcut değilse içerisinde Ahmet verisi olan name isimli bir key oluşturur. Eğer name isimli key mevcut ise, key'in içerisindeki değerin sonuna Ahmet değerini ekleyerek birleştirir. Geriye oluşan yeni değerin karakter uzunluğunu döndürür.
+- `HSET kedi cins tekir`: kedi isimli bir nesne üretmemizi, kedi nesnesinin içerisinde cins property'si üretmemizi ve property'e tekir değerini atamamızı sağlar. Bu şekilde nesneler tanımlayıp tutabiliriz.
+- `HGET kedi cins`: Oluşturulan kedi nesnesinin cins property'sinde tutulan değeri getirir.
+- `HGETALL kedi`: Oluşturulan kedi nesnesinin bütün property'lerini property ismi ve içerisindeki değer şeklinde sıralayarak getirir.
+- `SET geciciKediIsmi maya EX 5`: 5 saniye sonra otomatik olarak yok olacak bir geciciKediIsmi key'i oluşturur. 5 saniye sonra key otomatik olarak silinir.
+- `PUBLISH HufflePuff "redis ogreniyoruz"`: HufflePuff kanalının üyelerine "redis ogreniyoruz" mesajı gönderir.
+- `SUBSCRIBE HufflePuff`: HufflePuff kanalına abone oluruz. Kanal içerisinde mesaj yayınlandığında aboneler tarafından mesaj görüntülenir.
+
+<br>
+
+# Redis ile örnek proje:
+
+
+
+
+
+<br>
 
 # Kaynak
 
 - (Kablosuz Kedi)[https://www.youtube.com/watch?v=JLS9gg-oJPQ]
-- (Redis)[https://redis.io/]
+- (Bora Kaşmer)[https://www.youtube.com/c/borakasmer]
 - (Redis Kurmak)[https://www.youtube.com/watch?v=_nFwPTHOMIY]
+- (Redis)[https://redis.io/]
