@@ -11,10 +11,10 @@ Derslerde, eğitimlerde veya yaptığım araştırmalarda ve çalışmalarda ön
 
 - [Docker](https://github.com/AhmetOsmn/Notebook/tree/main/Docker)
 
-- [Github](https://github.com/AhmetOsmn/Notebook/blob/main/GitHub/GitHubKullanimi.md)
+- [Github](https://github.com/AhmetOsmn/Notebook/tree/main/GitHub)
 
 - [RabbitMQ](https://github.com/AhmetOsmn/Notebook/tree/main/RabbitMQ)
 
-- [Redis](https://github.com/AhmetOsmn/Notebook/blob/main/Redis/RedisNedir.md)
+- [Redis](https://github.com/AhmetOsmn/Notebook/tree/main/Redis)
 
 - [TSQL - SQL Server](https://github.com/AhmetOsmn/Notebook/tree/main/TSQL%20-%20SQL%20Server)
