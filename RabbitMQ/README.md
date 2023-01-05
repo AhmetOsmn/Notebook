@@ -1,4 +1,6 @@
-# Notes
+# Tutorial 1
+
+### Notes
 
 - RabbitMQ'yu bi posta ofisi olarak düşünebiliriz. Yaptıkları işlemler hemen hemen aynıdır. Sadece kağıt yerine byte array'leri kullanır.
 
@@ -22,13 +24,19 @@
 
 - Okuma işlemi sırasında alacağımız mesajlar `byte array (byte[]?)` olarak geleceği için onları tekrar `string` tipe çevirmemiz gerekecektir.
 
-# Work Queue
+<br>
+
+# Tutorial 2
+
+### Work Queue
 
 - `Work Queue` olarak adlandırılan kuyruk yapılarının amacı ağır işleri bir anda yapmaktan ve bu işin tamamlanmasını beklemekten kaçınmaktır.
 
     Örnek olarak 2 adet consumer servis olsun ve 1 adet producer servis olsun. Producer 6 adet mesaj yayınladığında, RabbitMQ bu 2 consumer'ın ortalama olarak aynı sayıda mesaj tüketmesini sağlamaya çalışır. Yani beklenen durum 2 consumer'ın da 3'er adet mesajı okumalarıdır.
 
-# Message acknowledgment
+<br>
+
+### Message acknowledgment
 
 - Eğer bir consumer aldığı task'ı tamamlamadan yok olursa, normal şartlarda üzerinde çalıştığı task ve o consumer'a atanmış olan task'ler silinecektir.
 
@@ -46,17 +54,21 @@
     
     Message ackn. bilgisi mesaj alınan aynı kanal üzerinden geri gönderilmelidir. Eğer farklı bir kanal üzerinden göndermeye çalışırsak ilgili exception fırlatılacaktır (channel-level protocol exception).
 
-# Message durability
+<br>
 
-- Aksini belirtmediğimiz sürece, RMQ suncusu çöktüğünde veya kapandığında mesajlarımız ve kuyruklarımız kaybolacaktır. Bunu engellemek için iki yapının da ``durable = true` olarak işaretlendiğinden emin olmalıyız. 
+### Message durability
+
+- Aksini belirtmediğimiz sürece, RMQ suncusu çöktüğünde veya kapandığında mesajlarımız ve kuyruklarımız kaybolacaktır. Bunu engellemek için iki yapının da `durable = true` olarak işaretlendiğinden emin olmalıyız. 
 
     Ayrıca ekstra olarak mesajı göndermeden önce `channel.CreateBasicProperties()` ile aldığımız property'lerden `Persistend = true` olarak ayarlamalıyız (Bu durumda mesajın kesinlikle kaybolmayacağını garanti edemez. RMQ'ya mesajı diske kaydetmesini söylese bile, bu işlem gerçekleşene kadar bir açıklık vardır).
 
-# Fair Dispatch
+<br>
+
+### Fair Dispatch
 
 - Mesajların her zaman consumer'lara dengeli olarak (iş yükü bakımından) dağıtılacağından emin olamayız. 
 
-    Örnek olarak 1 queue ve 2 consumer olsun. Bu iki consumer eşit sayıda mesajı tüketse bile (örnek olarak ikisi de 10 - 10 mesaj tüketsinler) bir tanesindeki mesajların iş yükü çok fazla olabilir, diğerinin iş yükü çok az olabilir. Böyle bir durumda şöyle bir şey oluşur, bir consumer çok fazla çalışırken diğer consumer çok çok az çalışabilir. Eğer buraya müdahele edilmez ise RMQ mesajalrı bu iki consumer'a eşit şekilde vermeye devam eder ve yoğun olarak çalılan consumer tamamen yük altında kalmış olur.
+    Örnek olarak 1 queue ve 2 consumer olsun. Bu iki consumer eşit sayıda mesajı tüketse bile (örnek olarak ikisi de 10 - 10 mesaj tüketsinler) bir tanesindeki mesajların iş yükü çok fazla olabilir, diğerinin iş yükü çok az olabilir. Böyle bir durumda şöyle bir şey oluşur, bir consumer çok fazla çalışırken diğer consumer çok çok az çalışabilir. Eğer buraya müdahele edilmez ise RMQ mesajları bu iki consumer'a eşit şekilde vermeye devam eder ve yoğun olarak çalılan consumer tamamen yük altında kalmış olur.
 
     Burada RMQ'nun böyle çalışmasının nedeni default çalışma şeklinde, kuyruğa bir mesaj geldiğinde o mesajı direkt olarak consumer'a atamasıdır. Burada atama yaparken hangi consumer kaç adet ackn. bilgisi göndermiş, mesajı ona göre göndereyim kontrolünü yapmaz. 
 
@@ -68,18 +80,208 @@
 
     Şuna dikkat etmeyi unutmamalıyız. Eğer tüm consumer'lar meşgulse kuyruk dolmaya başlar, hatta dolabilir. Bu süreci güzel yönetmek için farklı stratejiler uygulanabilir. Bunlardan bir tanesi consumer sayısını arttırmaktır.
 
+<br>
 
-# Keywords
+# Tutorial 3
 
-- `queue`: Oluşturulacak olan queue'nun adını belirtir. Eğer boş bir metin gönderirsek, sunucu kendisi bir isim üretir.
+### Publish / Subscribe
 
-- `durable`: Oluşturulan queue nun, broker restart edildiğinde kurtarılması gerekip gerekmediğini belirtir. 
-- `exclusive`: Oluşturulan queue içerisinde bulunduğu bağlantı ile sınırlı mıdır bunu belirtir. Sınırlı olan queue bağlantı kapandığında silinir.
-- `autoDelete`: Bu queue'nun son consumer'ı abonelikten çıktığında otomatik olarak silinip silinmemesi gerektiğini belirtir.
-- `arguments`: Opsiyonel olarak verilmek istenen argumanlar burada belirtilir.
-- `exchange`: Mesajın hangi şekilde alınıp yönlendirilmesini belirtir. Boş bırakılırsa default type kullanılır.
-- `routingKey`: Mesajın nereye gideceğini belirten adrestir.
-- `basicProperties`: Ekstra parametreleri içerir.
-- `body`: Göndermek istediğimiz mesajı alır (byte array olarak) alır.
-- `autoAck`: Mesajı okuma durumu.
-- `consumer`: Mesajı okuyan consumer bilgisi.
+- Bir önceki adımda 1 consumer'a sadece 1 mesaj verilmesi gerektiğini belirtmiştik. Burada farklı bir yaklaşım olarak 1 mesajın 1'den fazla consumer'a dağıtılmasını göreceğiz.
+
+    Bunu şu şekilde sağlayabiliriz: 
+
+    1 producer 1 mesajı yayınlar (publish). N tane oluşturulan consumer bu producer'a abone olur (subscribe). Bir producer'a abone olan consumer'lar artık o producer'ın yayınladığı mesajları dinlemeye başlar. Abone durumundaki consumer'ların hepsi mesajları alır ama hangisinin ne yapacağı kendisine kalmıştır.
+
+### Exchanges
+
+- Bir producer bir mesaj yayınladığında o mesja direkt olarak kuyruğa eklenmez. Burada arada görev alan bir varlıklar vardır, bu varlıklara `exchange` deriz. 
+
+    Exchange varlıkları gönderilmek istenen mesajı producer'lardan alıp kuyruğa gönderir. Burada mesajın kuyruğa nasıl ekleneceğini belirleyen şeyler `exchange type`'lardır. 
+
+- Uygulamalar birbirleri ile direkt olarak iletişim kurmak yerine, kuyruklar üzerinden iletişim kurabilirler. Bu asenkron olarak iletişim kurmayı sağlar.
+
+- Exchange Types:
+
+    - Direct
+
+    - Topic    
+    - Fanout
+    - Headers
+    - Default (nameless)
+
+- Direct Type:
+
+    Mesajları, verilen `routing key` ile birebir aynı isimde olan kuyruğa taşır.
+
+    <br>
+
+    <img src="./images/directtpyess.png" />
+
+    <br>
+
+- Topic Type:
+
+    Mesajları routingKey ile kuyruğun sahip olduğu `routing pattern`'e eşleştirdiği kuyruklara gönderir. Yani gelen mesajın routingKey'inin, routing paternleri ile eşleştiği bütün kuyruklara gönderilmesini sağlar (bir veya birden fazla olabilir).
+
+    RoutingKey'ler '.' karakteri ile ayrılarak tanımlanır. 
+
+    <br>
+    
+    <img src="./images/topictypess.png" alt="type" />
+    
+    <br>
+
+- Fanout Type:
+
+    Elindeki bütün mesajları kopyalayara, bildiği kuyruklara gönderir. Mesaj ile birlikte gönderilen routingKey ve kuyrukların routingPattern'leri gözardı edilir.
+
+    <br>
+    
+    <img src="./images/fanouttypess.png" alt="type" />
+    
+    <br>
+
+- Headers:
+
+    Mesajları yönlendirirken mesajın header alanında gelen `optional values` değerlerine göre yönlendirme yapar.
+
+    Çalışma şekli <b>Topic Type</b> ile aynıdır. Mesajları kontrol ettiği değerlerin eşleştiği kuyruklara gönderir.
+
+    Burada `x-match` keyword'ü ile eşleşme kontrolü yönetilebilir. Eğer `x-matches:any` olarak tanımlanırsa, kontrol edilen değerlerden herhangi birisi eşleştiğinde, kuyruğa gönderme yapılır.
+
+    `x-matches:all` olarak tanımlarsa, mesajın bir kuyruğa gönderilmesi için kontrol edilen değerlerin hepsinin eşleşmesi gerekmektedir. Default olarak `all` değeri kullanılır.
+    
+     <br>
+     
+     <img src="./images/headerstypess.png" alt="header" />
+     
+     <br>
+
+- Default Type (nameless):
+
+    Mesajı yayınlarken `exchange:""` şeklinde belirttiğimizde aslında exchange tipinin default olması gerketiğini söylemiş oluyoruz. 
+
+    Default tipin çalışma şekli şu şekildedir. Mesajı `routingKey:"test"` şeklinde belirtilen routingKey parametresi ile aynı isimde olan kuyruğa gönderir (eğer kuyruk mevcut ise). 
+
+     <br>
+     
+     <img src="./images/defaulttypess.png" alt="default" />
+     
+     <br>
+
+- Dead Letter Type:
+
+    Kuyruklar bazı kurallara uymayan mesajları almayı kabul etmeyebilir. Eğer bir mesaj herhangi bir kuyruk ile eşleşemezse yok edillir. Eğer bu gibi durumalrda mesajın kaybolmasını istemiyosak ve sonrasında tekrar işlenebilmesini istiyorsak `Dead Letter Type`'ı kullanırız.
+
+     <br>
+     
+     ![a](/images/deadlettertypess.png)
+     
+<br>
+
+### Temporary Queues
+
+- Bir loglama senaryosunu düşünelim. Amacımız sadece anlık olarak akan bütün log mesajlarını görmek olsun. Bu gibi senaryolarda geçici olarak kuyruklar oluşturabiliriz. Bu senaryoda 2 şeye ihtiyacımız vardır:
+
+    1. Temiz bir boş kuyruk. 
+    2. Consumer'ın bağlantısı kapandığında kuyruğun otomatik olarak silinmesi.
+
+    Yukarıdaki gibi işlemler için kuyruk oluştururken, kuyruk ismini rastgele oluşturmak isteyebiliriz. Bunu da sunucuya Alt kısımdaki gibi yaptırabiliriz:
+
+    `var queueName = channel.QueueDeclare().QueueName;`
+
+    Burada `QueueDeclare()` metodunu parametre vermeden kullanırsak <b>non-durable, exlusive, autodelete</b> özellikli ve ismi rastgele oluşturulmuş bir kuyruk elde ederiz.
+
+<br>
+
+### Bindings
+
+- Kendimizin tanımladığı bir **exchange**'e mesajları hangi kuyruğa iletmesini söylemek için yaptığımız işleme `binding` deriz. Bir örnek olarak:
+
+    `channel.QueueBind(queue: queueName, exchange: "logs", routingKey: "");`
+
+<br>
+
+### Putting it all together
+
+- Bir mesajı bütün consumer'lara göndermek için `Fanout` tipinde bir exchange tanımlayıp mesjaı bu exchange ile yayınlamamız yeterlidir. 
+ 
+    İşlemin örnek bir görüntürü alt kısımdadır:
+
+    ![](images/fanoutss.png)
+
+<br>
+
+# Tutorial 4
+
+- Biz bir publisher'dan gelen mesajlardan sadece bır kısmını almak isteyebiliriz. Bunu şöyle sağlayabiliriz.
+ 
+    `QueueBind()` metodunun aldığı `routingKey` parametresine kuyruğun kabul etmesini istediğimiz keyword'u yazarız.  
+
+    Bir önceki örnekte exchange tipi olarak **fanout** kullanmıştık. Belirttiğimiz case'i gerçekleştirebilmemiz için bu tipi değiştirmemiz gerekecektir. Çünkü **fanout** gönderilen routing key'leri görmezden geliyordu.
+
+    Fanout yerine **direct** kullanarak istedğimiz case'i sağlayabiliriz. Direct tipi sayesinde gönderilen routingKey, aynı key'i kabul eden bütün kuyruklara gönderilir.
+
+    <br>
+
+    ![](images/directexchange.png)
+
+    <br>
+
+    Yukarıdaki örnekte C1 consumer'ı sadece `orange` key'ini kabul ediyor. Yani routingKey olarak `orange` bind edilmiştir.
+
+    C2 consumer'ı ise sadece `black` ve `green` key'lerini kabul ediyor. Bir mesaj bu key'ler ile publish edilirse bu kuyruklara yönlendirilecektir.
+
+    Farklı bir örnek olarak aynı key'i kabul eden birden fazla kuyruk da olabilir. Bu durumda mesaj eşleştiği bütün kuyruklara götürülüyor olacaktır. Örnek olarak alt kısımdaki görüntüyü inceleyebiliriz:
+
+    <br>
+
+    ![](images/multiplebinding.png)
+
+    <br>
+
+<br>
+
+# Tutorial 5
+
+- Farklı bir case olarak yayınlanan mesajları daha gelişmiş bir kural setine göre almak isteyebiliriz. Örnek olarak: **cron**'dan gelen log'lardan sadece **error** tipte olanları, **kern**'den gelen mesajların ise hepsini almak isteyebiliriz.
+  
+    Önceki kısımda kullandığımız **direct** tipi birden fazla kurala göre yönlendirme yapamaz. Bu gibi kompleks kuralları **topic** tipi ile işletebiliriz.
+
+    **Topic** ile çalışırken **routingKey**'ler keyfi olarak verilemez. Geçerli olabilmesi için key'lerin '.' ile birleştirilmiş olması gerekir. 
+    
+    Örnekler:
+
+    `"quick.orange.rabbit"` - `"nyse.vmw"` - `"stock.usd.nyse"`
+
+    Buradaki yapı aslında **direct** ile benzer. Gelen key'ler, aynı key'leri kabul edel kuyruklar ile eşleştirilirler. Farklı olan 2 önemli durum vardır:
+
+    - '*' -> Bir kelimenin yerine geçebilir.
+    - '#' -> Sıfır veya daha fazla kelime yerine kullanılabilir.
+
+    Aşağıdaki örneği inceleyelim:
+
+    ![topic](images/topicexample.png)
+
+    <br>
+
+    Yukarıdaki görüntüde hayvanları tanımlamak için kullanılan kalıp şu şekildedir: `<speed>.<colour>.<species>`. 
+    
+    O zaman şu çıkarımları yapabiliriz:
+
+    - Q1, rengi turuncu olan bütün hayvanları kabul ediyor.
+    - Q2, bütün tavşanları ve yavaş olan bütün hayvanları kabul ediyor.
+
+    Gelen mesajın key'lerine göre mesajlar birden fazla kuyruk ile eşleşebilir. Örnek olarak:
+
+    - Mesajda gelen key `quick.orange.rabbit` veya `lazy.orange.elephant` gibi bir şey gelirse iki kuyruk ile de eşleştirilecektir.
+
+    - Gelen mesajın key'leri hiçbir kuyruk ile eşleşmeye de bilir, böyle durumlarda mesaj herhangi bir kuyruğa yönlendirilmez ve mesaj kaybolur.
+
+- **Topic** tipi diğer tipler gibi de kullanılabilir. Örnek olarak:
+
+    - Eğer kuyruk '#' ile bağlanırsa **fanout** şeklinde davranır.
+
+    - Eğer key'lerde '#' ve '*' kullanılmazsa **direct** gibi davranır.
+
+
