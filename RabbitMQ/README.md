@@ -1,3 +1,9 @@
+# Kaynak
+
+- https://www.rabbitmq.com/getstarted.html
+
+<br>
+
 # Tutorial 1
 
 ### Notes
@@ -14,7 +20,7 @@
 
 - Producer, Consumer ve Broker'ın aynı host üzerinde olması gerekmez. Çoğu uygulama da bu şekildedir.
 
-- Bir uygulama hem producer hem de consumer olabilir.
+- Bir uygulama hem **producer** hem de consumer olabilir.
 
 - Connection olarak belirtilen şey aslında soket bağlantısı kurma işleminin soyutlaştırılmış halidir.
 
@@ -289,7 +295,10 @@
 
 # Tutorial 6
 
+<br>
+
 ### RPC
+
 - Work Queue olarak öğrendiğimiz yapı, kuyruktaki mesajları consumer'lar arasında paylaştıran bir sistemdi.
 
      Tekrar böyle bir sistemde olduğumuzu düşünelim. Bir consumer'ın işlemi tamamlayabilmesi için uzaktaki bir bilgisayara istek göndermesi ve o isteğin cevabını beklemesi gerekiyor olsun. Bu pattern RPC (Remote Procedure Call) olarak bilinen bir pattern.
@@ -308,6 +317,27 @@
 
     `props.ReplyTo = replyQueueName;`
 
+    RPC sisteminin çalışma şekli alt kısımdaki gibidir:
+
+    ![rpc](images/rpc.png)
+
+    <br>
+
+    Yukarıdaki görseli adım adım açıklamak gerekirse:
+
+    - İstemci çalıştırıldığında, anonim ve özel bir callback queue oluşturur. 
+
+    - Yapılacak olan RPC istekleri için mesaj ile birlikte 2 adet property'de set edilerek yapılır. Bir tanesi **ReplyTo** parametresi (geri dönüş kuyruğunu belirtmek için), diğeri ise **CorrelationId**'dir (döndürülecek yanıt ile gönderilen istek arasındaki bağlantıyı sağlayabilmek için).
+
+    - İstek `rpc_queue` kuyruğuna gönderilir.
+    - RPC worker (server) istek gelmesi için bu kuyrukta bekler. Bir istek yapıldığında, yapması gereken işi yapar ve sonucu **ReplyTo**'da tanımlanan kuyruğa geri döndürür.
+    - İstemci bu sırada callback kuyruğunda bir yanıt bekliyordur. Buraya bir yanıt geldiğinde bu yanıt ile yapılan isteğin **CorrelationId**'lerini karşılaştırır ve eşleşiyorlarsa yanıtı uygulamaya döndürür.
+
+    Uyguladığımız pattern'in iki avantajı vardır:
+
+    - Eğer RPC server bir nedenden dolayı çok yavaş çalışıyorsa bir tane daha server oluşturarak kolayca ölçeklendirebiliriz.
+    - RPC sadece 1 adet mesaj alır ve geri döndürür. Yani sadece 1 adet network üzerinden çalışır.
+
 <br>
 
 ### Message Properties
@@ -321,6 +351,8 @@
     - **ReplyTo**: Genel olara geri dönülecek olan kuyruğu temsil eder. 
     - **CorrelationId**: RPC'den gelen yanıtları istekler ile ilişkilendirmek için kullanılır.
     
+<br>
+
 ### CorrelationId
 
 - Üst kısımda her RPC isteği için bir geri dönüş kuyruğu tanımlamayı görmüştük. Bu oldukça verimsiz bir yöntemdir. Bunun yerine her istemci için bir geri dönüş kuyruğu oluşturabiliriz.
@@ -330,4 +362,87 @@
     Gönderdiğimiz her istek için unique bir değer üreteceğiz ve bu değeri property'e set edeceğiz. Cevaplar geri geldiğinde yapılan istekler ve gelen cevapları bu unique değerlerini kullanarak eşleştireceğiz.
 
     Eğer gelen cevaplar içerisinde tanımadığımız bir CorrelationId görürsek mesajı güvenli bir şekilde silebiliriz çünkü o mesaj bizim isteklerimize ait değil.
+
+<br>
+
+# Tutorial 7
+
+### Publisher Confirms
+
+- Yapacağımız işlemlerde `Publisher Confirms` özelliğini kullanmak istiyorsak, oluşturduğumuz kanalda bunu bir kez ayarlamamız yeterlidir. 
+  
+    Bu özelliği açmak için uygulanan yönteme bakalım:
+
+    `var channel = connection.CreateModel();`
+
+    `channel.ConfirmSelect();` 
+
+    Uygulama olarak farklı uygulama stratejileri vardır. Burada birkaç tanesini inceleyeceğiz.
+
+<br>
+
+### Strateji 1 - Publishing Messages Individually (Mesajları Tek Tek Yayınlamak)
+
+- Bu yöntemde bir mesaj yayınlanır ve eşzamanlı olarak o mesajın onayı beklenir.
+
+- Bu yöntem oldukça basittir ama önemli bir dezavantajı vardır. Publishing'i önemli ölçüde yavaşlatır. Çünkü bir mesajın onaylanması, sonraki bütün mesajların yayınlanmasını engelleyecektir. Saniyede birkaç yüz mesajdan fazlasını büyük ihtimalle desteklemeyecektir.
+
+<br>
+
+### Strateji 2 - Publishing Messages in Batches (Mesajları Toplu Olarak Yayınlamak)
+
+- Mesajları gruplayarak yayınlayabiliriz ve grubun onaylanmasını bekleyebiliriz. Örnek olarak alt kısımdaki kod'a bakalım:
+
+    ![](images/batchpublish.png)
+
+    <br>
+
+    Bu yöntem bize üstteki yönteme göre neredeyse 20-30 kat hız kazandırır.
+
+    Dezavanataj olarak şöyle bir durum vardır. Eğer bir sorun oluşursa tam olarak nerede hata oluştuğunu bilemeyiz. Bu yüzden mesajları tekrar yayınlayabilmek için veya hata oluştuğunda anlamlı bir log mesajı kaydedebilmek için grupları bellekte tutmamız gerekebilir.
+
+    Ayrıca grupça yayınlama yöntemi avantaj sağlasa bile hala senkron olarak yayınlama yapıyor, yani diğer mesajların yayınlanmasını engelliyor.
+
+<br>
+
+### Strateji 3 - Handling Publisher Confirms Asynchronously
+
+- Broker yayınlanan mesajlar asenkron olarak (eş zamanlı bir şekilde) onaylayabilir. Yapmamız gereken tek şey bir **callback** adresi kaydetmektir.
+
+    Mesajlara göre 2 durum oluşur. Geriye **onaylandı bilgisi** dönme veya **onaylanmadı** bilgisini dönme durumları.
+
+    Bu 2 durumu şu şekilde yönetebiliriz:
+
+    ![](images/ackandnack.png)
+
+    <br>
+
+    2 durumda şu şekilde parametreleri vardır:
+
+    - `Delivery Tag`: Onaylanan veya onaylanmayan mesajı tanımlayan bir sıra numarasıdır.
+    - `Multiple`: **Boolean** değer alır. Eğer **false** ise yalnızca 1 mesaj onaylanır / yayınlanır. Eğer **true** ise düşük sıra numaralı veya eşit sıra numaralı tüm mesajlar onaylanır / yayınlanır. 
+
+    Bahsedilen **sıra numarasını** mesaj yayınlanmadan önce şu şekilde elde edebiliriz:
+
+    `var sequenceNumber = channel.NextPublishSeqNo;`
+
+    `channel.BasicPublish(exchange, queue, properties, body);`
+
+- Mesajların sıra numaralarını takip etmenin kolay yolu bir **dictionary** kullanmaktır. Örnek olarak:
+
+    ![](images/dictionary.png)
+
+    Sözlük kullandığımızda, mesajlar onaylandığında sözlüğü temizlememiz ve bir **nack** geldiğinde uyarı mesajı loglamamız gerekir. Örnek olarak:
+
+    ![](images/cleandict.png)
+
+- Özet olarak, onaylama işlemlerini asenkron olarak yapabilmek için şu adımları takip ederiz:
+
+    - Mesaj ile yayınlama sıra numarası arasında bir ilişki kurulur.
+    - Kayıt onaylama dinleyicileri publisher'dan ack / nack bilgisi geldiğinde bunu loglayarak veya bir yayınlama yaparak bildirmeleri gerekir. Bu aşamada bazen sıra numarası ile mesaj arasında temizlik gerekebilir.
+    - Mesajı yayınlamadan önce **sıra numarasını takip etmeliyiz.** 
+
+- Yukarıdaki 3 yöntem ile yayınlanan mesajların işlenme sürelerini alt kısımdan inceleyebiliriz:
+
+    ![](images/3strategy.png)
 
