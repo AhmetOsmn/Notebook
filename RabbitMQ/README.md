@@ -285,3 +285,49 @@
     - Eğer key'lerde '#' ve '*' kullanılmazsa **direct** gibi davranır.
 
 
+<br>
+
+# Tutorial 6
+
+### RPC
+- Work Queue olarak öğrendiğimiz yapı, kuyruktaki mesajları consumer'lar arasında paylaştıran bir sistemdi.
+
+     Tekrar böyle bir sistemde olduğumuzu düşünelim. Bir consumer'ın işlemi tamamlayabilmesi için uzaktaki bir bilgisayara istek göndermesi ve o isteğin cevabını beklemesi gerekiyor olsun. Bu pattern RPC (Remote Procedure Call) olarak bilinen bir pattern.
+
+     RPC pattern'inde dikkat etmemiz gerken bir nokta vardır. Bazı durumlarda programcı fonksiyona yapılan isteğin yerelden mi geldiğini yoksa bir RPC'mi olduğunu anlamaya bilir. Böyle durumlar spagetti kod oluşmasına neden olabilir.
+
+     Bu problem için yapılan öneriler aşağıdaki gibidir:
+
+     - Fonksiyon çağrılarının yerelden mi yoksa uzaktan mı geldiğine emin olun.
+     - Sistemi güzel bir şekilde dökümante edin. Component'ler arasındaki bağımlılıkları temiz bir şekilde kurun.
+     - Oluşabilecek hataları yönetebiliyor olun. Örnek olarak RPC server'i uzun süreli olarak durdurulursa istemci nasıl davranacak? Bu gibi durumları düşünmeliyiz.
+
+    RPC pattern'ini RMQ ile uygularken, remote'a mesajı alma isteği gönderirken bir `callback` kuyruk adresi de göndermeliyiz. Bunu şu şekilde yapabiliriz:
+
+    `var props = channel.CreateBasicProperties();`
+
+    `props.ReplyTo = replyQueueName;`
+
+<br>
+
+### Message Properties
+
+- Oluşturulan bir mesajın 14 adet property'si olur. Çokça kullanılan bazı property'ler alt kısımdadır:
+
+    - **Persistent**: `true` değeri verilir ise mesajı kalıcı olarak işaretler. Bunun dışındaki değerlerde mesaj geçici olarak işaretlenir. 
+
+    - **DeliveryMode**: **Persistent** ile aynı işlemi yapar.
+    - **ContentType**: Encoding yapılan **mime-type**'ı tanımlar. Çokça kullanılan bir örnek: `application/json`.
+    - **ReplyTo**: Genel olara geri dönülecek olan kuyruğu temsil eder. 
+    - **CorrelationId**: RPC'den gelen yanıtları istekler ile ilişkilendirmek için kullanılır.
+    
+### CorrelationId
+
+- Üst kısımda her RPC isteği için bir geri dönüş kuyruğu tanımlamayı görmüştük. Bu oldukça verimsiz bir yöntemdir. Bunun yerine her istemci için bir geri dönüş kuyruğu oluşturabiliriz.
+
+    Yukarıdaki senaryoda da bir sorun var. Böyle bir durumda elimizdeki cevapların hangisinin hangi isteğe ait olduğunu bilemeyeceğiz. Bu durumu çözmek için **CorrelationId** property'sini kullanacağız.
+
+    Gönderdiğimiz her istek için unique bir değer üreteceğiz ve bu değeri property'e set edeceğiz. Cevaplar geri geldiğinde yapılan istekler ve gelen cevapları bu unique değerlerini kullanarak eşleştireceğiz.
+
+    Eğer gelen cevaplar içerisinde tanımadığımız bir CorrelationId görürsek mesajı güvenli bir şekilde silebiliriz çünkü o mesaj bizim isteklerimize ait değil.
+
