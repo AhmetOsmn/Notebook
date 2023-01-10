@@ -319,4 +319,187 @@
 
 - Container'lar orkestratör tarafından yönetildiğinde, optimizasyondaki bağımlılıklara bağlı olarak farklı Docker Host'lara taşınabilirler.
 
+<br>
+
+# Service-Oriented Architecture (SOA)
+
+- SOA, geliştireceğimiz uygulamayı alt sistemler veya alt katmanlar olarak adlandırılabilecek birden çok hizmete ayrıştırarak geliştirmeyi söyler.
+
+- Docker container'ları olarak deploy edilen servisler ölçeklendirilebilir ve çevik durumda olur. Bu kısımda **Docker Clustering** ve **Docker Orchestrator** yardımcı olur.  
+
+- Mikro servisler SOA'dan türetilmiştir, ama SOA mikro servis mimarisinden farklıdır. 
+
+    SOA'da:
+
+    - Merkezi broker'lar,
+    - Kuruluş düzeyinde merkezi orchestrator'lar,
+    - Enterprise Service Bus (ESB)'ler tipiktir. 
+    
+    Bunlar mikro servis mimarisine uygun olmayan yapılardır.
+
+    Fakat sonuca vardığımızda eğer bir uygulamayı mikro servis mimarisi ile nasıl geliştirebileceğimizi biliyorsak, o uygulamayı SOA olarak geliştirmemiz daha kolay kolay olacaktır.
+
+<br>
+
+# Microservices Architecture
+
+- Mikro servislerin boyutlarının ne kadar olacağı çok önemli değildir. 
+    
+    Amacımız olabildiğince küçük, kendi kendine çalışabilen ve deploy edilebilecek olan paketler çıkartmak olduğundan bunların boyutlarını tabiki elimizden geldiğince küçültmeye çalışacağız ama asıl hedeflememiz gereken nokta servislerin birbirleri ile ve ortam ile olan uyumlarıdır.
+
+- Mikro servisleri tercih etmemizin başka bir nedeni ise, uzun dönemi düşündüğümüzde bize çeviklik sağlıyor olmasıdır.
+
+    Mikro servisler sayesinde otonom yaşam döngüsüne sahip, her biri parçalı olan ve bağımsız olarak konuşlandırılabilen uygulamalar oluşturmamızı sağlar. Bu da karmaşık, büyük ve yüksek düzeyde ölçeklenebilir sistemlerde-uygulamalarda daha iyi bakım sağlar. 
+
+![](images/monovsmicro.png)
+
+<br>
+
+- Mikro servis mimarisi ile geliştirilen bir uygulamada hızlı bir şekilde çalışan modüller görürüz. Yani bütün projeyi tamamlamadan modüller üzerinden projeyi geliştirme aşamalarını müşteriye gösterebiliyor oluruz.
+
+- Mikroservis uygulamalarda başarı sağlamanın bazı noktaları:
+
+    - Servis'lerin ve altyapının izlenmesi ve sağlık kontrollerinin yapılması.
+    - Servis'ler için ölçeklenebilir bir altyapı'nın olması (Cloud ve Orchestrator).
+    - Birden çok seviyede güvenlik tasarlanması be uygulanması (Oturum yönetimi, yetki yönetimi, güvenli iletişim vb.).
+    - Genellikle farklı mikro servislere odaklanan farklı takımlar ile hızlı uygulama teslimi.
+    - DevOps ve CI/CD uygulamaları ve altyapısı.
+
+<br>
+
+# Data Sovereignty Per Microservice (Mikro servis başına Veri Egemenliği)
+
+- Mikro servis mimarisinin önemli bir kuralı da şudur: her mikro servisin kendisine ait olan bir domain data'sı ve logic'i olmalıdır.
+
+    Mikro servislerin her biri kengi mantığına (logic) ve verilerine, kendi başına deploy edilebilme özelliğine ve otonom bir yaşam döngüsü altında olması gerekir.
+
+![](images/dbmodels.png)
+
+<br>
+
+- Geleneksel yaklaşımda bütün servisler sadece bir adet veritabanını kullanır. Mikro servis mimarisinde ise her servisin kendisine ait veri tabanı vardır.
+
+- Geleneksel yaklaşımın tipik olarak 2 adet avantajı vardır:
+
+    1. Tüm tablolarda ve verilerde çalışan ACID işlemleri.
+    2. Tüm tablolarda ve verilerde çalışan SQL dili.
+
+    Bu yaklaşım birden fazla tablodaki verileri birleştiren sorguları kolayca yazmayı sağlar.
+
+    Mikro servis mimarisine geçildiğinde farklı tablolardan verileri birleştirme işlemi biraz daha zorlaşır. 
+
+    Farklı servislerden verileri API endpoint'lerden alabiliriz veya asenkron kuyruk yapılarını kullanabiliriz.
+
+- Verileri kapsüllememiz bize servislerin bağımlılıklarını azalatmamızı ve servisleri bağımsız olarak evriltebilmemizi sağlıyor.
+
+<br>
+
+# The Relationship Between Microservices and The Bounded Context Pattern
+
+- Mikro servis'lerin konsepti **DDD** içerisindeki **Bounded Context (BC) Pattern**'den gelmektedir. 
+
+    DDD, büyük modelleri bölerek ve sınırlarını kesinleştirerek ele alır. Her BC'nin kendisine ait model'i ve veritabanı olmalıdır.
+
+<br>
+
+# Challenges and solutions for distributed data management
+
+### Challenge #1: How to define the boundaries of each microservice
+
+Mikro servisleri oluştururken, her bir mikro servis için sınırları nasıl belirleyebiliriz bunları inceleyelim:
+
+- İlk olarak uygulamanın mantıksal etki alanı modellerine (domain models) ve ilişkili verilere bakmamız gerekiyor.
+
+- Veri içerisinde birbirinden ayrılmış alanları bulmaya ve uygulama içerisindeki farklı bağlamları bulmaya çalışmalıyız.
+
+- Bağlamlar birbirinden bağımsız olarak tanımlanmalı ve yönetilmelidir.
+- Her zaman servisler arasındaki bağlantıyı en aza indirmeye çalışmalıyız.
+
+<br>
+
+### Challenge #2: How to create queries that retrieve data from several microservices
+
+Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun için alt kısımdaki çözümlere bakalım:
+
+- Farklı mikro servislerden (onların kendi db'lerinden) veri almanın önerilen ve yaygın olan çözümü **API Gateway** mikro servisleridir.  
+
+    Bu yöntemi kullanırken tıkanma noktaları oluşturmamaya (choke points) dikkat etmeliyiz. Bu sorunla karşılaşmayı azaltabilmek için her biri sistemin dikey dilimine veya işine odaklanan çok sayıda ayrıntılı API Gateway oluşturabiliriz.
+
+- Diğer bir yöntem ise sorgu/okuma tabloları ile birlikte CQRS'tir (Command and Query Responsibility Segregation). 
+
+    Bu yaklaşımda birden çok mikro servisin sahip olduğu verilerle salt okunur bir tablo oluşturulur. Tablo istemci uygulamasının gereksinimlerine uygun bir biçime sahiptir.
+
+    Örnek olarak uygulamadaki bir ekran farklı servislerdeki verileri içeriyor olsun.
+
+    Farklı bir veritabanında yalnızca sorgular için kullanılan bir tablo oluştururuz. Tablo uygulamanın ihtiyaç duyduğu alanlar ile sorgu tablosundaki sutunlar arasnda bire bir ilişki ile karmaşık sorgular için ihtiyaç duyulan verilere özel olarak tasarlanabilir. 
+
+    CQRS farklı servislerdeki verileri birleştirme sorununu çözmekle kalmaz aynı zamanda da karmaşık join sorgularına göre çok daha performans avantajı da sağlar.
+
+- Çözüm olarak düşünebilinecek son yöntem iste **Cold Data in central databases**.  
+
+    Bu yaklaşımda, gerçek zamanlı veri gerektirmeyen karmaşık raporlar ve sorgular için şöyle bir yöntem kullanılır. Bu tarz veriler büyük veritabanlarına eklenir ve orada bekletilir. Rapor alınması gerektiğinde buradaki soğuk veriyi geri gönderir.
+
+    Bu yöntemi kullanırken soğuk depo ile gerçek zamanlı verilerinizi senkronize tutabilmek için **olay güdümlü iletişim (event-driven communication)** veya farklı veritabanı araçları kullanılabilir.
+
+    Son olarak servisler diğer servislerdeki verilere çok fazla ihtiyaç duyuyorsa burada mimari bir sorun olabilir. Öyle bir durumda gerekli adımları atarak servisler arasındaki veri bağımlılığı azaltılmaya çalışılır.
+
+<br>
+
+### Challenge #3: How to achieve consistency across multiple microservices
+
+- Buradaki sorunumuz mikroservisler arasında veri bütünlüğünü nasıl sağlayacağmızdır. 
+
+    Sorunu biraz daha açmak gerekirse, örnek olarka bir e-ticaret projesi düşünelim. Burada bir Sepet servisi ve Katalog servisinin var olduğunu varsayalım. 
+
+    Kullanıcının sepetine eklediği bir ürünün fiyarı Katalog servisinde değiştiğinde Sepet Servisi'nin değişikliği uygulaması gerekecektir. Ekstra olarak mesela kullanıcıya sepetindeki bir ürünün fiyatının değiştiği belirten bir bildirim de gönderilmelidir, bu da bir servisin daha tetiklenmesi demektir.
+
+    ![](images/privatedb.png)
+
+    <br>
+
+    Yukarıdaki görüntüden farkedildiği gibi, Katalog servisi direkt olarak gidip Ürün servisinin db'sini manipüle etmemelidir. 
+
+    Bunun yerine Katalog ile Ürün servisi arasında asenkron olarak çalışan bir iletişim kurulmalı (mesaj ve event tabanlı iletişim) ve o iletişim üzerinden gerekli manipülasyonlar Ürün servisine yaptırılmalıdır.
+
+- Uygulamalarda güçlü tutarlılığı ile yüksek ölçeklenebililik ve kullanılabilirlik arasında seçim yapmamız gerekiyor. 
+
+    Mikro servislerin çoğunda kullanılabilirlik ve yüksek ölçeklenebilirlik ağır basmaktadır.
+
+    Görev açısından kritik uygulamalar çalışır durumda kalmalıdır. Bu tarz uygulamalarda geliştiriciler zayıf tutarlılıkla çalışmak için teknikler kullanarak güçlü tutarlılık etrafında çalışabilirler.
+
+- Veri tutarlılığını sağlayabilmek için genellikle event-driven iletişim kullanılır. Bunu da pub/sub yöntemi ile uygularız.
+
+<br>
+
+# Identify domain-model boundaries for each microservice
+
+- Mikro servislerin sınırlarını ve boyutlarını belirlerken amacımız en ayrıntılı ayrımı elde etmek değildir ama mümkünse en küçük mikro servislere yönelmeliyiz.
+
+    Bunun yerine hedefimiz en anlamlı ayrıma ulaşmaktır. Yukarıdaki boyut birim olarak değil, kabiliyet olarak en küçük olanı belirtmektedir.
+
+- Servislerde aynı olduğunu düşündüğümüz modellerimiz olsa bile bunları birleştirmek yerine ayrı ayrı tutmalıyız. Örnek olarak alt kısımdaki görsele bakalım:
+
+    ![](images/dbmodels.png)
+
+    <br>
+
+    Daha detaylı olarak bir modelin içerisine bakalım:
+
+    ![](images/modelexample.png)
+
+    <br>
+
+# The API gateway pattern versus the Direct client-to microservice communication
+
+### Direct client-to-microservice communication
+
+- İstemciden direkt olarak mikro servise iletişim kurabiliriz.
+
+    ![](images/clientToDirectMS.png)
+
+    <br>
+
+- Bu yaklaşımda mikro servislerin public endpoint'leri vardır. Bu endpoint'ler bazen farklı port'lar ile erişilebilir olabilirler.
+- Burada cluster içerisindeki bir load balancer client'tan gelen istekleri mikro servislere dağıtır. Ayrıca SSL sonlandırmayı da üstlenir.
+
 
