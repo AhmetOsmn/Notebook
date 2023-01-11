@@ -501,5 +501,94 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 - Bu yaklaşımda mikro servislerin public endpoint'leri vardır. Bu endpoint'ler bazen farklı port'lar ile erişilebilir olabilirler.
 - Burada cluster içerisindeki bir load balancer client'tan gelen istekleri mikro servislere dağıtır. Ayrıca SSL sonlandırmayı da üstlenir.
+- Bu yaklaşım bir nebze küçük projelerde kullanılabilir, fakat büyük bir proje geliştirmek istediğimizde bazı sorunlar yaratacaktır.
+
+    Büyük projelerde tek bir UI üzerinden bircen çok mikro servise erişmeye çalışmak istek ve cevap sayısını oldukça arttıracaktır. Bu da UI tarafında gecikme süresini ve karmaşıklığı arttırır.
+
+- Güvenlik ve Oturum Yönetimi gibi önemli işlevleri her servise eklemek gerçekten ciddi geliştirme maliyetine neden olur. 
+
+   Bunun yerine bunları direkt olarak erişilir kılmadan Docker Host gibi veya dahili cluster içerisinde bulundurabiliriz ve bu işlevleri API Gateway gibi merkezi bir yerde uygulayabiliriz.
 
 
+<br>
+
+### Why consider API Gateways instead of direct client-to-microservice communication
+
+- Mikro servis tabanlı uygulamalarda genellikle birden çok servis vardır ve kullanılır. Eğer client'lar mikro servislere direkt olarak erişiyor ise bir çok servisin endpoint'ine yapılan bir çok isteği yönetebiliyor olmalıdır. 
+
+    Ayrıca uygulama evrildiğinde, yeni mikroservisler eklendiğinde veya var olan mikroservisler güncellendiğinde client'ın bunlar ile baş etmesi çok çok zor olacaktır.
+
+    Bu nedenle orta düzeyde veya dolaylı bir katmana (Gateway) sahip olmamız mikroservis uygulamalarında avantaj sağlayabilir.
+
+<br>
+
+### What is the API Gateway pattern?
+
+- Bu pattern birden fazla client'ı ve mikro serivisi olan büyük uygulamarda mikro servis grupları için tek bir giriş noktası sağlar.
+- API Gatewat pattern bazen **BFF (backend for frontend)** olarak da bilinebilir.
+- Gateway'ler mikro servisler ile client'lar arasında yer alır. Bir bakıma ters proxy olarak davranır, yani istekleri istemcilerden hizmetlere yönlendirir.
+
+    Ek olarak Authentication, SSL sonlandırma ve cache gibi özellikleri de sağlayabilir.
+
+    Örnek olarak alt kısmı inceleyebiliriz:
+
+    ![](images/simplegateway.png)
+
+- Uygulamalar gateway üzerindeki bir endpoint'e bağlanır. Gateway bunları konfigüre eder ve istekleri mikro servislere yönlendirir.
+- Eğer uygulamamız büyük çaplı bir proje ise tek bir gateway kullanmak sakıncalı olabilir. Çünkü gelen istekler gateway'in şişmesine neden olabilir.
+
+    Bu nedenle Gateway'lerin de daha küçük gateway'lere bölünmesi ve ayrı ayrı kullanılması önerilir. Bölme işlemini iş sınırlarına ve istemci uygulamalarına göre ayırmalıyız.
+
+    İlk ayrım noktası istemcilere göre olabilir.
+
+    Örnek olarak alt kısımdaki görsele bakalım:
+
+    ![](images/multiplegateway.png)
+
+    <br>
+
+    Gateway'lerin yukarıdaki gibi kullanılmasına **BFF Pattern** denir. Projenin büyüklüğüne göre daha çok gateway ihtiyacımız var ise o zaman ikinci ayrım noktası olarak, istemci ayrımını yaptıktan sonra iş sınırlarına göre ayrımları da yapıp yeni gateway'ler ekleyebiliriz.
+
+<br>
+
+### Main features in the API Gateway pattern
+
+- **Reverse proxy or gateway routing.** Gateway'leri proxy gibi düşünebiliriz. Client'tan gelen istekleri mikro servislerdeki endpoint'lere iletir.
+
+    Gelen istekler için tek bir giriş noktası oluşturur.
+
+- **Requests aggregation.** Client'tan gelen birden çok isteği tek bir istemci isteğinde toplayabilir. Özellikle bir ekranda farklı mikro servislerden gelmesi istenen veriler varsa bu durum için çok uygun olur.
+
+- **Cross-cutting concerns or gateway offloading.** Her bir mikro serviste tanımlanması gereken veya kendisine özgü olan bazı işlevler gateway'e aktarılır ve bir yerden diğer servislerin kullanması sağlanır. Bunlara örnek olarak bazı işlevler:
+
+    - Authentication and authorization
+    - Service discovery integragion
+    - Response caching
+    - Load balancing
+    - Loggin, tracing, correlation
+    - Headers, query strings, and claims transformation
+    - IP allowlisting
+
+<br>
+
+# Azure API Management
+
+![](images/apigatewaywithazure.png)
+
+<br>
+
+- Azure ile API Gateway yönettiğimizde bize fayda olarak loglama, güvenlik ve ölçüm gibi yönetim ihtiyaçlarımızı da kolayca karşılayabiliyoruz. 
+
+    Ayrıca API'leri filtreleyebilir ve bu API'lere yetkilendirmeler uygulayabilir. Raporlara erişmek istediğimiz bize kolaylık sağlar.
+
+- API'lerin güvenliğini sağlamak için **API using key, token ve IP filtreleme** öğelerini kullanabiliriz.
+
+    Bu özellikler esnekliği sağlar ve detaylı limit bilgileri sağlar. API'lerin özelliklerini ve davranışlarını değiştirebiliriz ve cevapları cache'leyerek performansı arttırabiliriz.
+
+<br>
+
+# Ocelot
+
+- Ocelot daha basit yaklaşımlar için önerilen hafif bir API Gateway'dir.
+
+    Hafif, hızlı, ölçeklenebilir ve diğer bir çok özelliği ile birlikte kimlik doğrulamada sağlar.
