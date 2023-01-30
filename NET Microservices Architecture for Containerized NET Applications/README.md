@@ -592,3 +592,34 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 - Ocelot daha basit yaklaşımlar için önerilen hafif bir API Gateway'dir.
 
     Hafif, hızlı, ölçeklenebilir ve diğer bir çok özelliği ile birlikte kimlik doğrulamada sağlar.
+
+
+<br>
+
+# Drawbacks of the API Gateway pattern
+
+- API Gateway'lerin bir dezavantajı potansiyel bir hata noktası oluşturmasıdır.
+- API'nin yaptığı ek network çağrıları yanıt süresinin artmasına neden olabilir.
+- Eğer gateway'ler doğru şekilde ölçeklendirilmezse darboğaza dönüşebilirler.
+- API Gateway'ler ekstra olarak geliştirme maliyeti demektir. Kendi logic'leri ve veri eklentileri vardır.
+
+    Geliştiriciler her bir mikroservisin her endpoint'ini belirlemeli ve gatewayi güncellemelidir.
+- API Gateway tek bir ekip tarafından geliştirilirse, geliştirme darboğazı oluşabilir. 
+
+
+<br>
+
+# Communication types
+
+- Servisler ve client farklı şekillderde iletişim kurabilir. Bu iletişim türleri ilk olarak 2 eksene ayrılabilir.
+
+    İlk eksen iletişimin senkronize mi yoksa asenkronize mi olacağını belirler.
+
+    - Senkron iletişim. Örnek olarak HTTP protokolü senkron şekilde çalışan bir protokoldür. İstemci bir istek atar ve o isteğe servisten bir cevap gelmesini bekler.
+    - Asenkrol iletişim. AMQP protokolü asenkron mesajlaşmaya örnek olarak verilebilir. İstemci broker'a bir mesaj gönderir ve o mesaja yanıt beklemeden işlerine devam eder. Broker gelen mesajı iletmekten kendisi sorumludur.
+
+    Örnek olarak bir kayıt ekranında email onay işlemi yapılacak. Burada o email gönderme ve onayı alma işlemi eğer 'gönder' butonu altında senkron bir şekilde yapılacak olursa kullanıcı sayfada bir şey yapmadan beklemek zorunda kalırdı, çünkü sunucudan bir yanıt beklenecekti.
+
+    Bunun yerine kullanıcı bilgilerini girdikten sonra 'gönder' butonuna bastığında email doğrulama mesjaı bir broker'a gönderilir ve kullanıcı başka bir sayfaya yönlendirilir ve bekletilmemiş olur. Broker uygun olduğunda gelen mesajı kullanıcının email'ine gönderir ve kullanıcı bir ekranda durdurulup bekletilmeden email onay işlemi çözülmüş olur.
+
+
