@@ -613,13 +613,36 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 - Servisler ve client farklı şekillderde iletişim kurabilir. Bu iletişim türleri ilk olarak 2 eksene ayrılabilir.
 
-    İlk eksen iletişimin senkronize mi yoksa asenkronize mi olacağını belirler.
+    1. İlk eksen iletişimin senkronize mi yoksa asenkronize mi olacağını belirler.
 
-    - Senkron iletişim. Örnek olarak HTTP protokolü senkron şekilde çalışan bir protokoldür. İstemci bir istek atar ve o isteğe servisten bir cevap gelmesini bekler.
-    - Asenkrol iletişim. AMQP protokolü asenkron mesajlaşmaya örnek olarak verilebilir. İstemci broker'a bir mesaj gönderir ve o mesaja yanıt beklemeden işlerine devam eder. Broker gelen mesajı iletmekten kendisi sorumludur.
+       - Senkron iletişim. Örnek olarak HTTP protokolü senkron şekilde çalışan bir protokoldür. İstemci bir istek atar ve o isteğe servisten bir cevap gelmesini bekler.
+       - Asenkrol iletişim. AMQP protokolü asenkron mesajlaşmaya örnek olarak verilebilir. İstemci broker'a bir mesaj gönderir ve o mesaja yanıt beklemeden işlerine devam eder. Broker gelen mesajı iletmekten kendisi sorumludur.
 
-    Örnek olarak bir kayıt ekranında email onay işlemi yapılacak. Burada o email gönderme ve onayı alma işlemi eğer 'gönder' butonu altında senkron bir şekilde yapılacak olursa kullanıcı sayfada bir şey yapmadan beklemek zorunda kalırdı, çünkü sunucudan bir yanıt beklenecekti.
+        Örnek olarak bir kayıt ekranında email onay işlemi yapılacak. Burada o email gönderme ve onayı alma işlemi eğer 'gönder' butonu altında senkron bir şekilde yapılacak olursa kullanıcı sayfada bir şey yapmadan beklemek zorunda kalırdı, çünkü sunucudan bir yanıt beklenecekti.
 
-    Bunun yerine kullanıcı bilgilerini girdikten sonra 'gönder' butonuna bastığında email doğrulama mesjaı bir broker'a gönderilir ve kullanıcı başka bir sayfaya yönlendirilir ve bekletilmemiş olur. Broker uygun olduğunda gelen mesajı kullanıcının email'ine gönderir ve kullanıcı bir ekranda durdurulup bekletilmeden email onay işlemi çözülmüş olur.
+        Bunun yerine kullanıcı bilgilerini girdikten sonra 'gönder' butonuna bastığında email doğrulama mesjaı bir broker'a gönderilir ve kullanıcı başka bir sayfaya yönlendirilir ve bekletilmemiş olur. Broker uygun olduğunda gelen mesajı kullanıcının email'ine gönderir ve kullanıcı bir ekranda durdurulup bekletilmeden email onay işlemi çözülmüş olur.
 
+    2. İkinci eksen iletişimde bir tane mi dinleyici var yoksa birden fazla mı dinleyici var bunu belirler.
 
+        - Eğer tek dinleyici varsa her istek mutalaka sadece bir dinleyici veya servis tarafından işleniyor olmalıdır.
+        - Birden fazla dinleyici olduğunda istek 0 veya N dinleyici tarafından işlenebilmelidir. Burada iletişim asenkron olmak zorundadır (Örnek olarak pub/sub mekanizmasını kullanarak Event-Driven Arch. ile olması gibi). Burada message broker sistemleri veya service-bus'lar kullanılabilir. Sistem içerisinde bir veride değişiklik meydana geldiğinde veya yeni bir veri eklenmesi gibi durumlarda broker'lar veya bus'lar tarafından sub halindeki mikroservislere bir event gönderilir ve mikro servisler bu event'leri işlerler. 
+
+# Async microservice integration
+
+- Bir mikro servis oluşturulduktan sonra sisteme dahil edilirken dikkat edilmesi gereken nokta bu mikro servisin diğer mikro servisler ile asenkron olarak iletişimde olmasıdır. Bir de mikro servisler arasındaki iletişimin-bağımlılığın olabildiğince az olmasını istediğimizi tekrar belirtmiş olalım.
+
+    Burada mümkünse senkron iletişimden (request/response)(HTTP) uzak durmaya çalışalım.
+
+    Her mikro servisteki amacımız otonom olması ve halihazırda iletişimde olduğu başka bir mikro serviste bir sorun olsa da yeni dinleyicilere cevap verebiliyor olmasıdır.
+
+# Multiple-Receivers message based communication
+
+- Mikro servisler arasındaki iletişim mesaj tabanlı olması, yani pub/sub yönetimi ile yapılıyor olması ölçeklendirilebilirlik açısından önemlidir. Bir servisin yayınladığı mesajı başka 2 servis tüketiyor olsun. Eğer 3. bi servisin de bu mesajı tüketmesini istersek yapılması gereken şey sadece mesajı yayınlayan servise sub olmak. Bu sayede `Open/closed prensibi`'ne de bağlı kalmış oluyoruz.
+
+## Microservice APIs
+
+- Mikro servislerde API'leri oluştururken API'ler kullanılan yönteme veya protokole bağımlı olarak geliştirilir. Örnek olarak HTTP ve RESTful bir yapı kullanıyorsanız API URL'lerden, JSON formatındaki istek ve cevaplardan oluşacaktır. Veya mesajlaşma yöntemini kullanıyorsanız, API mesaj tiplerinden oluşacaktır.
+
+- API'leri oluşturduktan sonra üzerinde değişiklikler yapmamız gerekebilir. Böyle durumlarda bu API ile iletişimde olan diğer servislerin etkilenmemesi için API'leri versiyonlamaya başlarız. Burada API güncellendikçe, yeni versiyonları çıkmayada devam etse de eski versiyonların belirli bir süre hizmet vermeye devam ediyor olması önemlidir.
+
+ 
