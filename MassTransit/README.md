@@ -476,4 +476,6 @@
 
     Bir mediator eklendikten sonra başlatılmasına veya durdurulmasına gerek yoktur. Direkt olarak kullanılabilirler.
 
+# Kaynak
 
+- [Masstransit.io](https://masstransit.io/documentation/concepts)
