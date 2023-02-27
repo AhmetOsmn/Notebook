@@ -1,4 +1,4 @@
-# MassTransit Konseptleri
+# Concepts
 
 ## Messages
 
@@ -475,6 +475,104 @@
     ```
 
     Bir mediator eklendikten sonra başlatılmasına veya durdurulmasına gerek yoktur. Direkt olarak kullanılabilirler.
+
+# Transports
+
+## RabbitMQ
+
+- RMQ decouple ve distribute sistemler sistemlerin aralarında mesajlaşmasını sağlar.
+
+    Point-to-Point, Publish/Subscribe ve Request/Response gibi farklı mesajlaşma modellerini destekler.
+
+    Ayrıca mesaj kalıcılığı, güvenilir teslimat, routing gibi özellikleri de kullanmamıza izin verir.
+
+    Ek olarak sistemi yönetmemize ve takip etmemize yardımdı olan bir arayüze sahiptir. 
+
+- Exchanges
+
+    Gönderilmek istenen mesajları producer'dan alıp, bir veya birden daha fazla kuyruğa yönendiren nesnelere `Exchange` denir.
+
+    - `Direct Exchange:` Mesajları *routing-key*'leri tam olarak eşleşen kuyruklara yönlendirirler.
+    - `Fanout Exchange: ` Mesjaları subscribe durumundaki bütün kuyruklara yönlendirirler.
+    - `Topic Exchange:` Mesajları *routing-key*'lerinin belirli bir pattern'e göre eşleştiği kuyruklara yönlendirirler.
+    - `Headers Exchange:` Mesajları header'larına göre kuyruklara yönlendirirler.
+
+    Oluşturulan exchange'i alt kısımdaki örnek gibi düzenleyebiliriz:
+
+    ```cs
+    cfg.Publish<OrderSubmitted>(x =>
+    {
+        x.Durable = false; // default: true
+        x.AutoDelete = true; // default: false
+        x.ExchangeType = "fanout"; // default, allows any valid exchange type
+    });
+
+    cfg.Publish<OrderEvent>(x =>
+    {
+        x.Exclude = true; // do not create an exchange for this type
+    });
+    ```
+
+- Exchange Binding
+
+    Bir exchange'i receive endpoint'e örnekteki gibi bind edebiliriz:
+
+    ```cs
+    cfg.ReceiveEndpoint("input-queue", e =>
+    {
+        e.Bind("exchange-name", x =>
+        {
+            x.Durable = false;
+            x.AutoDelete = true;
+            x.ExchangeType = "direct";
+            x.RoutingKey = "8675309";
+        });
+
+        e.Bind<MessageType>();
+    })
+    ```
+
+    Yukarıdaki örnekte birisi `input-queue / exchange-name` diğeri ise `input-queue / MessageType` olacak şekilde 2 adet bind oluşturulur.
+
+    Oluşturulan binding üzerinde ayarlama yapmak istersek ilk örnekteki gibi yapabiliriz.
+
+- Endpoint Address
+
+    Endpoint adresleri alt kısımdaki query string parametrelerini desteklerler:
+
+    - `temporary (bool):` Geçici endpoint.
+    - `durable (bool):` Mesajları disk'e kaydet.
+    - `autodelete (bool):` Bus durdurulduğunda sil.
+    - `bind (bool):` Exchange'i kuyruğa bind et.
+    - `queue (string):` Kuyruk isime bind et.
+
+## Azure Service Bus 
+
+- Service Bus ek olarak `partitioning  (bölümleme)` ve `auto-scaling (otomatik ölçeklendirme)` gibi özellikleri de sağlar.
+
+    Bunun dışında teslim edilemeyem mesajların veya süresi dolmuş mesajların tutulduğu `dead letter queue` imkanını da sunar.
+
+- Topic
+
+    Aboneler, kendi filtresi olan bir konu için birden fazla abonelik oluşturabilir. Bu sayede sadece kendisini ilgilendiren mesajları almış olur. 
+
+    Ekstra olarak topic'ler mesajların garantili bir şekilde sıralanmasını sağlayabilen *Session Based (Oturum Bazlı)* mesajlaşmayı da sağlar. 
+
+- Partition Key
+
+    Mesajları topiclere bölümlemek istediğimizde kullanabiliriz. Bir key ayarlarız ve seçtiğimiz key'e sahip olan bütün mesajlar aynı bölüme gönderilir. 
+
+    Ayrıca çok fazla mesajımızın olduğu ve bunları gruplamak istediğimiz durumlarda mesajları dengeli olarak dağıtmamızı da sağlar.
+
+## Amazon SQS
+
+## ActiveMQ
+
+## gRPC
+
+## In Memory
+
+## Kafka
 
 # Kaynak
 
