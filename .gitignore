@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/MassTransit/QuickStarts/InMemory/GettingStarted/bin/Debug/net6.0
+/MassTransit/QuickStarts/InMemory/GettingStarted/obj
+/MassTransit/QuickStarts/InMemory/GettingStarted/.vs/GettingStarted
