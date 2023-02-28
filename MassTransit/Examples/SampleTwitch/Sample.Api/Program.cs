@@ -1,9 +1,9 @@
 
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using Sample.Components.Consumers;
 using Sample.Contracts;
 using Sample.Service;
+using System.Net;
 
 namespace Sample.Api
 {
@@ -20,6 +20,7 @@ namespace Sample.Api
             {
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
 
+                //cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
                 cfg.AddRequestClient<SubmitOrder>();
             });
 
@@ -35,9 +36,16 @@ namespace Sample.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
+                builder.Services.AddHttpsRedirection(options =>
+                {
+                    options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
+                    options.HttpsPort = 5286;
+                });
+
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
 
             app.UseHttpsRedirection();
 

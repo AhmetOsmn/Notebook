@@ -20,3 +20,14 @@
 /MassTransit/Examples/SampleTwitch/.vs/ProjectEvaluation
 /MassTransit/Examples/SampleTwitch/Sample.Service/obj
 /MassTransit/Examples/SampleTwitch/Sample.Service/bin/Debug/net7.0
+/MassTransit/Examples/DemandMenagement/DemandMenagement.Api/bin/Debug/net7.0
+/MassTransit/Examples/DemandMenagement/DemandMenagement.Api/obj
+/MassTransit/Examples/DemandMenagement/DemandManagement.Thirdparty.Service/obj
+/MassTransit/Examples/DemandMenagement/DemandManagement.Thirdparty.Service/bin/Debug/net7.0
+/MassTransit/Examples/DemandMenagement/DemandManagement.Registration/bin/Debug/net7.0
+/MassTransit/Examples/DemandMenagement/DemandManagement.Registration/obj
+/MassTransit/Examples/DemandMenagement/DemandManagement.Notification/bin/Debug/net7.0
+/MassTransit/Examples/DemandMenagement/DemandManagement.Notification/obj
+/MassTransit/Examples/DemandMenagement/DemandManagement.MessageContracts/bin/Debug/net7.0
+/MassTransit/Examples/DemandMenagement/DemandManagement.MessageContracts/obj
+/MassTransit/Examples/DemandMenagement/.vs/DemandMenagement
