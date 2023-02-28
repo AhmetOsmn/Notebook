@@ -17,3 +17,6 @@
 /MassTransit/Examples/SampleTwitch/Sample.Api/obj
 /MassTransit/Examples/SampleTwitch/Sample.Api/bin/Debug/net7.0
 /MassTransit/Examples/SampleTwitch/.vs/SampleTwitch
+/MassTransit/Examples/SampleTwitch/.vs/ProjectEvaluation
+/MassTransit/Examples/SampleTwitch/Sample.Service/obj
+/MassTransit/Examples/SampleTwitch/Sample.Service/bin/Debug/net7.0
