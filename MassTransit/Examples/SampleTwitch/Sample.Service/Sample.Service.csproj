@@ -1,0 +1,45 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	  <LangVersion>Latest</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.Development.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
+		<PackageReference Include="MassTransit.RabbitMQ" Version="8.0.13" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="*" />
+		<PackageReference Include="Microsoft.Extensions.Options" Version="*" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Sample.Components\Sample.Components.csproj" />
+	</ItemGroup>
+
+</Project>

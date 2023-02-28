@@ -1,0 +1,36 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "PhoneBook.Client";
+
+package phonebook;
+
+service PhoneBook{
+	// rpc: bu fonksiyon remote olarak cagrilabilir demek.
+	// CreateNewContact (ContactModel): Fonksiyonun ismi 'CreateNewContact' ve bu fonksiyon parametre olarak 'ContactModel' aliyor demek.
+	// returns (ContactModel): Bu fonksiyonun geri dondurecegi verinin turu 'ContactModel' demek.
+	// returns (stream ContactModel): Bu fonksiyonun ger dondurecegi verinin turu 'ContactModel' ve bu veriyi parca parca gonderecek (streaming) demektir.
+	rpc CreateNewContact (ContactModel) returns (ContactModel); //normal client-server iletisimine ornek fonksiyon.
+	rpc CreateNewContactAsClientStream(stream ContactModel) returns (CreateResult); //client streaming-server iletisimine ornek fonksiyon.
+	rpc CreateNewContactAsBidiStream(stream ContactModel) returns (stream CreateResult); // bidirectional iletisime ornek fonksiyon.
+	rpc	GetAllContact (Empty) returns (ContactList); // normal client-server iletisimine ornek fonksiyon.
+	rpc GetAllContactAsServerStream (Empty) returns (stream ContactModel); // client-server streaming iletisimine ornek fonksiyon.
+}
+
+// Contect nesnesinin tanimi.
+// Burada verilen sayilar, verileri binary formatina donustururken sira numarasi olarak kullanilir.
+message ContactModel{
+	int32 Id = 1;
+	string FirstName = 2;
+	string LastName = 3;
+}
+
+message Empty { }
+
+// repeated olarak isaretlenen prop'lar aslında icerisinde tekrar eden, birden fazla oge olabilir demek. Yani array olarak dusunebiliriz.
+message ContactList{
+	repeated ContactModel Contacts = 1;
+}
+
+message CreateResult{
+	string Message = 1;
+}
