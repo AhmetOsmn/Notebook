@@ -181,7 +181,7 @@
 
      <br>
      
-     ![a](/images/deadlettertypess.png)
+     ![](images/deadlettertypess.png)
      
 <br>
 
