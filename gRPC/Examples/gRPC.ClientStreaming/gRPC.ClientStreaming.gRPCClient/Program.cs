@@ -1,4 +1,4 @@
-﻿using gRPC.Unary.gRPCClient;
+﻿using gRPC.ClientSteaming.gRPCClient;
 using Grpc.Net.Client;
 
 namespace gRPC.ClientStreaming.gRPCClient

@@ -1,4 +1,4 @@
-﻿using gRPC.Unary.gRPCServer;
+﻿using gRPC.ClientSteaming.gRPCServer;
 using Grpc.Core;
 
 namespace gRPC.ClientStreaming.gRPCServer.Services
