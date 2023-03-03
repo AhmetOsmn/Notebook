@@ -6,18 +6,12 @@ namespace Sample.Components.Consumers
 {
     public class SubmitOrderConsumer : IConsumer<SubmitOrder>
     {
-        private readonly ILogger<SubmitOrderConsumer> _logger;
-
-        public SubmitOrderConsumer(ILogger<SubmitOrderConsumer> logger)
-        {
-            _logger = logger;
-        }
-
         public async Task Consume(ConsumeContext<SubmitOrder> context)
         {
-            Console.WriteLine($"SubmitOrderConsumer: {context.Message.CustomerNumber}");
+            Console.WriteLine($"-----> ConsumedMessage {RmqConstants.GetMessageCount()}: {context.Message.CustomerNumber}");
+            RmqConstants.AddOneToCounter();
 
-            if (context.Message.CustomerNumber.Contains("test", StringComparison.OrdinalIgnoreCase))
+            if (context.Message.CustomerNumber.Contains("test", StringComparison.OrdinalIgnoreCase) && context.RequestId != null)
             {
                 await context.RespondAsync<OrderSubmissionRejected>(new
                 {
@@ -30,12 +24,15 @@ namespace Sample.Components.Consumers
                 return;
             }
 
-            await context.RespondAsync<OrderSubmissionAccepted>(new
+            if (context.RequestId != null)
             {
-                InVar.Timestamp,
-                context.Message.OrderId,
-                context.Message.CustomerNumber,
-            });
+                await context.RespondAsync<OrderSubmissionAccepted>(new
+                {
+                    InVar.Timestamp,
+                    context.Message.OrderId,
+                    context.Message.CustomerNumber,
+                });
+            }
         }
     }
 }

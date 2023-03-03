@@ -14,7 +14,7 @@ namespace Sample.Service
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-           await _bus.StartAsync(cancellationToken).ConfigureAwait(false);
+            await _bus.StartAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public async Task StopAsync(CancellationToken cancellationToken)

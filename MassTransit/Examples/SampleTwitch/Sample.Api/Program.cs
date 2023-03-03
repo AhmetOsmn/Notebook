@@ -1,16 +1,16 @@
-
 using MassTransit;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Contracts;
 using Sample.Service;
-using System.Net;
 
 namespace Sample.Api
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
+            Console.Title = "Api";
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
@@ -20,14 +20,13 @@ namespace Sample.Api
             {
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
 
-                //cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:{KebabCaseEndpointNameFormatter.Instance.Consumer<SubmitOrderConsumer>()}"));
-                cfg.AddRequestClient<SubmitOrder>();
+                cfg.AddRequestClient<SubmitOrder>(new Uri($"exchange:{RmqConstants.QueueName}"));
             });
 
             builder.Services.AddHostedService<MassTransitConsoleHostedService>();
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -36,21 +35,13 @@ namespace Sample.Api
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                builder.Services.AddHttpsRedirection(options =>
-                {
-                    options.RedirectStatusCode = (int)HttpStatusCode.PermanentRedirect;
-                    options.HttpsPort = 5286;
-                });
-
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
 
-
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 

@@ -26,18 +26,12 @@
     </Content>
   </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="MassTransit.Extensions.DependencyInjection" Version="7.3.1" />
-		<PackageReference Include="MassTransit.RabbitMQ" Version="8.0.13" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="*" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="*" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="*" />
-		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="*" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Configuration" Version="*" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="*" />
-		<PackageReference Include="Microsoft.Extensions.Options" Version="*" />
-	</ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.0.13" />
+    <PackageReference Include="MassTransit.RabbitMQ" Version="8.0.13" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting" Version="2.2.7" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+  </ItemGroup>
 	<ItemGroup>
 	  <ProjectReference Include="..\Sample.Components\Sample.Components.csproj" />
 	</ItemGroup>

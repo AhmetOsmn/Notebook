@@ -1,22 +1,24 @@
-﻿
-using MassTransit;
+﻿using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sample.Components.Consumers;
+using Sample.Contracts;
 using System.Diagnostics;
 
 namespace Sample.Service
 {
-    internal class Program
+    internal static class Program
     {
         static async Task Main(string[] args)
         {
+            Console.Title = "Service";
+
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            var builder = new HostBuilder()
+            var host = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile("appsettings.json", true);
@@ -27,36 +29,30 @@ namespace Sample.Service
                         config.AddCommandLine(args);
                     }
                 })
-                .ConfigureServices((hostContext, services) =>
-                {
-                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
+               .ConfigureServices((context, services) =>
+               {
+                   services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
-                    services.AddMassTransit(cfg =>
-                    {
-                        cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
+                   services.AddMassTransit(cfg =>
+                   {
+                       cfg.AddConsumer<SubmitOrderConsumer>();
 
-                        cfg.UsingRabbitMq((context, cfgx) =>
-                        {
-                            cfgx.Host("localhost", "/", h =>
-                            {
-                                h.Username("guest");
-                                h.Password("guest");
-                            });
+                       cfg.UsingRabbitMq((context, cfgx) =>
+                       {
+                           cfgx.ReceiveEndpoint(RmqConstants.QueueName, e =>
+                           {
+                               e.ConfigureConsumer<SubmitOrderConsumer>(context);
+                           });
+                       });
+                   });
 
-                            cfgx.ConfigureEndpoints(context);
-                        });
-                    });
+                   services.AddHostedService<MassTransitConsoleHostedService>();
+               });
 
-                    services.AddHostedService<MassTransitConsoleHostedService>();
-                })
-                .ConfigureLogging((hostingContext,logging) =>
-                {
-                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                    logging.AddConsole();
-                });
+            if (isService) await host.Build().RunAsync();
+            else await host.RunConsoleAsync();
 
-            if(isService) await builder.UseWindowsService().Build().RunAsync();
-            else await builder.RunConsoleAsync();
+            Console.ReadKey();
         }
     }
 }
