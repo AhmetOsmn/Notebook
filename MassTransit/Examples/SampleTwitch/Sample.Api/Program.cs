@@ -21,6 +21,8 @@ namespace Sample.Api
                 cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
 
                 cfg.AddRequestClient<SubmitOrder>(new Uri($"exchange:{RmqConstants.QueueName}"));
+
+                cfg.AddRequestClient<CheckOrder>();
             });
 
             builder.Services.AddHostedService<MassTransitConsoleHostedService>();

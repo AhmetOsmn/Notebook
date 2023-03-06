@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Sample.Components.Consumers;
+using Sample.Components.StateMachines;
 using Sample.Contracts;
 using System.Diagnostics;
 
@@ -35,14 +36,14 @@ namespace Sample.Service
 
                    services.AddMassTransit(cfg =>
                    {
-                       cfg.AddConsumer<SubmitOrderConsumer>();
+                       cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
+
+                       cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                       .RedisRepository("localhost:6379");
 
                        cfg.UsingRabbitMq((context, cfgx) =>
                        {
-                           cfgx.ReceiveEndpoint(RmqConstants.QueueName, e =>
-                           {
-                               e.ConfigureConsumer<SubmitOrderConsumer>(context);
-                           });
+                           cfgx.ConfigureEndpoints(context);
                        });
                    });
 
