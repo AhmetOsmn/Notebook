@@ -3,10 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Sample.Components.Consumers;
 using Sample.Components.StateMachines;
-using Sample.Contracts;
 using System.Diagnostics;
 
 namespace Sample.Service
@@ -38,7 +36,7 @@ namespace Sample.Service
                    {
                        cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
 
-                       cfg.AddSagaStateMachine<OrderStateMachine, OrderState>()
+                       cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
                        .RedisRepository("localhost:6379");
 
                        cfg.UsingRabbitMq((context, cfgx) =>
