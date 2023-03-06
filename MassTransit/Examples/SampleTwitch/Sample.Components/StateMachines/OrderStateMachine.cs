@@ -23,6 +23,8 @@ namespace Sample.Components.StateMachines
                 }));
             });
 
+            Event(() => AccounClosed, x => x.CorrelateBy((saga, context) => saga.CustomerNumber == context.Message.CustomerNumber));
+
             InstanceState(x => x.CurrentState);
 
             Initially
@@ -37,7 +39,10 @@ namespace Sample.Components.StateMachines
                     .TransitionTo(Submitted)
             );
 
-            During(Submitted, Ignore(OrderSubmitted));
+            During(Submitted,
+                Ignore(OrderSubmitted),
+                When(AccounClosed)
+                .TransitionTo(Cancaled));
 
             DuringAny(
                 When(OrderStatusRequested)
@@ -59,8 +64,10 @@ namespace Sample.Components.StateMachines
         }
 
         public State Submitted { get; private set; }
+        public State Cancaled { get; private set; }
 
         public Event<OrderSubmitted> OrderSubmitted { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
+        public Event<CustomerAccuntClosed> AccounClosed { get; private set; }
     }
  }

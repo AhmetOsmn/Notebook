@@ -82,5 +82,45 @@ namespace Sample.Components.Tests
                 await harness.Stop();
             }
         }
+
+        [Test]
+        public async Task Should_cancel_when_customer_account_closed()
+        {
+            var orderStateMachine = new OrderStateMachine();
+            var harness = new InMemoryTestHarness();
+            var saga = harness.StateMachineSaga<OrderState, OrderStateMachine>(orderStateMachine);
+
+            await harness.Start();
+
+            try
+            {
+                var orderId = NewId.NextGuid();
+
+                await harness.Bus.Publish<OrderSubmitted>(new
+                {
+                    OrderId = orderId,
+                    InVar.Timestamp,
+                    CustomerNumber = "12345"
+                });
+
+                Assert.That(saga.Created.Select(x => x.CorrelationId == orderId).Any(), Is.True);
+
+                var instanceId = await saga.Exists(orderId, x => x.Submitted);
+                Assert.That(instanceId, Is.Not.Null);
+
+                await harness.Bus.Publish<CustomerAccuntClosed>(new
+                {
+                    CustomerId = InVar.Id,
+                    CustomerNumber = "12345"
+                });
+
+                instanceId = await saga.Exists(orderId, x => x.Cancaled);
+                Assert.That(instanceId, Is.Not.Null);
+            }
+            finally
+            {
+                await harness.Stop();
+            }
+        }
     }
 }

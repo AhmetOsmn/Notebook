@@ -37,7 +37,11 @@ namespace Sample.Service
                        cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
 
                        cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
-                       .RedisRepository("localhost:6379");
+                       .MongoDbRepository(r =>
+                       {
+                           r.Connection = "mongodb://127.0.0.1:27017";
+                           r.DatabaseName = "orderdb";
+                       });
 
                        cfg.UsingRabbitMq((context, cfgx) =>
                        {
