@@ -42,3 +42,5 @@
 /MassTransit/Examples/LightMessagingCore/LightMessagingCore.Common/bin/Debug/net7.0
 /MassTransit/Examples/LightMessagingCore/LightMessagingCore.Common/obj
 /MassTransit/Examples/LightMessagingCore/.vs/LightMessagingCore
+/MassTransit/Examples/SampleTwitch/Sample.Components.Tests/bin/Debug/net7.0
+/MassTransit/Examples/SampleTwitch/Sample.Components.Tests/obj

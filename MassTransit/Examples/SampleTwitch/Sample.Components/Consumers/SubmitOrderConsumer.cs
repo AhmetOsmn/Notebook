@@ -10,15 +10,18 @@ namespace Sample.Components.Consumers
             Console.WriteLine($"-----> ConsumedMessage {RmqConstants.GetMessageCount()}: {context.Message.CustomerNumber}");
             RmqConstants.AddOneToCounter();
 
-            if (context.Message.CustomerNumber.Contains("test", StringComparison.OrdinalIgnoreCase) && context.RequestId != null)
+            if (context.Message.CustomerNumber.Contains("test", StringComparison.OrdinalIgnoreCase))
             {
-                await context.RespondAsync<OrderSubmissionRejected>(new
+                if (context.RequestId != null)
                 {
-                    InVar.Timestamp,
-                    context.Message.OrderId,
-                    context.Message.CustomerNumber,
-                    Reason = "contains test keyword"
-                });
+                    await context.RespondAsync<OrderSubmissionRejected>(new
+                    {
+                        InVar.Timestamp,
+                        context.Message.OrderId,
+                        context.Message.CustomerNumber,
+                        Reason = "contains test keyword"
+                    });
+                }
 
                 return;
             }

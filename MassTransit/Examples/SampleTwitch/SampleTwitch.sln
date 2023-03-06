@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Contracts", "Sample.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Components", "Sample.Components\Sample.Components.csproj", "{D7DFCF5A-4A07-4142-8D01-290BFC961C4B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Service", "Sample.Service\Sample.Service.csproj", "{5C48663F-F02B-4CE8-A950-2FE78AD3B191}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sample.Service", "Sample.Service\Sample.Service.csproj", "{5C48663F-F02B-4CE8-A950-2FE78AD3B191}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample.Components.Tests", "Sample.Components.Tests\Sample.Components.Tests.csproj", "{C629E126-E5C5-433D-9877-F0C9E55743EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{5C48663F-F02B-4CE8-A950-2FE78AD3B191}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5C48663F-F02B-4CE8-A950-2FE78AD3B191}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5C48663F-F02B-4CE8-A950-2FE78AD3B191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C629E126-E5C5-433D-9877-F0C9E55743EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C629E126-E5C5-433D-9877-F0C9E55743EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C629E126-E5C5-433D-9877-F0C9E55743EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C629E126-E5C5-433D-9877-F0C9E55743EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
