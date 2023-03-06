@@ -9,7 +9,7 @@ namespace Sample.Components.Tests
     public class WhenAnOrderRequestIsConsumed
     {
         [Test]
-        public async Task ShouldRespondWithAcceptanceIfOk()
+        public async Task Should_respond_with_acceptance_if_ok()
         {
             var harness = new InMemoryTestHarness();
             var consumer = harness.Consumer<SubmitOrderConsumer>();
@@ -40,7 +40,7 @@ namespace Sample.Components.Tests
         }
 
         [Test]
-        public async Task ShouldRespondWithRejectedIfOk()
+        public async Task Should_respond_with_rejected_if_ok()
         {
             var harness = new InMemoryTestHarness();
             var consumer = harness.Consumer<SubmitOrderConsumer>();
@@ -71,7 +71,7 @@ namespace Sample.Components.Tests
         }
 
         [Test]
-        public async Task ShouldConsumeSubmitOrderCommands()
+        public async Task ShouldC_consume_submit_order_commands()
         {
             var harness = new InMemoryTestHarness();
             var consumer = harness.Consumer<SubmitOrderConsumer>();
@@ -100,7 +100,7 @@ namespace Sample.Components.Tests
         }
 
         [Test]
-        public async Task ShouldPublishOrderSubmittedEvent()
+        public async Task Should_publish_order_submitted_event()
         {
             var harness = new InMemoryTestHarness();
             harness.Consumer<SubmitOrderConsumer>();
@@ -126,7 +126,7 @@ namespace Sample.Components.Tests
         }
 
         [Test]
-        public async Task ShouldNotPublishOrderSubmittedEventWhenRejected()
+        public async Task Should_not_publish_order_submitted_event_when_rejected()
         {
             var harness = new InMemoryTestHarness();
             var consumer = harness.Consumer<SubmitOrderConsumer>();
