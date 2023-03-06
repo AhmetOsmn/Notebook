@@ -117,6 +117,7 @@ Gençay Hoca'nın yayınladığı [EF Core eğitiminden](https://www.youtube.com
         public DbSet<Order> Orders { get; set; }
     }
     ```
+
 ## Tablo Kolonları
 
 - Tablo içerisindeki kolonlar, entity içerisinde `property` olarak nitelendirir.
@@ -152,4 +153,70 @@ Gençay Hoca'nın yayınladığı [EF Core eğitiminden](https://www.youtube.com
     ```
 
 <br>
+
+# 7 - Database First
+
+- Package Manager Console üzerinden, var olan bir veritabanını C# ortamında modellemek istediğimizde alt kısımdaki farmatta bir komut çalıştırmamız yeterli olacaktır:
+
+        Scaffold-DbContext 'ConnectionString' DbProvider (EfCore.SqlServer vb.)
+
+        Scaffold-DbContext 'ConnectionString' DbProvider -Tables Table1, Table2
+
+
+    Burada yukarıdaki işlem için Tools ve SqlServer paketlerinin kurulu olması gerekir.
+
+    Aynı işlemi Dotnet CLI üzerinden aynı işlemi yapmak için:
+
+        dotnet ef dbcontext scaffold 'ConnectionString' DbProvider
+
+        dotnet ef dbcontext scaffold 'ConnectionString' DbProvider --table Table1 --table Table2
+
+    Paket olarak Provider ve Design paketlerinin yüklü olması gerekecektir.
+
+- Modellemeyi klasörlerin içerisine yapmak istediğimizde şu şekilde çalışabiliriz:
+
+        Scaffold-DbContext 'ConnectionString' DbProvider -ContextDir `klasör yolu` -OutputDir 'entity'lerin klasör yolu' 
+
+        dotnet ef db context scaffold 'ConnectionString' DbProvider --context-dir `klasör yolu` --output-dir 'entity'lerin klasör yolu' 
+
+- Database'de meydana gelen değişiklikleri tekrar aynı komut ile modellemek istediğimizde, dosyalar zaten mevcut tarzında bir hata alırız. Eğer aynı komutun sonuna *Force* parametresini ekleyip çalıştırırsak var olan dosyaları ezerek modellemeyi tekrar yapacaktır. 
+
+        dotnet ef dbcontext scaffold 'ConnectionString' DbProvider -Force
+
+- Eğer database'den modellenen entity'ler üzerinde güncelleme/geliştirme yapmak istersek bu değişiklikleri direkt olarak entity sınıfı üzerinde yaptığımızda, *Force* parametreli komut tekrar çalıştırıldığında bizim yaptığımız değişiklikler kaybolur. 
+
+    Yukarıdaki sorunun önüne geçmek için şöyle bir yöntem izleyebiliriz: Otomatik oluşan entity sınıfları `Partial` olarak oluşmaktadır. Biz farklı bir klasör içerisinde ama aynı namespace'e ve aynı isme sahip bir partial class daha tanımlarız. Yapmak istediğimiz değişiklikleri bu yeni açtığımız partial class içerisinde gerçekleştirdiğimizde artık *Force* komutlarından korunuyor hale geliriz.
+
+<br>
+
+# 8 - Code First
+
+- Migration'lar, Context class'ında veya başa bir yerdeki konfigürasyonda belirtilen/kullanılan provider'a göre, veritabanı bazlı olarak oluşturulurlar. Migration oluşturmak için PMC veya Dotnet CLI kullanırız.
+
+    SqlServer Provider'ı kullanılarak oluşturulan migration ile, PostgreSql Provider'ı kullanılarak oluşturulan migration birbirinden farklı olacaktır. Ayrıca database tipi ile oluşturulan migration eşleşmezse/uyuşmazsa hata alınır. Yani özet olarak SqlServer için oluşturulan bir migration, Postgre database tarafından kullanılamaz.
+
+- Migration'ların hepsini değil de, belirlenen birisine (önceden uygulanan bir migration olabilir) dönüş geçiş yapmak istersek şu şekilde yapabiliriz:
+
+        CLI -> dotnet ef database update mig_name
+
+        PMC -> update-database mig_name
+
+    `update-database` / `dotnet ef database update` komutları direkt olarak kullanılırsa son migration'a kadar hepsi uygulanır.
+
+<br>
+
+#  9 - Temel Kural | OnConfiguring | Tablo Adı
+
+- `OnConfiguring:` Bu metot bizim EfCore tool'unu özelleştirmemizi sağlar. Context class'ı içerisinde override edip gerekli ayarlamalar ile özelleştirmeleri (Provider, ConnectionString, Lazy Loading vb.) yaparız.
+
+- `Temel Entity Kuralı:` EfCore her tabloda default olarak primary key olması gerektiğini savunur. Eğer biz bir entity içerisinde primary key belirtmezsek, migration eklerken default'ta hata alırız. Bunu aşmanın yolları vardır fakat temelde bu şekilde çalışır.
+
+    Eğer bir entity'nin içerisinde:
+
+            public int Id {get; set;}
+            public int ID {get; set;}
+            public int EntityNameId {get; set;}
+            public int EntityNameID {get; set;}
+
+    Bu property'lerden birisi var ise EfCore bu property'i otomatik olarak primary key olarak tanımlar.
 
