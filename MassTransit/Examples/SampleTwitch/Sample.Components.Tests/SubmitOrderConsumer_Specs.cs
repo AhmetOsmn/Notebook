@@ -2,7 +2,6 @@ using MassTransit;
 using MassTransit.Testing;
 using Sample.Components.Consumers;
 using Sample.Contracts;
-using StackExchange.Redis;
 
 namespace Sample.Components.Tests
 {
@@ -104,6 +103,7 @@ namespace Sample.Components.Tests
         public async Task ShouldPublishOrderSubmittedEvent()
         {
             var harness = new InMemoryTestHarness();
+            harness.Consumer<SubmitOrderConsumer>();
 
             await harness.Start();
 
@@ -114,11 +114,10 @@ namespace Sample.Components.Tests
                 await harness.InputQueueSendEndpoint.Send<SubmitOrder>(new
                 {
                     OrderId = orderId,
-                    InVar.Timestamp,
-                    CustomerNumber = "12345"
+                    CustomerNumber = "12345",
+                    InVar.Timestamp
                 });
-
-                Assert.That(harness.Published.Select<OrderSubmitted>().Any(), Is.True);
+                Assert.That(harness.Published.Select<OrderSubmitted>().Any(),Is.True);
             }
             finally
             {
