@@ -1,5 +1,7 @@
 ﻿using MassTransit;
+using MassTransit.SagaStateMachine;
 using MassTransit.Testing;
+using MassTransit.Visualizer;
 using Sample.Components.StateMachines;
 using Sample.Contracts;
 
@@ -121,6 +123,61 @@ namespace Sample.Components.Tests
             {
                 await harness.Stop();
             }
+        }
+
+        [Test]
+        public async Task Should_accept_when_order_is_accepted()
+        {
+            var orderStateMachine = new OrderStateMachine();
+            var harness = new InMemoryTestHarness();
+            var saga = harness.StateMachineSaga<OrderState, OrderStateMachine>(orderStateMachine);
+
+            await harness.Start();
+
+            try
+            {
+                var orderId = NewId.NextGuid();
+
+                await harness.Bus.Publish<OrderSubmitted>(new
+                {
+                    OrderId = orderId,
+                    InVar.Timestamp,
+                    CustomerNumber = "12345"
+                });
+
+                Assert.That(saga.Created.Select(x => x.CorrelationId == orderId).Any(), Is.True);
+
+                var instanceId = await saga.Exists(orderId, x => x.Submitted);
+                Assert.That(instanceId, Is.Not.Null);
+
+                await harness.Bus.Publish<OrderAccepted>(new
+                {
+                    OrderId = orderId,
+
+                    InVar.Timestamp,
+                });
+
+                instanceId = await saga.Exists(orderId, x => x.Accepted);
+                Assert.That(instanceId, Is.Not.Null);
+            }
+            finally
+            {
+                await harness.Stop();
+            }
+        }
+
+        [Test]
+        public void Show_me_the_state_machine()
+        {
+            var orderStateMachine = new OrderStateMachine();
+
+            var graph = orderStateMachine.GetGraph();
+
+            var generator = new StateMachineGraphvizGenerator(graph);
+
+            string dots = generator.CreateDotFile();
+
+            Console.WriteLine(dots);
         }
     }
 }

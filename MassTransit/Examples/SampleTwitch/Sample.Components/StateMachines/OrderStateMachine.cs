@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using Sample.Components.StateMachines.OrderStateMachineActivities;
 using Sample.Contracts;
 
 namespace Sample.Components.StateMachines
@@ -8,6 +9,7 @@ namespace Sample.Components.StateMachines
         public OrderStateMachine()
         {
             Event(() => OrderSubmitted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderStatusRequested, x =>
             {
                 x.CorrelateById(m => m.Message.OrderId);
@@ -42,7 +44,10 @@ namespace Sample.Components.StateMachines
             During(Submitted,
                 Ignore(OrderSubmitted),
                 When(AccounClosed)
-                .TransitionTo(Cancaled));
+                .TransitionTo(Cancaled),
+                When(OrderAccepted)
+                .Activity(x => x.OfType<AcceptOrderActivity>())
+                .TransitionTo(Accepted));
 
             DuringAny(
                 When(OrderStatusRequested)
@@ -64,8 +69,10 @@ namespace Sample.Components.StateMachines
         }
 
         public State Submitted { get; private set; }
+        public State Accepted { get; private set; }
         public State Cancaled { get; private set; }
 
+        public Event<OrderAccepted> OrderAccepted { get; private set; }
         public Event<OrderSubmitted> OrderSubmitted { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
         public Event<CustomerAccuntClosed> AccounClosed { get; private set; }

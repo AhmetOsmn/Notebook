@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Sample.Components.StateMachines
 {
@@ -6,8 +7,9 @@ namespace Sample.Components.StateMachines
         SagaStateMachineInstance,
         ISagaVersion
     {
-        public int Version { get; set; }
+        [BsonId]
         public Guid CorrelationId { get; set; }
+        public int Version { get; set; }
         public string CurrentState { get; set; }
         public string CustomerNumber { get; set; }
         public DateTime? Updated { get; set; }
