@@ -44,3 +44,9 @@
 /MassTransit/Examples/LightMessagingCore/.vs/LightMessagingCore
 /MassTransit/Examples/SampleTwitch/Sample.Components.Tests/bin/Debug/net7.0
 /MassTransit/Examples/SampleTwitch/Sample.Components.Tests/obj
+/MassTransit/Examples/SampleTwitch/Warehouse.Components/bin/Debug/net7.0
+/MassTransit/Examples/SampleTwitch/Warehouse.Components/obj
+/MassTransit/Examples/SampleTwitch/Warehouse.Contracts/bin/Debug/net7.0
+/MassTransit/Examples/SampleTwitch/Warehouse.Contracts/obj
+/MassTransit/Examples/SampleTwitch/Warehouse.Service/bin/Debug/net7.0
+/MassTransit/Examples/SampleTwitch/Warehouse.Service/obj

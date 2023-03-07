@@ -3,21 +3,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Sample.Components.Consumers;
-using Sample.Components.CourierActivities;
-using Sample.Components.StateMachines;
-using Sample.Components.StateMachines.OrderStateMachineActivities;
 using System.Diagnostics;
-using Warehouse.Contracts;
+using Warehouse.Components;
 
-namespace Sample.Service
+namespace Warehouse.Service
 {
-    internal static class Program
+    internal class Program
     {
         static async Task Main(string[] args)
         {
-            Console.Title = "Service";
+            Console.Title = "Warehouse Service";
 
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
@@ -34,35 +29,19 @@ namespace Sample.Service
                 })
                .ConfigureServices((context, services) =>
                {
-                   services.AddScoped<AcceptOrderActivity>();
                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
                    services.AddMassTransit(cfg =>
                    {
-                       cfg.AddConsumersFromNamespaceContaining<SubmitOrderConsumer>();
-                       cfg.AddActivitiesFromNamespaceContaining<AllocateInventoryActivity>();
-
-                       cfg.AddSagaStateMachine<OrderStateMachine, OrderState>(typeof(OrderStateMachineDefinition))
-                       .MongoDbRepository(r =>
-                       {
-                           r.Connection = "mongodb://127.0.0.1:27017";
-                           r.DatabaseName = "orderdb";
-                       });
+                       cfg.AddConsumersFromNamespaceContaining<AllocateInventoryConsumer>();
 
                        cfg.UsingRabbitMq((context, cfgx) =>
                        {
                            cfgx.ConfigureEndpoints(context);
                        });
-
-                       cfg.AddRequestClient<AllocateInventory>();
                    });
 
                    services.AddHostedService<MassTransitConsoleHostedService>();
-               })
-               .ConfigureLogging((h,logging) =>
-               {
-                   logging.AddConfiguration(h.Configuration.GetSection("Logging"));
-                   logging.AddConsole();
                });
 
             if (isService) await host.Build().RunAsync();
