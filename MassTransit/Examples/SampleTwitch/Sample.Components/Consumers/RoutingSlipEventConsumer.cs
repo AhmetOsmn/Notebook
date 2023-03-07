@@ -18,23 +18,24 @@ namespace Sample.Components.Consumers
 
         public Task Consume(ConsumeContext<RoutingSlipCompleted> context)
         {
-
-            Console.WriteLine($"Routing Slip Completed: {context.Message.TrackingNumber}");
+            if(_logger.IsEnabled(LogLevel.Information))
+                _logger.Log(LogLevel.Information, $"Routing Slip Completed: {context.Message.TrackingNumber}");
 
             return Task.CompletedTask;
         }
 
         public Task Consume(ConsumeContext<RoutingSlipFaulted> context)
         {
-
-            Console.WriteLine($"Routing Slip Activity Faulted: {context.Message.TrackingNumber} {context.Message.ActivityExceptions.FirstOrDefault()}");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.Log(LogLevel.Information, $"Routing Slip Activity Faulted: {context.Message.TrackingNumber} {context.Message.ActivityExceptions.FirstOrDefault()}");
 
             return Task.CompletedTask;
         }
 
         public Task Consume(ConsumeContext<RoutingSlipActivityCompleted> context)
         {
-            Console.WriteLine($"Routing Slip Activity Completed: {context.Message.TrackingNumber} {context.Message.ActivityName}");
+            if (_logger.IsEnabled(LogLevel.Information))
+                _logger.Log(LogLevel.Information, $"Routing Slip Activity Completed: {context.Message.TrackingNumber} {context.Message.ActivityName}");
 
             return Task.CompletedTask;
         }

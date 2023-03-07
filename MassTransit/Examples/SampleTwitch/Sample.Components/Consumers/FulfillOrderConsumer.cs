@@ -9,7 +9,7 @@ namespace Sample.Components.Consumers
         {
             var builder = new RoutingSlipBuilder(NewId.NextGuid());
 
-            builder.AddActivity("AllocateInventory",new Uri("queue:allocete-inventory_execute"), new
+            builder.AddActivity("AllocateInventory",new Uri("queue:allocate-inventory_execute"), new
             {
                 ItemNumber = "ITEM123",
                 Quantity = 10
