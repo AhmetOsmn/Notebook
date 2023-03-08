@@ -7,12 +7,10 @@ namespace Warehouse.Components.Consumers
     {
         public async Task Consume(ConsumeContext<AllocateInventory> context)
         {
-            await Task.Delay(1000);
-
             await context.Publish<AllocationCreated>(new
             {
                 context.Message.AllocationId,
-                HoldDuration = 8000
+                HoldDuration = 15000
             });
 
             await context.RespondAsync<InventoryAllocated>(new

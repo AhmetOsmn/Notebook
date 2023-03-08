@@ -59,7 +59,7 @@ namespace Sample.Service
 
                    services.AddHostedService<MassTransitConsoleHostedService>();
                })
-               .ConfigureLogging((h,logging) =>
+               .ConfigureLogging((h, logging) =>
                {
                    logging.AddConfiguration(h.Configuration.GetSection("Logging"));
                    logging.AddConsole();

@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.AspNetCore.Logging;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
@@ -28,7 +27,7 @@ namespace Warehouse.Service
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
             var host = Host.CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((hostingContext, config) =>
+               .ConfigureAppConfiguration((hostingContext, config) =>
                 {
                     config.AddJsonFile("appsettings.json", true);
                     config.AddEnvironmentVariables();
@@ -64,7 +63,7 @@ namespace Warehouse.Service
                    services.AddMassTransit(cfg =>
                    {
                        cfg.AddConsumersFromNamespaceContaining<AllocateInventoryConsumer>();
-                       cfg.AddSagaStateMachine<AllocationStateMachine, AllocationState>()
+                       cfg.AddSagaStateMachine<AllocationStateMachine, AllocationState>(typeof(AllocateStateMachineDefinition))
                             .MongoDbRepository(r =>
                             {
                                 r.Connection = "mongodb://127.0.0.1:27017";

@@ -8,6 +8,7 @@ namespace Warehouse.Components.StateMachines
         public AllocationStateMachine()
         {
             Event(() => AllocationCreated, x => x.CorrelateById(m => m.Message.AllocationId));
+            Event(() => ReleaseRequested, x => x.CorrelateById(m => m.Message.AllocationId));
 
             Schedule(() => HoldExpiration, x => x.HoldDurationToken, s =>
             {
@@ -26,12 +27,35 @@ namespace Warehouse.Components.StateMachines
                         context.Message.AllocationId
                     }),
                     context => context.Message.HoldDuration)
-                .TransitionTo(Allocated)
+                .TransitionTo(Allocated),
+                When(ReleaseRequested)
+                .TransitionTo(Released)
+            );
+
+            During(Allocated,
+                When(AllocationCreated)
+                .Schedule(
+                    HoldExpiration,
+                    context => context.Init<AllocationHoldDurationExpired>(new
+                    {
+                        context.Message.AllocationId
+                    }),
+                    context => context.Message.HoldDuration)
+            );
+
+            During(Released,
+                When(AllocationCreated)
+                .ThenAsync(context => Console.Out.WriteLineAsync($"Allocation was already released: {context.Instance.CorrelationId}"))
+                .Finalize()
             );
 
             During(Allocated,
                 When(HoldExpiration.Received)
-                .ThenAsync(context => Console.Out.WriteLineAsync($"Allocation was released: {context.Instance.CorrelationId}"))
+                .ThenAsync(context => Console.Out.WriteLineAsync($"Allocation expired: {context.Instance.CorrelationId}"))
+                .Finalize(),
+                When(ReleaseRequested)
+                .Unschedule(HoldExpiration)
+                .ThenAsync(context => Console.Out.WriteLineAsync($"Allocation release request, granted: {context.Instance.CorrelationId}"))
                 .Finalize());
 
             SetCompletedWhenFinalized();
@@ -40,7 +64,9 @@ namespace Warehouse.Components.StateMachines
         public Schedule<AllocationState, AllocationHoldDurationExpired> HoldExpiration { get; set; }
 
         public Event<AllocationCreated> AllocationCreated { get; set; }
+        public Event<AllocationReleaseRequested> ReleaseRequested { get; set; }
 
         public State Allocated { get; set; }
+        public State Released { get; set; }
     }
 }

@@ -10,6 +10,8 @@ namespace Sample.Components.StateMachines
         {
             Event(() => OrderSubmitted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => FulfillmentFaulted, x => x.CorrelateById(m => m.Message.OrderId));
+
             Event(() => OrderStatusRequested, x =>
             {
                 x.CorrelateById(m => m.Message.OrderId);
@@ -49,6 +51,11 @@ namespace Sample.Components.StateMachines
                 .Activity(x => x.OfType<AcceptOrderActivity>())
                 .TransitionTo(Accepted));
 
+            During(Accepted,
+                When(FulfillmentFaulted)
+                .TransitionTo(Faulted)
+            );
+
             DuringAny(
                 When(OrderStatusRequested)
                     .RespondAsync(x => x.Init<OrderStatus>(new
@@ -71,10 +78,12 @@ namespace Sample.Components.StateMachines
         public State Submitted { get; private set; }
         public State Accepted { get; private set; }
         public State Cancaled { get; private set; }
+        public State Faulted { get; private set; }
 
         public Event<OrderAccepted> OrderAccepted { get; private set; }
         public Event<OrderSubmitted> OrderSubmitted { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
         public Event<CustomerAccuntClosed> AccounClosed { get; private set; }
+        public Event<OrderFulfillmentFaulted> FulfillmentFaulted{ get; private set; }
     }
  }

@@ -3,6 +3,7 @@ using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Contracts;
 using Sample.Service;
+
 namespace Sample.Api
 {
     public static class Program
@@ -12,6 +13,16 @@ namespace Sample.Api
             Console.Title = "Api";
 
             var builder = WebApplication.CreateBuilder(args);
+
+            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(x =>
+                {
+                    x.AllowAnyOrigin();
+                });
+            });
 
             builder.Services.AddApplicationInsightsTelemetry();
 
@@ -49,7 +60,10 @@ namespace Sample.Api
                 app.UseSwaggerUI();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors(MyAllowSpecificOrigins);
+
+
+            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 
