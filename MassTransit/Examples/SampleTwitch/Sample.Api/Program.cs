@@ -1,8 +1,8 @@
 using MassTransit;
+using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Contracts;
 using Sample.Service;
-
 namespace Sample.Api
 {
     public static class Program
@@ -12,6 +12,14 @@ namespace Sample.Api
             Console.Title = "Api";
 
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Services.AddApplicationInsightsTelemetry();
+
+            builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) =>
+            {
+                module.IncludeDiagnosticSourceActivities.Add("MassTransit");
+            });
+
 
             // Add services to the container.
             builder.Services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
