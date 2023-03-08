@@ -11,7 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
-using Warehouse.Components;
+using Warehouse.Components.Consumers;
+using Warehouse.Components.StateMachines;
 
 namespace Warehouse.Service
 {
@@ -39,6 +40,7 @@ namespace Warehouse.Service
                 })
                .ConfigureServices((context, services) =>
                {
+                   #region Tracking Configure
                    _module = new DependencyTrackingTelemetryModule();
                    _module.IncludeDiagnosticSourceActivities.Add("MassTransit");
 
@@ -55,20 +57,33 @@ namespace Warehouse.Service
                    ILoggerFactory factory = new LoggerFactory();
                    factory.AddProvider(applicationInsightsLoggerProvider);
                    LogContext.ConfigureCurrentLogContext(factory);
+                   #endregion
 
                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
                    services.AddMassTransit(cfg =>
                    {
                        cfg.AddConsumersFromNamespaceContaining<AllocateInventoryConsumer>();
+                       cfg.AddSagaStateMachine<AllocationStateMachine, AllocationState>()
+                            .MongoDbRepository(r =>
+                            {
+                                r.Connection = "mongodb://127.0.0.1:27017";
+                                r.DatabaseName = "allocations";
+                            });
 
                        cfg.UsingRabbitMq((context, cfgx) =>
                        {
+                           cfgx.UseMessageScheduler(new Uri("rabbitmq://localhost/quartz"));
                            cfgx.ConfigureEndpoints(context);
                        });
                    });
 
                    services.AddHostedService<MassTransitConsoleHostedService>();
+               })
+               .ConfigureLogging((h, logging) =>
+               {
+                   logging.AddConfiguration(h.Configuration.GetSection("Logging"));
+                   logging.AddConsole();
                });
 
             if (isService) await host.Build().RunAsync();
