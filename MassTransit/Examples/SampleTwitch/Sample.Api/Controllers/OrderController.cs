@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Sample.Api.Models;
 using Sample.Contracts;
 
 namespace Sample.Api.Controllers
@@ -49,14 +50,14 @@ namespace Sample.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Guid id, string customerNumber, string paymentCardNumber)
+        public async Task<IActionResult> Post(OrderModel orderModel)
         {
             var (accepted, rejected) = await _submitOrderRequestClient.GetResponse<OrderSubmissionAccepted, OrderSubmissionRejected>(new
             {
-                OrderId = id,
+                OrderId = orderModel.Id,
                 InVar.Timestamp,
-                CustomerNumber = customerNumber,
-                PaymentCardNumber = paymentCardNumber
+                CustomerNumber = orderModel.CustomerNumber,
+                PaymentCardNumber = orderModel.PaymentCardNumber
             });
 
             if (accepted.IsCompletedSuccessfully)

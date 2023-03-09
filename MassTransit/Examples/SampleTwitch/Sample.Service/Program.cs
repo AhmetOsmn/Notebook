@@ -1,18 +1,17 @@
 ﻿using MassTransit;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.ApplicationInsights;
-using Microsoft.Extensions.Options;
 using Sample.Components.Consumers;
 using Sample.Components.CourierActivities;
 using Sample.Components.StateMachines;
 using Sample.Components.StateMachines.OrderStateMachineActivities;
+using Serilog;
+using Serilog.Events;
 using System.Diagnostics;
 using Warehouse.Contracts;
 
@@ -28,6 +27,13 @@ namespace Sample.Service
             Console.Title = "Service";
 
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
 
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>

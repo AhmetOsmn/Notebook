@@ -52,3 +52,5 @@
 /MassTransit/Examples/SampleTwitch/Warehouse.Service/obj
 /MassTransit/Examples/SampleTwitch/Sample.Quartz/bin/Debug/net7.0
 /MassTransit/Examples/SampleTwitch/Sample.Quartz/obj
+/MassTransit/Examples/SampleTwitch/Client.Console/bin/Debug/net7.0
+/MassTransit/Examples/SampleTwitch/Client.Console/obj
