@@ -68,9 +68,9 @@ namespace Sample.Quartz
 
                 x.AddConsumer<SampleConsumer>();
 
-                x.UsingAzureServiceBus((context, cfg) =>
+                x.UsingRabbitMq((context, cfg) =>
                 {
-                    cfg.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
+                    //cfg.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
 
                     cfg.UsePublishMessageScheduler();
 

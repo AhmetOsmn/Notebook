@@ -1,6 +1,7 @@
 ﻿using Automatonymous;
 using MassTransit;
 using Sample.Contracts;
+using System.ComponentModel;
 
 namespace Sample.Components.StateMachines.OrderStateMachineActivities
 {
@@ -22,8 +23,8 @@ namespace Sample.Components.StateMachines.OrderStateMachineActivities
             await sendEndpoint.Send<FulfillOrder>(new
             {
                 context.Message.OrderId,
-                context.Instance.CustomerNumber,
-                context.Instance.PaymentCardNumber,
+                context.Saga.CustomerNumber,
+                context.Saga.PaymentCardNumber,
             }, context.CancellationToken);
 
             await next.Execute(context).ConfigureAwait(false);

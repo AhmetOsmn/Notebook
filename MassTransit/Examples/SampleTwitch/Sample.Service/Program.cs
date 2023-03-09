@@ -1,9 +1,14 @@
 ﻿using MassTransit;
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.DependencyCollector;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.ApplicationInsights;
+using Microsoft.Extensions.Options;
 using Sample.Components.Consumers;
 using Sample.Components.CourierActivities;
 using Sample.Components.StateMachines;
@@ -15,6 +20,9 @@ namespace Sample.Service
 {
     internal static class Program
     {
+        static TelemetryClient _telemetryClient;
+        static DependencyTrackingTelemetryModule _module;
+
         static async Task Main(string[] args)
         {
             Console.Title = "Service";
@@ -34,6 +42,25 @@ namespace Sample.Service
                 })
                .ConfigureServices((context, services) =>
                {
+                   //#region Tracking Configure
+                   //_module = new DependencyTrackingTelemetryModule();
+                   //_module.IncludeDiagnosticSourceActivities.Add("MassTransit");
+
+                   //var configuration = TelemetryConfiguration.CreateDefault();
+                   //configuration.InstrumentationKey = "30ae615d-4452-4575-aca9-cf3938f17bf8";
+                   //configuration.TelemetryInitializers.Add(new HttpDependenciesParsingTelemetryInitializer());
+
+                   //_telemetryClient = new TelemetryClient(configuration);
+                   //_module.Initialize(configuration);
+
+                   //var loggerOptions = new Microsoft.Extensions.Logging.ApplicationInsights.ApplicationInsightsLoggerOptions();
+                   //var applicationInsightsLoggerProvider = new ApplicationInsightsLoggerProvider(Options.Create(configuration),
+                   //    Options.Create(loggerOptions));
+                   //ILoggerFactory factory = new LoggerFactory();
+                   //factory.AddProvider(applicationInsightsLoggerProvider);
+                   //LogContext.ConfigureCurrentLogContext(factory);
+                   //#endregion
+
                    services.AddScoped<AcceptOrderActivity>();
                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
@@ -49,10 +76,11 @@ namespace Sample.Service
                            r.DatabaseName = "orders";
                        });
 
-                       cfg.UsingAzureServiceBus((context, cfgx) =>
+                       cfg.UsingRabbitMq((context, cfgx) =>
                        {
-                           cfgx.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
-
+                           // for azure service bus:
+                           // cfgx.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
+                           cfgx.UseMessageScheduler(new Uri("queue:quartz"));
                            cfgx.ConfigureEndpoints(context);
                        });
 
@@ -69,6 +97,9 @@ namespace Sample.Service
 
             if (isService) await host.Build().RunAsync();
             else await host.RunConsoleAsync();
+
+            _telemetryClient?.Flush();
+            _module?.Dispose();
 
             Console.ReadKey();
         }

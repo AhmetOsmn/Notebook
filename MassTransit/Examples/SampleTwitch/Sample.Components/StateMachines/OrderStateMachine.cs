@@ -12,6 +12,7 @@ namespace Sample.Components.StateMachines
             Event(() => OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => FulfillmentFaulted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => FulfillmentCompleted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => FulfillOrderFaulted, x => x.CorrelateById(m => m.Message.Message.OrderId));
 
             Event(() => OrderStatusRequested, x =>
             {
@@ -54,6 +55,9 @@ namespace Sample.Components.StateMachines
                 .TransitionTo(Accepted));
 
             During(Accepted,
+                When(FulfillOrderFaulted)
+                .Then(context => Console.WriteLine($"Fulfill Order Faulted:{context.Message.Exceptions.FirstOrDefault()?.Message}"))
+                .TransitionTo(Faulted),
                 When(FulfillmentFaulted)
                 .TransitionTo(Faulted),
                 When(FulfillmentCompleted)
@@ -91,5 +95,6 @@ namespace Sample.Components.StateMachines
         public Event<CustomerAccuntClosed> AccounClosed { get; private set; }
         public Event<OrderFulfillmentFaulted> FulfillmentFaulted{ get; private set; }
         public Event<OrderFulfillmentCompleted> FulfillmentCompleted{ get; private set; }
+        public Event<Fault<FulfillOrder>> FulfillOrderFaulted{ get; private set; }
     }
  }
