@@ -70,9 +70,10 @@ namespace Warehouse.Service
                                 r.DatabaseName = "allocations";
                             });
 
-                       cfg.UsingRabbitMq((context, cfgx) =>
+                       cfg.UsingAzureServiceBus((context, cfgx) =>
                        {
-                           cfgx.UseMessageScheduler(new Uri("rabbitmq://localhost/quartz"));
+                           cfgx.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
+                           cfgx.UseMessageScheduler(new Uri("queue:quartz"));
                            cfgx.ConfigureEndpoints(context);
                        });
                    });

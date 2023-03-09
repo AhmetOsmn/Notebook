@@ -11,6 +11,7 @@ namespace Sample.Components.StateMachines
             Event(() => OrderSubmitted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => OrderAccepted, x => x.CorrelateById(m => m.Message.OrderId));
             Event(() => FulfillmentFaulted, x => x.CorrelateById(m => m.Message.OrderId));
+            Event(() => FulfillmentCompleted, x => x.CorrelateById(m => m.Message.OrderId));
 
             Event(() => OrderStatusRequested, x =>
             {
@@ -36,9 +37,10 @@ namespace Sample.Components.StateMachines
                 When(OrderSubmitted)
                     .Then(context =>
                     {
-                        context.Instance.SubmitDate = context.Data.Timestamp;
-                        context.Instance.CustomerNumber = context.Data.CustomerNumber;
-                        context.Instance.Updated = DateTime.UtcNow;
+                        context.Saga.PaymentCardNumber = context.Message.PaymentCardNumber;
+                        context.Saga.SubmitDate = context.Message.Timestamp;
+                        context.Saga.CustomerNumber = context.Message.CustomerNumber;
+                        context.Saga.Updated = DateTime.UtcNow;
                     })
                     .TransitionTo(Submitted)
             );
@@ -53,7 +55,9 @@ namespace Sample.Components.StateMachines
 
             During(Accepted,
                 When(FulfillmentFaulted)
-                .TransitionTo(Faulted)
+                .TransitionTo(Faulted),
+                When(FulfillmentCompleted)
+                .TransitionTo(Completed)
             );
 
             DuringAny(
@@ -79,11 +83,13 @@ namespace Sample.Components.StateMachines
         public State Accepted { get; private set; }
         public State Cancaled { get; private set; }
         public State Faulted { get; private set; }
+        public State Completed { get; private set; }
 
         public Event<OrderAccepted> OrderAccepted { get; private set; }
         public Event<OrderSubmitted> OrderSubmitted { get; private set; }
         public Event<CheckOrder> OrderStatusRequested { get; private set; }
         public Event<CustomerAccuntClosed> AccounClosed { get; private set; }
         public Event<OrderFulfillmentFaulted> FulfillmentFaulted{ get; private set; }
+        public Event<OrderFulfillmentCompleted> FulfillmentCompleted{ get; private set; }
     }
  }

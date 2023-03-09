@@ -17,11 +17,13 @@ namespace Sample.Components.StateMachines.OrderStateMachineActivities
 
             var consumeContext = context.GetPayload<ConsumeContext>();
 
-            var sendEndpoint = await consumeContext.GetSendEndpoint(new Uri("exchange:fulfill-order"));
+            var sendEndpoint = await consumeContext.GetSendEndpoint(new Uri("queue:fulfill-order"));
 
             await sendEndpoint.Send<FulfillOrder>(new
             {
-                context.Message.OrderId
+                context.Message.OrderId,
+                context.Instance.CustomerNumber,
+                context.Instance.PaymentCardNumber,
             }, context.CancellationToken);
 
             await next.Execute(context).ConfigureAwait(false);

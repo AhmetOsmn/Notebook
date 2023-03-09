@@ -28,6 +28,7 @@ namespace Sample.Components.Consumers
 
             await context.Publish<OrderSubmitted>(new
             {
+                context.Message.PaymentCardNumber,
                 context.Message.OrderId,
                 context.Message.Timestamp,
                 context.Message.CustomerNumber,

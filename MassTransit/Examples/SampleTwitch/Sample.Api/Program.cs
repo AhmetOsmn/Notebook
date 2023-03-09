@@ -37,9 +37,15 @@ namespace Sample.Api
 
             builder.Services.AddMassTransit(cfg =>
             {
-                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
+                cfg.AddBus(provider =>
+                {
+                    return Bus.Factory.CreateUsingAzureServiceBus(cfg =>
+                    {
+                        cfg.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
+                    });
+                });
 
-                cfg.AddRequestClient<SubmitOrder>(new Uri($"exchange:{RmqConstants.QueueName}"));
+                cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:{RmqConstants.QueueName}"));
 
                 cfg.AddRequestClient<CheckOrder>();
             });

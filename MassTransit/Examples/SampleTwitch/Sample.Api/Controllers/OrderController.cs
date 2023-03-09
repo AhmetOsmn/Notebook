@@ -49,13 +49,14 @@ namespace Sample.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Guid id, string customerNumber)
+        public async Task<IActionResult> Post(Guid id, string customerNumber, string paymentCardNumber)
         {
             var (accepted, rejected) = await _submitOrderRequestClient.GetResponse<OrderSubmissionAccepted, OrderSubmissionRejected>(new
             {
                 OrderId = id,
                 InVar.Timestamp,
-                CustomerNumber = customerNumber
+                CustomerNumber = customerNumber,
+                PaymentCardNumber = paymentCardNumber
             });
 
             if (accepted.IsCompletedSuccessfully)
@@ -75,7 +76,7 @@ namespace Sample.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(Guid id, string customerNumber)
         {
-            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"exchange:{RmqConstants.QueueName}"));
+            var endpoint = await _sendEndpointProvider.GetSendEndpoint(new Uri($"queue:{RmqConstants.QueueName}"));
 
             await endpoint.Send<SubmitOrder>(new
             {
