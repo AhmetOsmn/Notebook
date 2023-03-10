@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using MassTransit.Courier.Contracts;
+using MassTransit.MongoDbIntegration.MessageData;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Extensions.Configuration;
@@ -92,6 +93,7 @@ namespace Sample.Service
                        {
                            // for azure service bus:
                            // cfgx.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
+                           cfgx.UseMessageData(new MongoDbMessageDataRepository("mongodb://127.0.0.1:27017", "attachments"));
                            cfgx.UseMessageScheduler(new Uri("queue:quartz"));
                            cfgx.ReceiveEndpoint(KebabCaseEndpointNameFormatter.Instance.Consumer<RoutingSlipBatchEventConsumer>(), e =>
                            {

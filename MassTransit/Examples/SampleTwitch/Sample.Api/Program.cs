@@ -1,10 +1,11 @@
 using MassTransit;
+using MassTransit.MongoDbIntegration.MessageData;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Contracts;
 using Sample.Service;
-using Serilog.Events;
 using Serilog;
+using Serilog.Events;
 
 namespace Sample.Api
 {
@@ -24,8 +25,6 @@ namespace Sample.Api
 
             var builder = WebApplication.CreateBuilder(args);
 
-            var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
-
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(x =>
@@ -41,8 +40,6 @@ namespace Sample.Api
                 module.IncludeDiagnosticSourceActivities.Add("MassTransit");
             });
 
-
-            // Add services to the container.
             builder.Services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
             builder.Services.AddMassTransit(cfg =>
@@ -55,7 +52,17 @@ namespace Sample.Api
                 //    });
                 //});
 
-                cfg.AddBus(provider => Bus.Factory.CreateUsingRabbitMq());
+                cfg.AddBus(provider =>
+                {
+                    return Bus.Factory.CreateUsingRabbitMq(x =>
+                    {
+                        MessageDataDefaults.ExtraTimeToLive = TimeSpan.FromDays(1);
+                        MessageDataDefaults.Threshold = 2000;
+                        MessageDataDefaults.AlwaysWriteToRepository = false;
+
+                        x.UseMessageData(new MongoDbMessageDataRepository("mongodb://127.0.0.1:27017", "attachments"));
+                    });
+                });
 
 
                 cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:{RmqConstants.QueueName}"));
@@ -74,17 +81,11 @@ namespace Sample.Api
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
-            app.UseCors(MyAllowSpecificOrigins);
-
-
-            //app.UseHttpsRedirection();
 
             app.UseAuthorization();
 

@@ -26,12 +26,22 @@ namespace Sample.Components.Consumers
                 return;
             }
 
+            MessageData<string> notes = context.Message.Notes;
+            if (notes.HasValue)
+            {
+                string notesValue = await notes.Value;
+
+                Console.WriteLine("NOTES: {0}",notesValue);
+            }
+
+
             await context.Publish<OrderSubmitted>(new
             {
                 context.Message.PaymentCardNumber,
                 context.Message.OrderId,
                 context.Message.Timestamp,
                 context.Message.CustomerNumber,
+                context.Message.Notes
             });
 
             if (context.RequestId != null)

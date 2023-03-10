@@ -1,4 +1,6 @@
-﻿namespace Sample.Contracts
+﻿using MassTransit;
+
+namespace Sample.Contracts
 {
     public interface OrderSubmitted
     {
@@ -6,5 +8,6 @@
         DateTime Timestamp { get; }
         string CustomerNumber { get; }
         string PaymentCardNumber { get; }
+        MessageData<string> Notes { get; }
     }
 }

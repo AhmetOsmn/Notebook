@@ -9,20 +9,17 @@ namespace Sample.Api.Controllers
     [ApiController]
     public class OrderController : ControllerBase
     {
-        private readonly ILogger<OrderController> _logger;
         private readonly IRequestClient<SubmitOrder> _submitOrderRequestClient;
         private readonly IRequestClient<CheckOrder> _checkOrderRequestClient;
         private readonly ISendEndpointProvider _sendEndpointProvider;
         private readonly IPublishEndpoint _publishEndpoint;
 
         public OrderController(
-            ILogger<OrderController> logger,
             IRequestClient<SubmitOrder> submitOrderRequestClient,
             ISendEndpointProvider sendEndpointProvider,
             IRequestClient<CheckOrder> checkOrderRequestClient,
             IPublishEndpoint publishEndpoint)
         {
-            _logger = logger;
             _submitOrderRequestClient = submitOrderRequestClient;
             _sendEndpointProvider = sendEndpointProvider;
             _checkOrderRequestClient = checkOrderRequestClient;
@@ -56,8 +53,9 @@ namespace Sample.Api.Controllers
             {
                 OrderId = orderModel.Id,
                 InVar.Timestamp,
-                CustomerNumber = orderModel.CustomerNumber,
-                PaymentCardNumber = orderModel.PaymentCardNumber
+                orderModel.CustomerNumber,
+                orderModel.PaymentCardNumber,
+                orderModel.Notes,
             });
 
             if (accepted.IsCompletedSuccessfully)

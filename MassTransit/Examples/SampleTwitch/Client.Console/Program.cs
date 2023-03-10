@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using Newtonsoft.Json;
-using Sample.Api.Models;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
@@ -32,7 +31,8 @@ namespace Client.Console
                     {
                         Id = NewId.NextGuid(),
                         CustomerNumber = $"CUSTOMER{i}",
-                        PaymentCardNumber = i % 4 == 0 ? "5999" : "4000-1234"
+                        PaymentCardNumber = i % 4 == 0 ? "5999" : "4000-1234",
+                        Notes = new string('*', 1000 * (i + 1))
                     };
 
                     tasks.Add(Execute(order));
@@ -105,5 +105,19 @@ namespace Client.Console
                 return exception.Message;
             }
         }
+    }
+
+    public class OrderModel
+    {
+        public Guid Id { get; set; }
+        public string CustomerNumber { get; set; }
+        public string PaymentCardNumber { get; set; }
+        public string Notes { get; set; }
+    }
+
+    public class OrderStatusModel
+    {
+        public Guid OrderId { get; set; }
+        public string State { get; set; }
     }
 }
