@@ -22,8 +22,8 @@ namespace Sample.Service
 {
     internal static class Program
     {
-        static TelemetryClient _telemetryClient;
-        static DependencyTrackingTelemetryModule _module;
+        //static TelemetryClient _telemetryClient;
+        //static DependencyTrackingTelemetryModule _module;
 
         static async Task Main(string[] args)
         {
@@ -31,13 +31,7 @@ namespace Sample.Service
 
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+            SetSerilog();
 
             Log.Information("test log başladı");
 
@@ -127,10 +121,21 @@ namespace Sample.Service
             if (isService) await host.Build().RunAsync();
             else await host.RunConsoleAsync();
 
-            _telemetryClient?.Flush();
-            _module?.Dispose();
+            //_telemetryClient?.Flush();
+            //_module?.Dispose();
 
             Console.ReadKey();
+        }
+
+        private static void SetSerilog()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
         }
     }
 }

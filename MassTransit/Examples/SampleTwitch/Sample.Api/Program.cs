@@ -15,35 +15,25 @@ namespace Sample.Api
         {
             Console.Title = "Api";
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+            SetSerilog();
 
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(x =>
-                {
-                    x.AllowAnyOrigin();
-                });
-            });
+            #region Azure Service Bus Configs
+            //builder.Services.AddApplicationInsightsTelemetry();
 
-            builder.Services.AddApplicationInsightsTelemetry();
+            //builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) =>
+            //{
+            //    module.IncludeDiagnosticSourceActivities.Add("MassTransit");
+            //});
+            #endregion
 
-            builder.Services.ConfigureTelemetryModule<DependencyTrackingTelemetryModule>((module, o) =>
-            {
-                module.IncludeDiagnosticSourceActivities.Add("MassTransit");
-            });
 
             builder.Services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
             builder.Services.AddMassTransit(cfg =>
             {
+                #region Azure Service Bus Configs
                 //cfg.AddBus(provider =>
                 //{
                 //    return Bus.Factory.CreateUsingAzureServiceBus(cfg =>
@@ -51,19 +41,9 @@ namespace Sample.Api
                 //        cfg.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
                 //    });
                 //});
+                #endregion
 
-                cfg.AddBus(provider =>
-                {
-                    return Bus.Factory.CreateUsingRabbitMq(x =>
-                    {
-                        MessageDataDefaults.ExtraTimeToLive = TimeSpan.FromDays(1);
-                        MessageDataDefaults.Threshold = 2000;
-                        MessageDataDefaults.AlwaysWriteToRepository = false;
-
-                        x.UseMessageData(new MongoDbMessageDataRepository("mongodb://127.0.0.1:27017", "attachments"));
-                    });
-                });
-
+                cfg.AddBus(x => ConfigureBus());
 
                 cfg.AddRequestClient<SubmitOrder>(new Uri($"queue:{RmqConstants.QueueName}"));
 
@@ -92,6 +72,29 @@ namespace Sample.Api
             app.MapControllers();
 
             app.Run();
+        }
+
+        static IBusControl ConfigureBus()
+        {
+            return Bus.Factory.CreateUsingRabbitMq(x =>
+            {
+                MessageDataDefaults.ExtraTimeToLive = TimeSpan.FromDays(1);
+                MessageDataDefaults.Threshold = 2000;
+                MessageDataDefaults.AlwaysWriteToRepository = false;
+
+                x.UseMessageData(new MongoDbMessageDataRepository("mongodb://127.0.0.1:27017", "attachments"));
+            });
+        }
+
+        static void SetSerilog()
+        {
+            Log.Logger = new LoggerConfiguration()
+              .MinimumLevel.Information()
+              .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
+              .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+              .Enrich.FromLogContext()
+              .WriteTo.Console()
+              .CreateLogger();
         }
     }
 }

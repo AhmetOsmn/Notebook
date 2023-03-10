@@ -19,8 +19,10 @@ namespace Warehouse.Service
 {
     internal class Program
     {
-        static TelemetryClient _telemetryClient;
-        static DependencyTrackingTelemetryModule _module;
+        #region Azure Service Bus Config
+        //static TelemetryClient _telemetryClient;
+        //static DependencyTrackingTelemetryModule _module;
+        #endregion
 
         static async Task Main(string[] args)
         {
@@ -28,13 +30,7 @@ namespace Warehouse.Service
 
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Console()
-                .CreateLogger();
+            SetSerilog();
 
             var host = Host.CreateDefaultBuilder(args)
                .ConfigureAppConfiguration((hostingContext, config) =>
@@ -101,10 +97,23 @@ namespace Warehouse.Service
             if (isService) await host.Build().RunAsync();
             else await host.RunConsoleAsync();
 
-            _telemetryClient?.Flush();
-            _module?.Dispose();
+            #region Azure Service Bus Config
+            //_telemetryClient?.Flush();
+            //_module?.Dispose();
+            #endregion
 
             Console.ReadKey();
+        }
+
+        static void SetSerilog()
+        {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
         }
     }
 }

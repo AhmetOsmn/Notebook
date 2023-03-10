@@ -98,6 +98,5 @@ namespace Sample.Api.Controllers
 
             return Accepted();
         }
-
     }
 }
