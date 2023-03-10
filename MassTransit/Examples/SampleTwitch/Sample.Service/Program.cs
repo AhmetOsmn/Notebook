@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using MassTransit.Courier.Contracts;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Extensions.Configuration;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Sample.Components.BatchConsumers;
 using Sample.Components.Consumers;
 using Sample.Components.CourierActivities;
 using Sample.Components.StateMachines;
@@ -29,11 +31,14 @@ namespace Sample.Service
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
 
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .CreateLogger();
+
+            Log.Information("test log başladı");
 
             var host = Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
@@ -68,6 +73,7 @@ namespace Sample.Service
                    //#endregion
 
                    services.AddScoped<AcceptOrderActivity>();
+                   services.AddScoped<RoutingSlipBatchEventConsumer>();
                    services.TryAddSingleton(KebabCaseEndpointNameFormatter.Instance);
 
                    services.AddMassTransit(cfg =>
@@ -87,6 +93,19 @@ namespace Sample.Service
                            // for azure service bus:
                            // cfgx.Host("Endpoint=sb://sample-twitch-bus.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=APo2ZqgNHIloVG95QCDKpEQfE+1zvXSp2+ASbKUflYk=");
                            cfgx.UseMessageScheduler(new Uri("queue:quartz"));
+                           cfgx.ReceiveEndpoint(KebabCaseEndpointNameFormatter.Instance.Consumer<RoutingSlipBatchEventConsumer>(), e =>
+                           {
+                               e.PrefetchCount = 20;
+
+                               e.Batch<RoutingSlipCompleted>(b =>
+                               {
+                                   b.MessageLimit = 10;
+
+                                   b.TimeLimit = TimeSpan.FromSeconds(5);
+
+                                   b.Consumer<RoutingSlipBatchEventConsumer, RoutingSlipCompleted>(services.BuildServiceProvider());
+                               });
+                           });
                            cfgx.ConfigureEndpoints(context);
                        });
 
@@ -100,6 +119,8 @@ namespace Sample.Service
                    logging.AddConfiguration(h.Configuration.GetSection("Logging"));
                    logging.AddConsole();
                });
+
+            host.UseSerilog();
 
             if (isService) await host.Build().RunAsync();
             else await host.RunConsoleAsync();

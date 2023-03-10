@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.ApplicationInsights;
 using Microsoft.Extensions.Options;
+using Serilog;
+using Serilog.Events;
 using System.Diagnostics;
 using Warehouse.Components.Consumers;
 using Warehouse.Components.StateMachines;
@@ -25,6 +27,14 @@ namespace Warehouse.Service
             Console.Title = "Warehouse Service";
 
             var isService = !(Debugger.IsAttached || args.Contains("--console"));
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
 
             var host = Host.CreateDefaultBuilder(args)
                .ConfigureAppConfiguration((hostingContext, config) =>
@@ -85,6 +95,8 @@ namespace Warehouse.Service
                    logging.AddConfiguration(h.Configuration.GetSection("Logging"));
                    logging.AddConsole();
                });
+
+            host.UseSerilog();
 
             if (isService) await host.Build().RunAsync();
             else await host.RunConsoleAsync();

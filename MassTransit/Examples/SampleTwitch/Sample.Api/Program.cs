@@ -3,6 +3,8 @@ using Microsoft.ApplicationInsights.DependencyCollector;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sample.Contracts;
 using Sample.Service;
+using Serilog.Events;
+using Serilog;
 
 namespace Sample.Api
 {
@@ -11,6 +13,14 @@ namespace Sample.Api
         public static void Main(string[] args)
         {
             Console.Title = "Api";
+
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .MinimumLevel.Override("MassTransit", LogEventLevel.Debug)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .CreateLogger();
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -59,6 +69,8 @@ namespace Sample.Api
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Host.UseSerilog();
 
             var app = builder.Build();
 

@@ -1,8 +1,9 @@
 ﻿using MassTransit;
 using MassTransit.Courier.Contracts;
 using Microsoft.Extensions.Logging;
+using Sample.Components.Consumers;
 
-namespace Sample.Components.Consumers
+namespace Sample.Components.BatchConsumers
 {
     public class RoutingSlipBatchEventConsumer : IConsumer<Batch<RoutingSlipCompleted>>
     {
@@ -16,7 +17,7 @@ namespace Sample.Components.Consumers
         public Task Consume(ConsumeContext<Batch<RoutingSlipCompleted>> context)
         {
             if (_logger.IsEnabled(LogLevel.Information))
-                _logger.Log(LogLevel.Information, "Routing Slip Completed: {TrackingNumbers}", string.Join(",",context.Message.Select(x => x.Message.TrackingNumber)));
+                _logger.Log(LogLevel.Information, "Routing Slip Completed: {TrackingNumbers}", string.Join(",", context.Message.Select(x => x.Message.TrackingNumber)));
 
             return Task.CompletedTask;
 
