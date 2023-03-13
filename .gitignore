@@ -54,3 +54,8 @@
 /MassTransit/Examples/SampleTwitch/Sample.Quartz/obj
 /MassTransit/Examples/SampleTwitch/Client.Console/bin/Debug/net7.0
 /MassTransit/Examples/SampleTwitch/Client.Console/obj
+/MassTransit/Templates/Worker/obj
+/MassTransit/Templates/Worker/.vs
+/MassTransit/Templates/obj
+/MassTransit/Templates/.vs/Templates/FileContentIndex
+/MassTransit/Templates/.vs/Templates/v17
