@@ -1,9 +1,55 @@
-version: "3"
+version: "3.6"
+
+networks:
+    twitch:
+
 services:
     rabbitmq:
         container_name: sample-twitch-rabbitmq
-        hostname: rabbit
         image: masstransit/rabbitmq:latest	
+        networks:
+        - twitch
         ports:
         - "5672:5672"
         - "15672:15672"
+        
+    sqlserver:
+        container_name: sample-twitch-mssql
+        image: masstransit/sqlserver-quartz:latest
+        environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=A1b2c3*!
+        networks:
+        - twitch
+        ports:
+        - "1433:1433"
+          
+    quartz:
+        container_name: sample-twitch-quartz
+        image: masstransit/quartz:latest
+        environment:
+            ApplicationInsights__InstrumentationKey: '30ae615d-4452-4575-aca9-cf3938f17bf8'
+            MT_Prometheus: 'quartz'
+            MT_Scheduler: 'quartz'
+            MT_Quartz__ConnectionString: 'Server=tcp:sqlserver;Database=quartznet;Persist Security Info=False;User ID=sa;Password=A1b2c3*!;Encrypt=False;TrustServerCertificate=True;'
+        networks:
+        - twitch
+        ports:
+        - "5002:80"
+        
+    redis:
+        container_name: sample-twitch-redis
+        image: redis
+        networks:
+        - twitch
+        ports: 
+        - "6379:6379"
+        
+    mongo:
+        container_name: sample-twitch-mongodb
+        image: mongo
+        networks:
+        - twitch
+        ports:
+        - "27017-27019:27017-27019"
+
