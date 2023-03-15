@@ -213,13 +213,16 @@ Gençay Hoca'nın yayınladığı [EF Core eğitiminden](https://www.youtube.com
 
     Eğer bir entity'nin içerisinde:
 
-            public int Id {get; set;}
-            public int ID {get; set;}
-            public int EntityNameId {get; set;}
-            public int EntityNameID {get; set;}
+    ```cs
+    public int Id {get; set;}
+    public int ID {get; set;}
+    public int EntityNameId {get; set;}
+    public int EntityNameID {get; set;}
+    ```
 
     Bu property'lerden birisi var ise EfCore bu property'i otomatik olarak primary key olarak tanımlar.
 
+<br>
 
 # 10 - Veri Ekleme ve Veri Kalıcılığı
 
@@ -237,7 +240,9 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
 
 - Bir verinin ef core'a göre statüsünü öğrenmek istiyorsak şu şekilde bakabiliriz:
 
-        context.Entry(obje).State;
+    ```cs
+    context.Entry(order).State;
+    ```
 
     Eğer veri henüz database'e eklenmemişse ve biz yukarıdaki şekilde bu verinin (objenin) ef core'a göre statüsüne bakarsak `Detached` olduğunu görürüz.
 
@@ -254,22 +259,107 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
     Yani örnek olarak her ekleme işleminden sonra **SaveChanges()** kullanmak yerine eklenecek verileri **Add()** ile ekledikten sonra tek bir **SaveChanges()** kullanarak işlemi gerçekleştirebiliriz.
 
     Çoklu ekleme işlemi için ek olarak **AddRange()** metodu da kullanılabilir.
-    
+
+<br>
+
 # 11 - Veri Güncelleme ve Veri Kalıcılığı
 
 - `ChangeTracker:` Context üzerinden gelen verilerin takibini yapan mekanizmadır. Bu mekanizma sayesinde context üzerinden gelen veriler ile update veya delete sorgularının oluşturulacağı anlaşılır.
 
 - Eğer *Context* üzerinde getirilen bir veriyi güncellemek istiyorsak (yani takip edilen bir veriyi), ilgili güncellemeleri yaptıktan sonra direkt olarak **SaveChanges()** metodunu kullanmamız yeterlidir. Örnek olarak:
 
-        var selectedOrder = context.Orders.FirstOrDefault(x => x.Id == id);
-        selectedOrder.Status = OrderStatus.Accepted;
-        context.SaveChanges();
+    ```cs
+    var selectedOrder = context.Orders.FirstOrDefault(x => x.Id == id);
+    selectedOrder.Status = OrderStatus.Accepted;
+    context.SaveChanges();
+    ```
 
 - Eğer context üzerinden elde dilmeyen bir veriyi (yani Tracker tarafından takip edilmeyen veri) database'de güncellemek istersek şu şekilde yapabiliriz:
 
-        context.DbSet.Update(obje);
-        context.SaveChanges();
+    ```cs
+    context.Orders.Update(order);
+    context.SaveChanges();
+    ```
 
     Yukarıdaki şekilde olduğu gibi eğer **Update()** fonksiyonu ile takip edilmeyen bir veriyi güncellemek istiyorsak, bu verinin kesinlikle `Id` değeri verilmelidir.
+
+<br>
+
+# 12 - Veri Silme ve Veri Kalıcılığı
+
+- *ChangeTracking* tarafından takip edilmeyen bir veriyi silerken *Update* örneğindeki gibi, **Id** değerine sahip olan bir nesne **Remove()** fonksiyonuna verilir ve ardından **SaveChanges()** metodu uygulanır.
+- Farklı bir kullanım olarak *EntityState* üzerindenden de silme işlemi yapabiliriz. Örnek olarak:
+
+    ```cs
+    context.Entry(order).State = EntityState.Deleted;
+    context.SaveChanges();
+    ```
+
+- Birden fazla veriyi silmek istiyorsak **RemoveRange()** metodunu kullanabiliriz.
+
+<br>  
+
+# 13 - Veri Sorgulama
+
+- `Method Syntax:` Database üzerinden verileri sorgulama işlemini metotlar ile yaptığımız durumlara denir (LINQ Sorguları).
+
+    ```cs
+    var orders = context.Orders.ToList();
+    ```
+
+- `Query Syntax:` Verileri sorgularken query'ler kullandığımız durumlardır (LINQ Query'leri).
+  
+    ```cs
+    var orders = (from order in context.Orders select order).ToList();
+    ```        
+
+- Oluşturulan sorgulardan cevap alabilmek için bu sorguların bir şekilde çalıştırılıyor olamsı gerekiyor. Sonraki kısımlarda tekrar açıklanacak fakat şimdilik kısaca 2 kavramı basit düzeyde incelememiz gerekiyor:
+
+    - `IQueryable:` Sorguya karşılık gelir. Ef core üzerinden yapılmış olan sorgunun execute edilmemiş halini temsil eder. 
+    - `IEnumerable:` Sorgunun execute edilip, elde edilen verilerin in memory'e yüklenmiş halini temsil eder.
+
+    <br>
+
+    Sorguyu (IQueryable) execute ettiğimiz zaman artık ***IEnumerable*** duruma geçmiş oluyoruz, yani artık elimizde bir veri/veri seti oluyor. *IQueryable* halden *IEnumerable* hale geçebilmek için farklı yöntemler vardır ama şimdilik **ToList()** kullanıyoruz diyebiliriz. Örnek olarak:
+
+    ```cs
+    var orders = context.Orders; //=> IQueryable
+    var orders = context.Orers.ToList(); //=> IEnumerable
+    ```
+
+    Veya bir sorguyu oluşturup bir değişkende tuttuğumuzda (IQueryable durmuda), bu değişkeni bir **foreach** döngüsü içerisinde tetiklersek, bu sorgu execute edilir. Bu kullanım `Deferred Execution (Ertelenmiş Çalışma)` olarak isimlendirilir. Örnek olarak:
+
+    ```cs
+    var orders = from order in context.Orders select order; // IQueryable
+
+    foreach(var order in orders)
+    {
+        Console.WriteLine(order.Id);
+    }
+    ```
+
+- `Deferred Execution:` Ertelenmiş işlemlerde eğer oluşturulan sorgu henüz execute edilmeden bu sorgu içerisindeki bir değişkenin değeri değiştirilirse, sorgu execute edildiğinde bu değişkenin son hali ile bir sorgu generate edilecektir. Örnek olarak:
+
+    ```cs    
+    int orderId = 5;
+    var orders = from order in context.Orders where order.Id > orderId select order; 
+
+    foreach(var order in orders)
+    {
+        Console.WriteLine(order.Id);
+    }
+    // Bu örnekte id'si 5'ten büyük olan order'lar getirilecektir.
+    ```
+    ```cs
+    int orderId = 5;
+    var orders = from order in context.Orders where order.Id > orderId select order; 
+    orderId = 15;
+
+    foreach(var order in orders)
+    {
+        Console.WriteLine(order.Id);
+    }
+    // Bu örnekte ise id'si 15'ten büyük olan order'lar getirilecektir. Çünkü IQueryable durumdaki sorgu execute edildiğinde, sorgu içerisindeki **orderId** değişkenin son değeri 15'ti.
+    ```
 
 
