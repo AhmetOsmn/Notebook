@@ -220,3 +220,56 @@ Gençay Hoca'nın yayınladığı [EF Core eğitiminden](https://www.youtube.com
 
     Bu property'lerden birisi var ise EfCore bu property'i otomatik olarak primary key olarak tanımlar.
 
+
+# 10 - Veri Ekleme ve Veri Kalıcılığı
+
+- Context üzerinden veri eklemenin 2 yolu vardır:
+
+    - context.AddAsync(); // Parametre olarak `Object` tipinde bir veri alır.
+    - context.DbSet.AddAsync(); // Parametre olarak belirtilen sınıfa özgü tipteki veriyi alır.
+    
+    `DbSet` olarak belirtilen şey ekleme yapılmak istenen tablonun adıdır. Bu ikisi arasındaki tek fark tip güvenli ekleme yapmaktır.
+
+- `SaveChanges():` insert, update, delete sorgularını oluşturur ve bunları bir transaction içerisinde veritabanına gönderip çalışmasını (execute edilmesini) sağlar. 
+Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemden önce yapılan bütün işlemleri geri alır, yani `rollback` yapılır.
+
+    ***Not:*** *SaveChanges()* fonksiyonu çalıştırılmadan veritabanına herhangi bir sorgu gönderilmez. 
+
+- Bir verinin ef core'a göre statüsünü öğrenmek istiyorsak şu şekilde bakabiliriz:
+
+        context.Entry(obje).State;
+
+    Eğer veri henüz database'e eklenmemişse ve biz yukarıdaki şekilde bu verinin (objenin) ef core'a göre statüsüne bakarsak `Detached` olduğunu görürüz.
+
+    Eğer veri database'e eklenmek için **Context.Add(obje)** metodunda kullanılmış ise ama henüz **SaveChanges()** metodu kullanılmamış ise statüsü `Added`'tir.
+
+    Eğer veri yukarıdaki gibi bir Context metodu ile kullanılmış ise ve ardından **SaveChanges()** metodu da çalıştırılmış ise artık statüsü `Unchanged` olur. Eğer **SaveChanges()** metodundan sonra tekrar başka bir işlem yapılırsa verinin statüsü tekrar değişecektir. Her **SaveChanges()** kullanımında statü `Unchanged` durumuna getirilir.
+
+    Veri üzerinde güncelleme işlemi gerçekleştirildiğine `Modified` statüsüne sahip olur.
+
+    Eğer bir silme işlemi gerçekleştirirsek `Deleted` durumuna gelecektir.
+
+- Database içerisinde transaction açmak masraflı bir işlemdir. Çoklu veri ekleme işlemi gibi işlemlerde her ekleme için ayrı ayrı transaction açmak yerine tek transaction içerisinde yapabiliriz. 
+
+    Yani örnek olarak her ekleme işleminden sonra **SaveChanges()** kullanmak yerine eklenecek verileri **Add()** ile ekledikten sonra tek bir **SaveChanges()** kullanarak işlemi gerçekleştirebiliriz.
+
+    Çoklu ekleme işlemi için ek olarak **AddRange()** metodu da kullanılabilir.
+    
+# 11 - Veri Güncelleme ve Veri Kalıcılığı
+
+- `ChangeTracker:` Context üzerinden gelen verilerin takibini yapan mekanizmadır. Bu mekanizma sayesinde context üzerinden gelen veriler ile update veya delete sorgularının oluşturulacağı anlaşılır.
+
+- Eğer *Context* üzerinde getirilen bir veriyi güncellemek istiyorsak (yani takip edilen bir veriyi), ilgili güncellemeleri yaptıktan sonra direkt olarak **SaveChanges()** metodunu kullanmamız yeterlidir. Örnek olarak:
+
+        var selectedOrder = context.Orders.FirstOrDefault(x => x.Id == id);
+        selectedOrder.Status = OrderStatus.Accepted;
+        context.SaveChanges();
+
+- Eğer context üzerinden elde dilmeyen bir veriyi (yani Tracker tarafından takip edilmeyen veri) database'de güncellemek istersek şu şekilde yapabiliriz:
+
+        context.DbSet.Update(obje);
+        context.SaveChanges();
+
+    Yukarıdaki şekilde olduğu gibi eğer **Update()** fonksiyonu ile takip edilmeyen bir veriyi güncellemek istiyorsak, bu verinin kesinlikle `Id` değeri verilmelidir.
+
+
