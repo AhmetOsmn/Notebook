@@ -362,4 +362,47 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
     // Bu örnekte ise id'si 15'ten büyük olan order'lar getirilecektir. Çünkü IQueryable durumdaki sorgu execute edildiğinde, sorgu içerisindeki **orderId** değişkenin son değeri 15'ti.
     ```
 
+<br>
+
+# 14 - Sorgulama Fonksiyonları (Çoğul Veri Getirenler)
+
+- `ToList():` Üretilen sorguyu execute etmemizi sağlayan fonksiyon  fonksiyonudur.
+- `ThenBy():` **OrderBy()** üzerinde yapılan sıralama işlemini farklı kolonlarda uygulamamızı sağar. Örnek olarak:
+
+    ```cs
+    var orders = context.Orders.OrderBy(x => x.OrderDate).ThenBy(x => x.Id);
+    ```
+
+    Default olarak **OrderBy()**'da da default olduğu gibi *ascending* sıralama yapar.
+
+<br>
+
+# 15 - Sorgulama Fonksiyonları (Tekil Veri Getirenler)
+
+- `Single():` Eğer sorgu neticesinde birden fazla veri geliyorsa veya hiç veri gelmiyorsa her iki durumda da exception fırlatır.
+- `SingleOrDefault():` Eğer sorgu neticesinde birden fazla veri geliyorsa exception fırlatır, hiç veri gelmiyor ise **null (default değerini)** döner.
+-  `First():` Sorgu neticesinde elde edilen verilerin ilkini getirir. Eğer hiç veri gelmiyorsa exception fırlatır.
+-  `FirstOrDefault():` Sorgu neticesinde elde edilen verilerin ilkini getirir. Eğer hiç veri gelmiyorsa **null (default değerini)** döner.
+-  `Find():` Eğer tablodaki *primary key* üzerinden hızlı bir şekilde bir arama yapılmak isteniyorsa kullanılır.
+
+    Ayrıca **Composite Primary Key** durumlarında da kullanılır. Örnek olarak:
+
+    ```cs
+    var orderDetail = context.OrderDetails.Find(2,5); // 2 -> OrderId, 5 -> Id (OrderDetailId)
+    ```
+
+    **Find()** Fonksiyonu üstteki diğer fonksiyonlardan farklı olarak şu şekilde davranır: 
+    
+    - Üstteki fonksiyonlar sorguları her zaman database'e gönderir. **Find()** ise veriyi ilk önce context içerisinde arar (yani in memory'de), eğer burada yok ise sorguyu database'e gönderir. Performans açısından avantaj sağlamış olur.
+    - **Find()** sadece *primary key* üzerinde arama yapar, üstteki diğer fonksiyonlar ise *where* ifadesi ile istenilen kolon üzerinde arama yapabilir.
+      
+- `Last():` Sorgu neticesinde elde edilen verilerin sonuncusunu getirir. Eğer hiç veri gelmiyorsa exception fırlatır.
+
+    ***Not:*** **Last()** ve **LastOrDefault()** fonksiyonlarını kullanmadan önce **OrderBy()** veya **OrderByDescending()** fonksiyonları kullanılmak zorundadır. Ornek olarak:
+
+    ```cs
+    var lastOrder = context.Orders.OrderBy(x => x.CreatedDate).Last(x => x.Id > 5);
+    ```
+
+- `LastOrDefault():` Sorgu neticesinde elde edilen verilerin sonuncusunu getirir. Eğer hiç veri gelmiyorsa **null (default değerini)** döner.
 
