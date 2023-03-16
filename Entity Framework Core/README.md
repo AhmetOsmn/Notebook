@@ -213,10 +213,196 @@ Gençay Hoca'nın yayınladığı [EF Core eğitiminden](https://www.youtube.com
 
     Eğer bir entity'nin içerisinde:
 
-            public int Id {get; set;}
-            public int ID {get; set;}
-            public int EntityNameId {get; set;}
-            public int EntityNameID {get; set;}
+    ```cs
+    public int Id {get; set;}
+    public int ID {get; set;}
+    public int EntityNameId {get; set;}
+    public int EntityNameID {get; set;}
+    ```
 
     Bu property'lerden birisi var ise EfCore bu property'i otomatik olarak primary key olarak tanımlar.
+
+<br>
+
+# 10 - Veri Ekleme ve Veri Kalıcılığı
+
+- Context üzerinden veri eklemenin 2 yolu vardır:
+
+    - context.AddAsync(); // Parametre olarak `Object` tipinde bir veri alır.
+    - context.DbSet.AddAsync(); // Parametre olarak belirtilen sınıfa özgü tipteki veriyi alır.
+    
+    `DbSet` olarak belirtilen şey ekleme yapılmak istenen tablonun adıdır. Bu ikisi arasındaki tek fark tip güvenli ekleme yapmaktır.
+
+- `SaveChanges():` insert, update, delete sorgularını oluşturur ve bunları bir transaction içerisinde veritabanına gönderip çalışmasını (execute edilmesini) sağlar. 
+Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemden önce yapılan bütün işlemleri geri alır, yani `rollback` yapılır.
+
+    ***Not:*** *SaveChanges()* fonksiyonu çalıştırılmadan veritabanına herhangi bir sorgu gönderilmez. 
+
+- Bir verinin ef core'a göre statüsünü öğrenmek istiyorsak şu şekilde bakabiliriz:
+
+    ```cs
+    context.Entry(order).State;
+    ```
+
+    Eğer veri henüz database'e eklenmemişse ve biz yukarıdaki şekilde bu verinin (objenin) ef core'a göre statüsüne bakarsak `Detached` olduğunu görürüz.
+
+    Eğer veri database'e eklenmek için **Context.Add(obje)** metodunda kullanılmış ise ama henüz **SaveChanges()** metodu kullanılmamış ise statüsü `Added`'tir.
+
+    Eğer veri yukarıdaki gibi bir Context metodu ile kullanılmış ise ve ardından **SaveChanges()** metodu da çalıştırılmış ise artık statüsü `Unchanged` olur. Eğer **SaveChanges()** metodundan sonra tekrar başka bir işlem yapılırsa verinin statüsü tekrar değişecektir. Her **SaveChanges()** kullanımında statü `Unchanged` durumuna getirilir.
+
+    Veri üzerinde güncelleme işlemi gerçekleştirildiğine `Modified` statüsüne sahip olur.
+
+    Eğer bir silme işlemi gerçekleştirirsek `Deleted` durumuna gelecektir.
+
+- Database içerisinde transaction açmak masraflı bir işlemdir. Çoklu veri ekleme işlemi gibi işlemlerde her ekleme için ayrı ayrı transaction açmak yerine tek transaction içerisinde yapabiliriz. 
+
+    Yani örnek olarak her ekleme işleminden sonra **SaveChanges()** kullanmak yerine eklenecek verileri **Add()** ile ekledikten sonra tek bir **SaveChanges()** kullanarak işlemi gerçekleştirebiliriz.
+
+    Çoklu ekleme işlemi için ek olarak **AddRange()** metodu da kullanılabilir.
+
+<br>
+
+# 11 - Veri Güncelleme ve Veri Kalıcılığı
+
+- `ChangeTracker:` Context üzerinden gelen verilerin takibini yapan mekanizmadır. Bu mekanizma sayesinde context üzerinden gelen veriler ile update veya delete sorgularının oluşturulacağı anlaşılır.
+
+- Eğer *Context* üzerinde getirilen bir veriyi güncellemek istiyorsak (yani takip edilen bir veriyi), ilgili güncellemeleri yaptıktan sonra direkt olarak **SaveChanges()** metodunu kullanmamız yeterlidir. Örnek olarak:
+
+    ```cs
+    var selectedOrder = context.Orders.FirstOrDefault(x => x.Id == id);
+    selectedOrder.Status = OrderStatus.Accepted;
+    context.SaveChanges();
+    ```
+
+- Eğer context üzerinden elde dilmeyen bir veriyi (yani Tracker tarafından takip edilmeyen veri) database'de güncellemek istersek şu şekilde yapabiliriz:
+
+    ```cs
+    context.Orders.Update(order);
+    context.SaveChanges();
+    ```
+
+    Yukarıdaki şekilde olduğu gibi eğer **Update()** fonksiyonu ile takip edilmeyen bir veriyi güncellemek istiyorsak, bu verinin kesinlikle `Id` değeri verilmelidir.
+
+<br>
+
+# 12 - Veri Silme ve Veri Kalıcılığı
+
+- *ChangeTracking* tarafından takip edilmeyen bir veriyi silerken *Update* örneğindeki gibi, **Id** değerine sahip olan bir nesne **Remove()** fonksiyonuna verilir ve ardından **SaveChanges()** metodu uygulanır.
+- Farklı bir kullanım olarak *EntityState* üzerindenden de silme işlemi yapabiliriz. Örnek olarak:
+
+    ```cs
+    context.Entry(order).State = EntityState.Deleted;
+    context.SaveChanges();
+    ```
+
+- Birden fazla veriyi silmek istiyorsak **RemoveRange()** metodunu kullanabiliriz.
+
+<br>  
+
+# 13 - Veri Sorgulama
+
+- `Method Syntax:` Database üzerinden verileri sorgulama işlemini metotlar ile yaptığımız durumlara denir (LINQ Sorguları).
+
+    ```cs
+    var orders = context.Orders.ToList();
+    ```
+
+- `Query Syntax:` Verileri sorgularken query'ler kullandığımız durumlardır (LINQ Query'leri).
+  
+    ```cs
+    var orders = (from order in context.Orders select order).ToList();
+    ```        
+
+- Oluşturulan sorgulardan cevap alabilmek için bu sorguların bir şekilde çalıştırılıyor olamsı gerekiyor. Sonraki kısımlarda tekrar açıklanacak fakat şimdilik kısaca 2 kavramı basit düzeyde incelememiz gerekiyor:
+
+    - `IQueryable:` Sorguya karşılık gelir. Ef core üzerinden yapılmış olan sorgunun execute edilmemiş halini temsil eder. 
+    - `IEnumerable:` Sorgunun execute edilip, elde edilen verilerin in memory'e yüklenmiş halini temsil eder.
+
+    <br>
+
+    Sorguyu (IQueryable) execute ettiğimiz zaman artık ***IEnumerable*** duruma geçmiş oluyoruz, yani artık elimizde bir veri/veri seti oluyor. *IQueryable* halden *IEnumerable* hale geçebilmek için farklı yöntemler vardır ama şimdilik **ToList()** kullanıyoruz diyebiliriz. Örnek olarak:
+
+    ```cs
+    var orders = context.Orders; //=> IQueryable
+    var orders = context.Orers.ToList(); //=> IEnumerable
+    ```
+
+    Veya bir sorguyu oluşturup bir değişkende tuttuğumuzda (IQueryable durmuda), bu değişkeni bir **foreach** döngüsü içerisinde tetiklersek, bu sorgu execute edilir. Bu kullanım `Deferred Execution (Ertelenmiş Çalışma)` olarak isimlendirilir. Örnek olarak:
+
+    ```cs
+    var orders = from order in context.Orders select order; // IQueryable
+
+    foreach(var order in orders)
+    {
+        Console.WriteLine(order.Id);
+    }
+    ```
+
+- `Deferred Execution:` Ertelenmiş işlemlerde eğer oluşturulan sorgu henüz execute edilmeden bu sorgu içerisindeki bir değişkenin değeri değiştirilirse, sorgu execute edildiğinde bu değişkenin son hali ile bir sorgu generate edilecektir. Örnek olarak:
+
+    ```cs    
+    int orderId = 5;
+    var orders = from order in context.Orders where order.Id > orderId select order; 
+
+    foreach(var order in orders)
+    {
+        Console.WriteLine(order.Id);
+    }
+    // Bu örnekte id'si 5'ten büyük olan order'lar getirilecektir.
+    ```
+    ```cs
+    int orderId = 5;
+    var orders = from order in context.Orders where order.Id > orderId select order; 
+    orderId = 15;
+
+    foreach(var order in orders)
+    {
+        Console.WriteLine(order.Id);
+    }
+    // Bu örnekte ise id'si 15'ten büyük olan order'lar getirilecektir. Çünkü IQueryable durumdaki sorgu execute edildiğinde, sorgu içerisindeki **orderId** değişkenin son değeri 15'ti.
+    ```
+
+<br>
+
+# 14 - Sorgulama Fonksiyonları (Çoğul Veri Getirenler)
+
+- `ToList():` Üretilen sorguyu execute etmemizi sağlayan fonksiyon  fonksiyonudur.
+- `ThenBy():` **OrderBy()** üzerinde yapılan sıralama işlemini farklı kolonlarda uygulamamızı sağar. Örnek olarak:
+
+    ```cs
+    var orders = context.Orders.OrderBy(x => x.OrderDate).ThenBy(x => x.Id);
+    ```
+
+    Default olarak **OrderBy()**'da da default olduğu gibi *ascending* sıralama yapar.
+
+<br>
+
+# 15 - Sorgulama Fonksiyonları (Tekil Veri Getirenler)
+
+- `Single():` Eğer sorgu neticesinde birden fazla veri geliyorsa veya hiç veri gelmiyorsa her iki durumda da exception fırlatır.
+- `SingleOrDefault():` Eğer sorgu neticesinde birden fazla veri geliyorsa exception fırlatır, hiç veri gelmiyor ise **null (default değerini)** döner.
+-  `First():` Sorgu neticesinde elde edilen verilerin ilkini getirir. Eğer hiç veri gelmiyorsa exception fırlatır.
+-  `FirstOrDefault():` Sorgu neticesinde elde edilen verilerin ilkini getirir. Eğer hiç veri gelmiyorsa **null (default değerini)** döner.
+-  `Find():` Eğer tablodaki *primary key* üzerinden hızlı bir şekilde bir arama yapılmak isteniyorsa kullanılır.
+
+    Ayrıca **Composite Primary Key** durumlarında da kullanılır. Örnek olarak:
+
+    ```cs
+    var orderDetail = context.OrderDetails.Find(2,5); // 2 -> OrderId, 5 -> Id (OrderDetailId)
+    ```
+
+    **Find()** Fonksiyonu üstteki diğer fonksiyonlardan farklı olarak şu şekilde davranır: 
+    
+    - Üstteki fonksiyonlar sorguları her zaman database'e gönderir. **Find()** ise veriyi ilk önce context içerisinde arar (yani in memory'de), eğer burada yok ise sorguyu database'e gönderir. Performans açısından avantaj sağlamış olur.
+    - **Find()** sadece *primary key* üzerinde arama yapar, üstteki diğer fonksiyonlar ise *where* ifadesi ile istenilen kolon üzerinde arama yapabilir.
+      
+- `Last():` Sorgu neticesinde elde edilen verilerin sonuncusunu getirir. Eğer hiç veri gelmiyorsa exception fırlatır.
+
+    ***Not:*** **Last()** ve **LastOrDefault()** fonksiyonlarını kullanmadan önce **OrderBy()** veya **OrderByDescending()** fonksiyonları kullanılmak zorundadır. Ornek olarak:
+
+    ```cs
+    var lastOrder = context.Orders.OrderBy(x => x.CreatedDate).Last(x => x.Id > 5);
+    ```
+
+- `LastOrDefault():` Sorgu neticesinde elde edilen verilerin sonuncusunu getirir. Eğer hiç veri gelmiyorsa **null (default değerini)** döner.
 
