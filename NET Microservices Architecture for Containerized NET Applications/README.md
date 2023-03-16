@@ -88,7 +88,7 @@
 
 <br>
 
-# Bölüm 1 - Introduction to Containers and Docker (Konteynırlar ve Docker'a Giriş)
+# 1 - Introduction to Containers and Docker
 
 - `Containerization` dediğimiz şey bir uygulamanın, bu uygulamanının bağımlılıklarının ve konfigürasyonlarının bir araya toplanıp bir paket haline getirilmesi diyebiliriz.
 
@@ -179,7 +179,7 @@
 
 <br>
 
-# Choosing Between .NET 6 and .NET Framework for Docker Containers
+# 2 - Choosing Between .NET 6 and .NET Framework for Docker Containers
 
 - İki tarafta dockerize edilebilir durumdadır. Kullanıcı ihtiyaçlarına ve bağımlılıklarına göre tercih edebilir.
 
@@ -213,7 +213,7 @@
 
 <br>
 
-# Architecting container and microservice-based applications
+# 3 - Architecting container and microservice-based applications
 
 ### Container design principles
 
@@ -266,7 +266,7 @@
 
 <br>
 
-# Manage state and data in Docker applications
+### Manage state and data in Docker applications
 
 - Docker uygulamalarında verileri yönetmenin farklı yolları vardır. 
 
@@ -321,7 +321,7 @@
 
 <br>
 
-# Service-Oriented Architecture (SOA)
+### Service-Oriented Architecture (SOA)
 
 - SOA, geliştireceğimiz uygulamayı alt sistemler veya alt katmanlar olarak adlandırılabilecek birden çok hizmete ayrıştırarak geliştirmeyi söyler.
 
@@ -341,7 +341,7 @@
 
 <br>
 
-# Microservices Architecture
+### Microservices Architecture
 
 - Mikro servislerin boyutlarının ne kadar olacağı çok önemli değildir. 
     
@@ -367,7 +367,7 @@
 
 <br>
 
-# Data Sovereignty Per Microservice (Mikro servis başına Veri Egemenliği)
+### Data Sovereignty Per Microservice (Mikro servis başına Veri Egemenliği)
 
 - Mikro servis mimarisinin önemli bir kuralı da şudur: her mikro servisin kendisine ait olan bir domain data'sı ve logic'i olmalıdır.
 
@@ -394,7 +394,7 @@
 
 <br>
 
-# The Relationship Between Microservices and The Bounded Context Pattern
+### The Relationship Between Microservices and The Bounded Context Pattern
 
 - Mikro servis'lerin konsepti **DDD** içerisindeki **Bounded Context (BC) Pattern**'den gelmektedir. 
 
@@ -402,7 +402,7 @@
 
 <br>
 
-# Challenges and solutions for distributed data management
+### Challenges and solutions for distributed data management
 
 ### Challenge #1: How to define the boundaries of each microservice
 
@@ -471,7 +471,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 <br>
 
-# Identify domain-model boundaries for each microservice
+### Identify domain-model boundaries for each microservice
 
 - Mikro servislerin sınırlarını ve boyutlarını belirlerken amacımız en ayrıntılı ayrımı elde etmek değildir ama mümkünse en küçük mikro servislere yönelmeliyiz.
 
@@ -489,7 +489,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
     <br>
 
-# The API gateway pattern versus the Direct client-to microservice communication
+### The API gateway pattern versus the Direct client-to microservice communication
 
 ### Direct client-to-microservice communication
 
@@ -571,7 +571,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 <br>
 
-# Azure API Management
+### Azure API Management
 
 ![](images/apigatewaywithazure.png)
 
@@ -587,7 +587,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 <br>
 
-# Ocelot
+### Ocelot
 
 - Ocelot daha basit yaklaşımlar için önerilen hafif bir API Gateway'dir.
 
@@ -596,7 +596,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 <br>
 
-# Drawbacks of the API Gateway pattern
+### Drawbacks of the API Gateway pattern
 
 - API Gateway'lerin bir dezavantajı potansiyel bir hata noktası oluşturmasıdır.
 - API'nin yaptığı ek network çağrıları yanıt süresinin artmasına neden olabilir.
@@ -609,7 +609,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 <br>
 
-# Communication types
+### Communication types
 
 - Servisler ve client farklı şekillderde iletişim kurabilir. Bu iletişim türleri ilk olarak 2 eksene ayrılabilir.
 
@@ -627,7 +627,7 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
         - Eğer tek dinleyici varsa her istek mutalaka sadece bir dinleyici veya servis tarafından işleniyor olmalıdır.
         - Birden fazla dinleyici olduğunda istek 0 veya N dinleyici tarafından işlenebilmelidir. Burada iletişim asenkron olmak zorundadır (Örnek olarak pub/sub mekanizmasını kullanarak Event-Driven Arch. ile olması gibi). Burada message broker sistemleri veya service-bus'lar kullanılabilir. Sistem içerisinde bir veride değişiklik meydana geldiğinde veya yeni bir veri eklenmesi gibi durumlarda broker'lar veya bus'lar tarafından sub halindeki mikroservislere bir event gönderilir ve mikro servisler bu event'leri işlerler. 
 
-# Async microservice integration
+### Async microservice integration
 
 - Bir mikro servis oluşturulduktan sonra sisteme dahil edilirken dikkat edilmesi gereken nokta bu mikro servisin diğer mikro servisler ile asenkron olarak iletişimde olmasıdır. Bir de mikro servisler arasındaki iletişimin-bağımlılığın olabildiğince az olmasını istediğimizi tekrar belirtmiş olalım.
 
@@ -635,14 +635,225 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
     Her mikro servisteki amacımız otonom olması ve halihazırda iletişimde olduğu başka bir mikro serviste bir sorun olsa da yeni dinleyicilere cevap verebiliyor olmasıdır.
 
-# Multiple-Receivers message based communication
+- Eğer başlangiç servisimiz ilk etapta diğer servislerden birisinden veri okumak zorundaysa, bunu senkron isteklerle gerçekleştirmek yerine, o verileri bir veritabanında tutup (data consistency'i sağlayarak) oradan yayına almak daha sağlıklıdır.
+
+### Asynchronous message-based communication
+
+- Microservice yapılanmalarında bir mikroservice içerisinde bir değişiklik meydana geldiğinde bunu handle edebiliyor olmamız gerekiyor. Değişik olduğunda diğer servislerin de gerekli işlemleri yapıp çalışmaya devam etmesi, bozulmaması gerekiyor. Bunu sağlamanın bir yolu *eventual consistenct* ve *Async Event-Driven Communication*'dır.
+
+<br>
+
+### Multiple-Receivers message based communication
+
+- ![](images/singlereceiver.png)
+  
+<br>
+
+### Multiple-Receivers message based communication
 
 - Mikro servisler arasındaki iletişim mesaj tabanlı olması, yani pub/sub yönetimi ile yapılıyor olması ölçeklendirilebilirlik açısından önemlidir. Bir servisin yayınladığı mesajı başka 2 servis tüketiyor olsun. Eğer 3. bi servisin de bu mesajı tüketmesini istersek yapılması gereken şey sadece mesajı yayınlayan servise sub olmak. Bu sayede `Open/closed prensibi`'ne de bağlı kalmış oluyoruz.
 
-## Microservice APIs
+    ![](images/multiplereceiver.png)
+
+<br>
+
+### Microservice APIs
 
 - Mikro servislerde API'leri oluştururken API'ler kullanılan yönteme veya protokole bağımlı olarak geliştirilir. Örnek olarak HTTP ve RESTful bir yapı kullanıyorsanız API URL'lerden, JSON formatındaki istek ve cevaplardan oluşacaktır. Veya mesajlaşma yöntemini kullanıyorsanız, API mesaj tiplerinden oluşacaktır.
 
 - API'leri oluşturduktan sonra üzerinde değişiklikler yapmamız gerekebilir. Böyle durumlarda bu API ile iletişimde olan diğer servislerin etkilenmemesi için API'leri versiyonlamaya başlarız. Burada API güncellendikçe, yeni versiyonları çıkmayada devam etse de eski versiyonların belirli bir süre hizmet vermeye devam ediyor olması önemlidir.
 
- 
+<br>
+
+### Creating composite UI based on microservices
+
+- Server tarafında microservice yapısına geçilse bile, UI tarafında monolith kalan projeler olabiliyor. Bunun yerine daha iyi bir yaklaşım olarak UI tarafını da microservice mimarisine çevirme durumuna **micro frontends** diyoruz.
+
+    Monolith UI örneği:
+
+    ![](images/monolithui.png)
+
+    Composite UI örneği:
+
+    ![](images/compositeui.png)
+
+<br>
+
+### Resiliency and high availability in microservices
+
+- Dayanıklık (Resiliency) problemleri, uygulamanın güncellenmesi sırasında biraz daha karmaşık hale gelebilir. Dağıtım sistemleri ile birlikte çalışan bir microservice yeni bir sürüme geçip geçmeyeceğine, bir sorun olursa tutarlı olan önceki sürüme dönüp dönmeyeceğine karar vermelidir. Ayrıca yeni sürümlere geçerken kaynak olarak yeterli olunup olunmadığına ve microsevice'in önceki sürümlerinin nasıl işlem göreceğine de karar verilmelidir. Bunlar için microservice'in sağlık bilgilerini yayınlıyor olması gerekir, orchestrator'da bu bilgilere göre kararlar alır.
+
+    Bir de dayanıklılık (Resiliency) bulut tabanlı sistemlerin davranışları ile de ilgilidir. Bu sistemler oluşan hataları otomatik tekrar deneme işlemleri ile kapatmaya çalışırlar. 
+
+<br>
+
+### Health management and diagnostics in microservices
+
+- Şimdiye kadar ki kısımdan da anlaşılacağı üzere bir microservice'in sağlık durumunu (health) ve diagnostic verilerini dışarıya paylaşıyor olması gerekiyor.
+
+    Sağlık bilgilerinin ve diagnostic olaylarının ortak bir yaklaşım ile aynı şekilde incelenmesi önemlidir, yani microservice'ler arasında bir ortak dil/yöntem olmalı ve hepsi bu 2 kategoride (health ve diagnostic) verilerini aynı şekilde paylaşmalıdır.
+
+<br>
+
+### Health checks
+
+- Microservice'ler tarafından sağlanan sağlık durum bilgileri, bu microservice'in kullanıldığı yerlerde önemli rol oynar. Microservice'ler gerekli işlemleri yapıp yapamayacakları konusunda dışarıya bir statü bildirir.
+
+    Örnek olarak güncelleme ve yayınlama yapılan bir proje içerisinde bir microservice kullanılıyor olsun. Eğer bu microservice'in health check mekanizması devrede değil ise, microservice bozulduğunda/durduğunda ana uygulama hatalı çalışabilir. Bu tarz durumların yaşanmaması için ilk önce microservice'lerin sağlık kontrolleri yapılır, her şeyin olması gerektiği durumda olduğuna karar verildiğinde microservice'ler kullanılmaya başlanır.  
+
+    Temel anlamda 2 tip health check vardır:
+
+    - **Liveness:** Microservice'in ayakta olup olmadığını kontrol eder. Eğer ayaktaysa request alıp response dönebiliyor mu bunu kontrol eder.
+    - **Readiness:** Microservice'in bağımlılıklarının (database, queue servisleri vb.) hazır durumda olup olmadığını, microservice'in kendisinden beklenen operasyonu gerçekleştirip gerçekleştiremeyeceğini kontrol eder.
+
+<br>
+
+### Using diagnostics and logs event streams
+
+- Monolitik uygulamalarda logları bir dosya içerisinde tutmak ve analiz etmek biraz daha kolaydır. Fakat microservice mimarisinde bu iş biraz daha kompleks halie gelir. Microservice'ler bir orchestrator cluster'da birden fazla node içerisinde dağınık halde çalışırlar. Bu dağınık microservice'lerin yayınladığı loglardan ilişkili olanları bir arada tutmak/biraraya getirmek ekstra bir efor gerektirir.
+
+    Microservice'ler loglarını kendileri yönetmemelidir. Her microservice üzerinde/içerisinde çalıştığı ana uygulamanın output'larına/log'larına yazmalıdır. Bu ana uygulama içerisindeki ekstra tool'lar ile bu loglar yönetilirse çok daha temiz ve anlaşılır bir işlem yapılmış olunur.
+
+<br>
+
+### Orchestrators managing health and diagnostics information
+
+- Microservice mimarilerinde az sayıda microservice varken çok sorun yaşanmasa da, sayı arttıkça yönetebilirlik zorlaşacaktır. Bu yönetim development takımları tarafından sağlanmaya çalışılırsa çok fazla ekstra maliyet oluşur, takımlar servis bazında business sorunları ile uğraşmalı ve geliştirmeler yapmalı. Bunun yerine **microservice cluster** veya **orchestrator** olarak isimlendirilen uygulamalar ile microservice'leri yönetmek çok daha mantıklı ve avantajlıdır. Bu yaklaşım ile microservice mimarisindeki karmaşıklığı azaltmış oluruz.
+
+<br>
+
+### Orchestrate microservices and multi-container applications for high scalability and availability
+
+- **Clusters and orchestrators:** Birçok Docker host'unda uygulamaları ölçeklendirmemiz gerektiğinde, büyük microservice yapılanmalarında olduğu gibi temel platformdaki karmaşıklıkları soyutlayarak tüm host'ları tek bir cluster olarak yönetmek oldukça önemlidir. Cluster'lar ve Orchestrator'lar bu hizmeti sağlarlar.
+
+<br>
+
+# 4 - Development process for Docker-based applications
+
+### Development workflow for Docker apps
+
+- Docker ile entegre bir uygulama geliştirmeye başladığımızda bu uygulamayı local'imizde bir container olarak sürekli test eder durumda oluruz. Her container'ın sahip olduğu şeyler şunlardır:
+
+    - İşletim sistemi seçimi, bu bir Linux dağıtımı olabilir, Windows Nano Server olabilir veya Windows Server Core olabilir.
+    - Development sürecinde eklenen dosyalar, örnek olarak projenin kaynak kodları vb.
+    - Configuration bilgileri, Environment settings ve bağımlılıklar gibi.
+
+<br>
+
+### Workflow for developing Docker container-based applications
+
+- Bir geliştiricinin local'inde container-based bir projeyi oluşturuken ilerleyeceği adımlar alt kısımda örneklendirilmiştir:
+
+    ![](images/workflow.png)
+
+
+    1. Start coding and create your initial application or service baseline:
+
+        VS ile container-based bir uygulama geliştirmek istiyorsak ilk olarak **Docker Desktop** bilgisayarımızda kurulu olmalıdır (windows). Ayrıca VS 2022 17.0 versiyonunda veya üzerinde olmalıdır. 
+
+        Sonraki kısımlarda artık projeyi normal bir şekilde geliştirebiliriz.
+    
+    2. Create a Dockerfile related to an existing .NET base image:
+
+        Deploy etmek istediğimiz her custom image ve container için bir **dockerfile** oluşturmamız gerekir. Eğer microservice mimarisinde çalışıyorsak ve birden fazla servisimiz varsa her servis için birer **dockerfile** oluşturmamız gerekir. 
+
+        Oluşturulan bu **dockerfile** dosyaları servislerin root klasöründe yer almalıdır. İçerik olarak servisin nasıl setup edileceği ve nasıl run edileceği bilgilerini içerir. Örnek bir **dockerfile** içeriği:
+
+        ```cs
+        FROM mcr.microsoft.com/dotnet/aspnet:6.0
+        ARG source
+        WORKDIR /app
+        EXPOSE 80
+        COPY ${source:-obj/Docker/publish} .
+        ENTRYPOINT ["dotnet", " MySingleContainerWebApp.dll "]
+        ```
+
+        Multi-stage builds in Dockerfile
+
+        **Dockerfile** içerisinde yer alan her satır çalıştığında, önceki katmandaki değişiklikler ile birlikte yeni bir katman oluşur. En son satırdaki komut ile oluşan katman ile elde edilen katmanlar bütünü nihai dosya sistemini oluşturur. 
+        
+        Örnek bir **dockerfile** ve içeriğinin detaylı açıklamaları:
+
+        ```cs
+        1 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+        2 WORKDIR /app
+        3 EXPOSE 80
+        4
+        5 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+        6 WORKDIR /src
+        7 COPY src/Services/Catalog/Catalog.API/Catalog.API.csproj ...
+        8 COPY src/BuildingBlocks/HealthChecks/src/Microsoft.AspNetCore.HealthChecks ...
+        9 COPY src/BuildingBlocks/HealthChecks/src/Microsoft.Extensions.HealthChecks ...
+        10 COPY src/BuildingBlocks/EventBus/IntegrationEventLogEF/ ...
+        11 COPY src/BuildingBlocks/EventBus/EventBus/EventBus.csproj ...
+        12 COPY src/BuildingBlocks/EventBus/EventBusRabbitMQ/EventBusRabbitMQ.csproj ...
+        13 COPY src/BuildingBlocks/EventBus/EventBusServiceBus/EventBusServiceBus.csproj ...
+        14 COPY src/BuildingBlocks/WebHostCustomization/WebHost.Customization ...
+        15 COPY src/BuildingBlocks/HealthChecks/src/Microsoft.Extensions ...
+        16 COPY src/BuildingBlocks/HealthChecks/src/Microsoft.Extensions ...
+        17 RUN dotnet restore src/Services/Catalog/Catalog.API/Catalog.API.csproj
+        18 COPY . .
+        19 WORKDIR /src/src/Services/Catalog/Catalog.API
+        20 RUN dotnet build Catalog.API.csproj -c Release -o /app
+        21
+        22 FROM build AS publish
+        23 RUN dotnet publish Catalog.API.csproj -c Release -o /app
+        24
+        25 FROM base AS final
+        26 WORKDIR /app
+        27 COPY --from=publish /app .
+        28 ENTRYPOINT ["dotnet", "Catalog.API.dll"]
+        ```
+        1. Stage'e **base** ismiyle küçük bir image'i tanımlayarak başlar.
+        2. Image içerisinde **/app** klasörü oluşturur.
+        3. 80 Portunu açık hale getirir.
+        5. Yeni bir Stage'e başlar ve burada **building/publishing** işlemleri için kullanılacak büyük bir image tanımlar ve bu image'i **build** olarak isimlendirir.
+        6. Image içerisinde **/src** klasörü oluşturur.
+        7. - 16. Bu aralıkta daha sonrasında restore edebilmek için **.csproj** dosyalarının kopyalarını alır.
+        17. Catalog.API ve referans aldığı projelerin paketlerini restore eder.
+        18. **/src** klasörünün içerisine (dockerignore dosyasında belirtilen dosyalar hariç) solution içerisindeki bütün her şeyi kopyalar.
+        19. Current klasörü **Catalog.API** olarak günceller.
+        20. Projeyi build eder (bağımlılıkları ile birlikte) ve sonrasında **/app** klasörüne çıktı alır.
+        22. Yeni bir Stage'e başlar ve **build**', **publish** olarak değiştirir. 
+        23. Projeyi publish eder (bağımlılıkları ile birlikte) ve **/app** klasörüne çıktı alır.
+        25. Yeni bir Stage'e başlar ve **base**'i **final** olarak değiştirir.
+        26. Current klasörü **/app** olarak günceller.
+        27. Publish Stage'i içerisindeki **/app** klasörünü current klasöre kopyalar.
+        28. Container başlatıldığında çalıştırılacak komutu tanımlar.
+
+        Burada docker'ın cache mekanizmasından faydalanılabilir. Daha önce çalıştırılan bir komut tekrar çalıştırılacağı zaman, bu komutu tekrar çalıştırmaz önceki katmanı kullanır. Bu sayede zamandan kazanç elde etmeyi sağlar.
+
+        Eğer **7-16** arasındaki kısımları **COPY . .** olarak değiştirirsek biraz daha optimizasyon yapmış oluruz. Çünkü kopyalama işlemi sadece ilk sefer de çalıştırılır ve diğer tüm servisler için önceki katmanlar kullanılır (cache).
+
+        Sonraki optimizasyon için **17.** satırdaki restore işlemini düzenleyebiliriz. Eski hali ile paketleri 15 kez restore eder. Onun yerine orada **RUN dotnet restore** komutu olsaydı sadece 1 kez restore işlemi yapılırdı. Burada şöyle bir işlem daha yapılması gerekiyor: bu komut sadece tek bir proje veya solution varsa çalışacaktır. Bu nedenle alt kısımdaki gibi **dockerignore** dosyası içerisine ekleme yapmamız gerekir:
+
+            ```cs
+            *.sln
+            !eShopOnContainers-ServicesAndWebApps.sln // sadece 1 sln kalmış olacak.
+            ```
+         Bir de restore komutuna **/ignoreprojectextensions:.dcproj** ifadesini de dahil edersek **docker-compose** projesini de ignore'lamış oluruz ve sadece üst kısımda bıraktığımız sln restore edilir.
+
+         Son optimizasyon olarak **20.** satır gereksizdir. Burayı da kaldırdıktan sonra **dockerfile**'ın son hali alt kısımdaki gibi olur:
+
+        ```cs
+        1 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+        2 WORKDIR /app
+        3 EXPOSE 80
+        4
+        5 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS publish
+        6 WORKDIR /src
+        7 COPY . .
+        8 RUN dotnet restore /ignoreprojectextensions:.dcproj
+        9 WORKDIR /src/src/Services/Catalog/Catalog.API
+        10 RUN dotnet publish Catalog.API.csproj -c Release -o /app
+        11
+        12 FROM base AS final
+        13 WORKDIR /app
+        14 COPY --from=publish /app .
+        15 ENTRYPOINT ["dotnet", "Catalog.API.dll"]
+        ```
+   
+    3. Create your custom Docker images and embed your application or service in them:
+
+        
+
