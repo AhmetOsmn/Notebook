@@ -406,3 +406,86 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
 
 - `LastOrDefault():` Sorgu neticesinde elde edilen verilerin sonuncusunu getirir. Eğer hiç veri gelmiyorsa **null (default değerini)** döner.
 
+<br>
+
+# 16 - Sorgulama Fonksiyonları Ekstralar
+
+- `Count():` Bu fonksiyonun kullanımında IEnumerable ile mi çalışacağımıza IQueryable ile mi çalışacağımıza dikkat etmeliyiz. Eğer sadece veri sayısını elde etmek istiyorsak, IQueryable haldeyken, yani verileri in memory'e çekmeden (IEnumerable hale getirmeden) bunu yapabiliriz. Bu sayede daha performanslı bir işlem yapmış oluruz. Örnek olarak:
+
+    ```cs
+    var orderCount = (context.Orders.ToList()).Count(); // Kötü kullanım.
+    var orderCount = context.Order.Count(); // İyi kullanım.
+    ```
+    Burada **Count()** içerisine şart belirterek te veri sayısı sorgulayabiliriz. Örnek olarak:
+
+    ```cs
+    var orderCount = context.Order.Count(x => x.Price > 50); // Ücreti 50'den büyük olan order'ların sayısı.
+    ```
+- `Any():` Sorgu neticesinde geriye herhangi bi cevap dönüyorsa **true**, dönmüyorsa **false** döner.
+
+    İstersek şartlar ile oluşturulan bir sorgunun sonuna **Any()** ekleyerek bir veri gelip gelmediğini kontrol edebiliriz, veya direkt olarak **Any()** içerisine de şartlar ekleyerek veri kontrolü yapabiliriz.
+
+- `Distinc():` Eğer sorgude tekrar eden kayıtlar varsa, bu kayıtları tekil hale getirir. 
+
+- `All():` Verilen sorgu neticesinde gelen verilerin tamamının, şarta uyup uymadığını kontrol eder. Eğer bütün veriler şarta uyuyorsa **true** uymuyorsa **false** döner. Örnek:
+
+    ```cs
+    var orders = context.Orders.All(x => x.Price > 10); // Gelen order'ların hepsinin fiyatı 10'dan büyük mü? Hepsi büyükse true, bir tane bile küçük veya eşit varsa false döner.
+    ```
+
+- `Contains():` Sql sorgusu içerisine **like** ifadesi eklemek istersek **Where()** komutu içerisinde **Contains()** kullanırız. Buradaki like sorgusu **%..%** yapısında olacaktır. Örnek olarak:
+
+    ```cs
+    var orders = context.Ordes.Where(o => o.Description.Contains("test")).ToList();
+    ```
+
+- `StartsWith():` Sql sorgusu içerisine **like** ifadesi eklemek istersek **Where()** komutu içerisinde **StartsWith()** kullanırız. Buradaki like sorgusu **..%** yapısında olacaktır. Örnek olarak:
+
+    ```cs
+    var orders = context.Ordes.Where(o => o.Description.StartsWith("te")).ToList();
+    ```
+
+- `EndsWith():` Sql sorgusu içerisine **like** ifadesi eklemek istersek **Where()** komutu içerisinde **EndsWith()** kullanırız. Buradaki like sorgusu **%..** yapısında olacaktır. Örnek olarak:
+
+    ```cs
+    var orders = context.Ordes.Where(o => o.Description.EndsWith("st")).ToList();
+    ```
+
+<br>  
+
+# 17 - Dönüşüm Fonksiyonları
+
+- Sorgu sonucunda elde edilen verileri dönüştürmek istersek bu fonksiyonları kullanırız.
+  
+- `ToList()`, `ToArray()`, `ToDictionary()` fonksiyonlarının ortak noktası, IQueryable durumdaki ifadeleri, IEnumerable'hale dönüştürür. Yani sorguları execute eder ve yanıtları getirir.
+    
+- `Select():` Bu fonksiyonun işlevsel olarak birden fazla davranışı vardır.
+
+    1. Select fonksiyonu, oluşturulacak olan sorguda tablodan çekilecek olan kolonları ayarlamamızı sağlar.
+
+    ```cs
+    var orders = context.Orders.Select(x => x.Id).ToList(); // Order'ları getirirken sadece Id'lerini getir.
+    ```
+
+    2. Select fonksiyonu, gelen verileri farklı türlerde karşılamamızı sağlar.
+
+    ```cs
+    var orders = context.Orders.Select(x => new 
+    {
+        Id = x.Id,
+        Price = x.Price
+    });
+    ```
+
+- `SelectMany():` İlişkili veriler üzerinden tekil bir veri elde etmek istiyorsak kullanırız. Örnek olarak:
+
+    ```cs
+    var orderDetails = context.OrderDetails.Include(x => x.Order).SelectMany(x => x.Order, (o, od) => new 
+    {
+        o.Id,
+        o.Date,
+        od.Id,
+        od.Description
+    });
+    ```
+
