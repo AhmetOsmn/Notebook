@@ -453,7 +453,7 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
 
 <br>  
 
-# 17 - Dönüşüm Fonksiyonları
+# 17 - Dönüşüm Fonksiyonları Ekstralar
 
 - Sorgu sonucunda elde edilen verileri dönüştürmek istersek bu fonksiyonları kullanırız.
   
@@ -487,5 +487,19 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
         od.Id,
         od.Description
     });
+    ```
+
+<br>
+
+# 18 - Sorgulama Fonksiyonları Ekstralar 2
+
+- `GroupBy():` Verilerde gruplama yapmamızı sağlar. Örnek olarak:
+
+    ```cs
+    var datas = contex.Orders.GroupBy(x => x.Date).Select(group => new 
+    {
+        Count = group.Count(),
+        Date = group.Key
+    }).ToList();
     ```
 
