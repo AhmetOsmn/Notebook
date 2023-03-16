@@ -503,3 +503,64 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
     }).ToList();
     ```
 
+<br>
+
+# 19 - Change Tracker Detayları
+
+- `ChangeTracker Property'si:` Takip edilen nesnelere erişebilmemizi sağlayan ve gerekli işlemleri yapmamıza imkan sunan property'dir.
+
+    Eğer takip edilen verileri görmek istersek alt kısımdaki örnekteki gibi erişim sağlayabiliriz:
+
+    ```cs
+    var datas = context.ChangeTracker.Entries();
+    ```
+
+- `ChangeTracker.DetectChanges():` Yapılan operasyonlar otomatik olarak tracking ediliyor olsa bile, bu metot ile opsiyonel olarak EF Coru kontrole zorlayabiliriz. Normalde **SaveChanges()** metodu otomatik olarak bu metodu kullanır fakat biz kendimiz de direkt olarak tetikleyebiliriz.
+
+- `ChangeTracker.AutoDetectChangesEnabled Property'si:` Normalde **SaveChanges() ve Entries()** metotları kullanıldığında, **DetectChanges()**'ı otomatik (default olarak) tetikliyor demiştik. Bu property'i **false** durumuna getirirsek artık tetikleyemez duruma gelir. Eğer biz tracing işlemlerini kendimiz manuel olarak yönetmek istiyorsak, sadece ihtiyacımızın olduğu yerlerde tracing yaparak performans artışı sağlamak istiyorsak bu property'i **false** yaparak kapatabiliriz.
+
+- `ChangeTracker.Entries():` **Change Tracker** tarafından takip edilen her entity nesnesinin bilgisini **EntityEntry** türünden elde etmemizi sağlar. Ayrıca bu entity'ler üzerinden belirli işlemleri de yapabilmemize olanak tanır.
+
+- `ChangeTracker.AccecptAllChanges():` **SaveChanges()** veya **SaveChanges(true)** kullanımlarında EF Core her şeyin doğru bir şekilde gittiğini varsayar ve track ettiği verilerin takiplerini keser ve yeni değişikliklerin takip edilmesini bekler. Böyle bir durumda hata oluşursa, verileri track edilmediği için düzeltme şansımız yoktur.
+
+    Eğer biz **SaveChanges(false)** şeklinde bir kullanım yaparsak, track edilen verilerin işlemleri başarılı veya başarısız olsa da veriler takip edilmeye devam edilecektir. Burada biz kendi irademiz ile bu takip edilmeyi (tracking'i) kırmak/kesmek istersek **AccecptAllChanges()** metodunu kullanırız. Burada dikkat etmemiz gereken nokta eğer işlemin başarılı olduğundan eminsek takibi kesmeliyiz.
+
+- `ChangeTracker.HasChanges():` Takip edilen nesneler arasında değişiklik yapılanların olup olmadığını kontrol eder. Arka planda **DetectChanges()** metodunu tetikler. 
+
+- `OriginalValues Property'si:` Bir veri üzerinde değişiklik yapıldıktan sonra henüz bu değişiklikler database'e yansıtılmadan, database'deki son değerleri almak istersek kullanabiliriz. Örnek olarak:
+
+    ```cs
+    var order = context.Orders.FirstOrDefault(x => x.Id = 5);
+    order.Date = DateTime.Now; // Date değeri güncellendi fakat database'e işlenmedi.
+
+    var orgDate = context.Entry(order).OriginalValues.GetValue<DateTime>(nameOf(order.Date)); // order nesnesinin Date değeri güncellenmeden önceki değeri yani database'e işlenen son hali gelir.
+    ```
+
+    Yukarıda ki işleme benzer bir işlemi şu şekilde de gerçekleştirebiliriz:
+
+    ```cs
+    var order = context.Orders.FirstOrDefault(x => x.Id = 5);
+    order.Date = DateTime.Now; 
+
+    var orderDbValues = context.Entry(order).GetDatabaseValues(); // order nesnesinin database'e işlenen son değerlerini getirir.
+    ```
+
+- `Change Tracker'ın Interceptor Olarak Kullanılması:` Sürekli **SaveChanges()** metodu kullanılan yerlerde/zamanlarda, **SaveChanges()** metodunu override ederiz ve bu override edilen metot içerisinde database'de işlemleri gerçekleştirmeden araya girerek ChangeTracker üzeriden ihtiyacımız olan değişiklikleri/geliştirmeleri yapabiliriz.
+
+<br>
+
+# 20 - Change Tracker Mekanizmasının Davranışlarını Yönetmek
+
+- `AsNoTracking():` Context üzerinden getirilen bütün veriler default olarak Change Tracker tarafından takip edilmektedir. Bu takip işleminin bir maliyeti vardır. Eğer biz context ile getirdiğimiz veriler üzerinde bir değişiklik yapmayacaksak, sadece listeleme vb. işlemler için kullanacaksak bu maliyeti azaltmak için **AsNoTracking()** metodunu kullanırız.
+
+    Bu fonksiyon kullanılarak getirilen veriler üzerinde bir değişiklik yaptığımızda bu veriler tracking edilmediği için **SaveChanges()** fonksiyonu kullanıldığında database'e değişiklikler işlenmez. Eğer biz tracking edilmeyen bir veriyi güncellemek istersek daha önce belirtildiği gibi **Update()** fonksiyonunu kullanabiliriz.
+
+- `AsNoTrackingWithIdentityResolution():` Normalde Change Tracker mekanizması sayesinde yinelenen datalar aynı instance'leri kullanırlar. Eğer biz **AsNoTracking()** fonksiyonunu kullanırsak, yinelenen dataların hepsi kendisine ait olarak oluşturulan instance'ları kullanır, yani maliyetli bir çalışma yapmış oluruz.
+
+    Eğer biz hem getirilen verilerin tracking yapılmasını istemiyorsak, hem de yinelenen dataların aynı instance'ları kullanmasını istiyorsak, yani maliyetli işlem yapmaktan kaçınmak istiyorsak **AsNoTrackingWithIdentityResolution()** fonksiyonunu kullanırız.
+
+- `AsTracking():` Change Tracker mekanizmasını manuel olarak yönetmemiz gerekebilir. Yani biz tracking'i kendimiz kapattıktan sonra, uygulama seviyesinde tekrar açabilmek için bu fonksiyonu kullanırız.
+
+- `UseQueryTrackingBehavior():` EF Core seviyesinde veya uygulama seviyesinde ilgili context'ten gelen verilerin üzerinde Change Tracker mekanizmasının davranışını temel seviyede belirlememizi/yönetmemizi sağlar. Yani konfigürasyon fonksiyonudur. Context sınıfı içerisindeki **OnConfiguring** metodu içerisinde bu metodu kullanarak gerekli yönetimleri yapabiliriz. 
+
+<br>
