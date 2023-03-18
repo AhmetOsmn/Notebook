@@ -653,7 +653,9 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
         public int CalisanId {get; set;} //foreign key
         public Calisan Calisan {get; set;} //nav prop
     }
-    // veya
+    /*
+     veya
+    
     public class CalisanAdresi
     {
         public int Id {get; set;}
@@ -663,7 +665,9 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
         public int X {get; set;} //Data Annotation kullandığımızda artık bu property'e istediğimiz ismi verebiliriz.
         public Calisan Calisan {get; set;} //nav prop
     }
-    // veya
+    
+    veya
+    
     public class CalisanAdresi
     {
         [Key, ForeignKey(nameof(Calisan))] // Hem key hem de foreignkey olarak tanımladığımızda hem 1-1 ilişkiyi garanti altına almış oluruz, hem ekstra olarak bir kolon daha oluşturmamış oluruz hem de ekstra olarak database'de bir index tanımlanmamış olur.
@@ -672,6 +676,7 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
              .
         public Calisan Calisan {get; set;} //nav prop
     }
+    */
     ```
 
 - `Fluent Api:`
@@ -700,7 +705,7 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
     public class MyDbContext : DbContext
     {
         public DbSet<Calisan> Calisanlar {get; set;}
-        public DbSet<Calisan> CalisanAdresleri {get; set;}
+        public DbSet<CalisanAdresi> CalisanAdresleri {get; set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optBuilder)
         {
@@ -720,5 +725,258 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
         }
     }
     ```  
+<br>
 
+# 23 - 1-n İlişki
 
+1-n İlişki oluşturmanın farklı yöntemleri vardır. Bu yöntemleri alt kısımda inceleyelim:
+
+- `Default Conventions:`
+
+    ForeignKey kolonuna karşılık gelen bir property tanımlamak zorunda değiliz, EF Core kendisi bu kolonu oluşturacaktır. Eğer kendimiz tanımlamak istersekde o propert'i baz alacaktır.
+
+    ```cs
+    public class Calisan // Dependent Entity 
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+        
+        public Departman Departman {get; set;} // nav prop
+    }
+    /*
+    veya
+
+    public class Calisan // Dependent Entity 
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+        
+        public int DepartmanId {get; set;}
+        public Departman Departman {get; set;} // nav prop
+    }
+    */
+    public class Departman
+    {
+        public int Id {get; set;}
+        public string DepartmanAdi {get; set;}
+
+        public ICollection<Calisan> Calisanlar {get; set;} // nav prop
+    }
+    ```   
+
+- `Data Annotations:`
+
+    Default Convention dışarısında bir foreign key property'si oluşturmak istersek, bu property'i foreign key olarak tanımlamak için annotation kulllanırız.
+
+    ```cs
+     public class Calisan // Dependent Entity 
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+        
+        [ForeignKey(nameof(Departman))]
+        public int DId {get; set;}
+        public Departman Departman {get; set;} // nav prop
+    }
+
+    public class Departman
+    {
+        public int Id {get; set;}
+        public string DepartmanAdi {get; set;}
+
+        public ICollection<Calisan> Calisanlar {get; set;} // nav prop
+    }
+    ```
+
+- `Fluent Api:`
+
+    ```cs
+     public class Calisan // Dependent Entity 
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+        
+        public Departman Departman {get; set;} // nav prop
+    }
+
+    public class Departman
+    {
+        public int Id {get; set;}
+        public string DepartmanAdi {get; set;}
+
+        public ICollection<Calisan> Calisanlar {get; set;} // nav prop
+    }
+
+    public class MyDbContext : DbContext
+    {
+        public DbSet<Calisan> Calisanlar {get; set;}
+        public DbSet<Departman> Departmanlar {get; set;}
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optBuilder)
+        {
+            optBuilder.UseSqlServer(CfgExtensions.GetConnectionString());
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Calisan>()
+                .HosOne(c => c.Departman)
+                .WithMany(d => d.Calisanlar);
+
+            /*   
+            Eğer otomatik oluşacak olan foreign key yerine kendimiz bir tanımlama yapmak istiyorsak, 
+            dependent class içerisinde tanımlamak istediğimiz foreign key için bir property oluştururz (mesela DId isimli bir property, 
+            sonrasında o property'i burada foreign key olarak tanımlayabiliriz.)
+
+            modelBuilder.Entity<Calisan>()
+                .HosOne(c => c.Departman)
+                .WithMany(d => d.Calisanlar)
+                .HasForeignKey(c => c.DId);
+            */
+        }
+    }
+    ```  
+
+<br>
+
+# 24 - n-n İlişki
+
+- `Default Conventions:`
+ 
+    İki entity arasındaki ilişki navigation property'leri koleksiyonel olarak tanımlayarak oluşturabiliriz.
+
+    DefaultConvention kullanıldığında cross table'ı manuel oluşturmak zorunda değiliz. EF Core bu tabloyu hazırladığımız entity'lere göre kendisi otomatik olarak oluşturur. Ek olarak da bu cross table'da composite primary key'i de kendisi otomatik olarak oluşturur.
+
+    ```cs
+    public class Kitap 
+    {
+        public int Id {get; set;}
+        public string KitapAdi {get; set;}
+
+        public ICollection<Yazar> Yazarlar {get; set;}
+        
+    }
+
+    public class Yazar
+    {
+        public int Id {get; set;}
+        public string YazarAdi {get; set;}
+
+        public ICollection<Kitap> Kitaplar {get; set;}
+    }
+    ```   
+
+- `Data Annotations:`
+
+    Cross table'ı manuel olarak kendimiz oluşturmak zorunda kalırız. Bu cross table ile entity'ler arasında 1-n ilişki kurarak, entity'lerin kendi arasında n-n ilişki kurmasını sağlarız.
+    
+    Cross table'da composite primary key'i annotation'lar ile kuramıyoruz. Bunun için Fluent Api'de çalışma yapmamız gerekiyor.
+
+    Cross table için oluşturulan entity, context sınıfı içerisinde **DbSet** olarak tanımlanmak zorunda değildir.
+
+    Eğer foreign key'leri naming convention'a göre oluşturmazsak, fluent api içerisinde veya data annotation'lar ile bu foreign key'leri de belirtmemiz gerekiyor. Eğer convention'a uymazsak ve tanımladığımız property'nin foreign key olduğunu bildirmezsek, EF Core bu property'i foreign key olarak kullanmayıp kendisi tekrar 2 adet foreign key tanımlaması yapacaktır. 
+
+    ```cs
+    public class Kitap 
+    {
+        public int Id {get; set;}
+        public string KitapAdi {get; set;}  
+
+        public ICollection<KitapYazar> Yazarlar {get; set;}                
+    }
+
+    public class Yazar
+    {
+        public int Id {get; set;}
+        public string YazarAdi {get; set;}
+
+        public ICollection<KitapYazar> Kitaplar {get; set;}                
+    }
+
+    public class KitapYazar
+    {        
+        public int KitapId {get; set;}
+        public int YazarId {get; set;}
+
+        public Kitap Kitap {get; set;}
+        public Yazar Yazar {get; set;}
+    }
+
+     public class MyDbContext : DbContext
+    {
+        public DbSet<Yazar> Yazarlar {get; set;}
+        public DbSet<Kitap> Kitaplar {get; set;}
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optBuilder)
+        {
+            optBuilder.UseSqlServer(CfgExtensions.GetConnectionString());
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<KitapYazar>()
+                .HasKey(ky => new {ky.KitapId, ky.YazarId});
+        }
+    }
+    ```  
+
+- `Fluent Api:`
+
+    Cross table manuel olarak oluşturulmalıdır ve bu table'ın context sınıfı içerisinde **DbSet** olarak tanımlanmasına gerek yoktur.
+
+    Composite primary key tanımlaması **HasKey()** fonksiyonu ile tanımlanmalıdır.
+
+    ```cs
+    public class Kitap 
+    {
+        public int Id {get; set;}
+        public string KitapAdi {get; set;}  
+
+        public ICollection<KitapYazar> Yazarlar {get; set;}                
+    }
+
+    public class Yazar
+    {
+        public int Id {get; set;}
+        public string YazarAdi {get; set;}
+
+        public ICollection<KitapYazar> Kitaplar {get; set;}                
+    }
+
+    public class KitapYazar
+    {        
+        public int KitapId {get; set;}
+        public int YazarId {get; set;}
+
+        public Kitap Kitap {get; set;}
+        public Yazar Yazar {get; set;}
+    }
+
+    public class MyDbContext : DbContext
+    {
+        public DbSet<Yazar> Yazarlar {get; set;}
+        public DbSet<Kitap> Kitaplar {get; set;}
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optBuilder)
+        {
+            optBuilder.UseSqlServer(CfgExtensions.GetConnectionString());
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<KitapYazar>()
+                .HasKey(ky => new {ky.KitapId, ky.YazarId});
+
+            modelBuilder.Entity<KitapYazar>()
+                .HasOne(ky => ky.Kitap)
+                .WithMany(k => k.Yazarlar)
+                .HasForeignKey(ky => ky.KitapId);
+
+            modelBuilder.Entity<KitapYazar>()
+                .HasOne(ky => ky.Yazar)
+                .WithMany(y => y.Kitaplar)
+                .HasForeignKey(ky => ky.YazarId);            
+        }
+    }
+    ```  
+<br>
