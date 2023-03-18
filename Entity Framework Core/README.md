@@ -564,3 +564,161 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
 - `UseQueryTrackingBehavior():` EF Core seviyesinde veya uygulama seviyesinde ilgili context'ten gelen verilerin üzerinde Change Tracker mekanizmasının davranışını temel seviyede belirlememizi/yönetmemizi sağlar. Yani konfigürasyon fonksiyonudur. Context sınıfı içerisindeki **OnConfiguring** metodu içerisinde bu metodu kullanarak gerekli yönetimleri yapabiliriz. 
 
 <br>
+
+# 21 - İlişkisel Yapılar
+
+- `Principal Entity (Asıl Entity):` Kendi başına var olabilen tabloyu modelleyen entity'e denir. 
+ 
+- `Dependent Entity (Bağımlı Entity):` Kendi başına var olamayan, başka bir tabloya ilişkisel olarak bağımlı olan tabloyu modelleyen entity'e denir.
+- `Foreign Key:` **Principal Entity** ile **Dependent Entity** arasındaki ilişkiyi sağlayan key'dir. Dependent Entity'de tanımlanır, Principal Entity'deki Principal Key'i tutar.
+- `Principal Key:` Principal Entity'in kimliği olan kolonu ifade eden property'dir.
+- `Navigation Property:` İlişkisel tabolar arasındaki fiziksel erişimi class'lar üzerinden sağlayan property'lerdir. Bu property'lerin türleri kesinlikle entity olmak zorundadır.
+
+    Navigation Property'ler tanımlanma şekillerine göre entity'ler arasındaki n-n veya 1-n şeklindeki ilişkileri temsil ederler.
+- `İlişki Yapılandırma Yöntemleri:` 
+  - `Default Conventions:` Varsayılan entity kurallarını kullanarak uygulanan yöntemdir. Navigation Property'lerini kullanarak ilişkli şablonlarını oluşturma yöntemidir.
+  - `Data Annotations Attributes:` Attribute'ları kullanarak bazı yönlendirmeler yapabiliriz. Örnek olarak [Key], [ForeignKey] gibi attribute'ları kullanabiliriz.
+  - `Fluent Api:` Entity'lerdeki ilişkileri oluştururken daha detaylı işlemler yapılmasını sağlayan yöntemdir. Bu yöntemde alt kısımdaki fonksiyonları bilmemiz gerekiyor:
+    
+    - **HasOne():** İligili entity'nin ilişkisel entity'e 1-1 veya 1-n olacak şekilde ilişikisini yapılandırmaya başlayan fonksiyondur. 
+    
+    - **HasMany():** İlgili entity'nin ilişkisel entity'e n-n veya n-1 olacak şekilde ilişkisini yapılandırmaya başlayan fonksiyondur.
+    
+    - **WithOne():** **HasOne()** veya **HasMany()** ile başladıktan sonra, ilişkiyi 1 olarak bitirmek için kullanılan fonksiyondur. 
+        
+        Örnek olarak **HasOne()** ile başlayıp **WithOne()** ile devam edersek 1-1 ilişkiyi oluşturmuş oluruz.
+
+        Eğer **HasMany()** ile başlayıp **WithOne()** ile devam edersek n-1 ilişkiyi oluşturmuş oluruz.
+    
+    - **WithMany():** **HasOne()** veya **HasMany()** ile başladıktan sonra, ilişkiyi n olarak bitirmek için kullanılan fonksiyondur. 
+
+        Örnek olarak **HasOne()** ile başlayıp **WithMany()** ile devam edersek 1-n ilişkiyi oluşturmuş oluruz.
+
+        Eğer **HasMany()** ile başlayıp **WithMany()** ile devam edersek n-n ilişkiyi oluşturmuş oluruz.
+
+<br>
+
+# 22 - 1-1 İlişki
+
+1-1 İlişki oluşturmanın farklı yöntemleri vardır. Bu yöntemleri alt kısımda inceleyelim:
+
+- `Default Conventions:`
+
+    Her iki entity'de de birbirlerini tekil olarak referans eden **navigation property'ler** olmalıdır.
+
+    1-1 ilişkilerde dependent entity'nin hangisi olduğunu EF Core'un anlaması zordur. Bu nedenle dependent entity içerisinde principal entity'i temsil edecek bir **foreign key** tanımlamamız gerekiyor. Bu yöntemde luzumsuz olarak ekstra bir kolon (foreign key'e karşılık gelen kolon) oluşturmuş oluyor fakat bunu yapmak zorundayız.
+
+    ```cs
+    public class Calisan
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+
+        public CalisanAdresi CalisanAdresi {get; set;} //nav prop        
+    }
+
+    public class CalisanAdresi
+    {
+        public int Id {get; set;}
+        public string Adres {get; set;}
+
+        public int CalisanId {get; set;} //foreign key
+        public Calisan Calisan {get; set;} //nav prop
+    }
+    ```   
+
+- `Data Annotations:`
+
+    Her iki entity'de de birbirlerini tekil olarak referans eden **navigation property'ler** olmalıdır.
+
+    Foreign kolonunun ismi default convention'ın dışında olacaksa, ForeignKey attribute'u ile bu property'i foreignkey olarak bildirebiliriz.
+
+    Ekstra olarak foreign key kolonu oluşturmadan, tek bir kolonu hem primary hem de foreign key tanımlayabiliriz.
+
+    ```cs
+    public class Calisan
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+
+        public CalisanAdresi CalisanAdresi {get; set;} //nav prop        
+    }
+
+    public class CalisanAdresi
+    {
+        public int Id {get; set;}
+        public string Adres {get; set;}
+
+        [ForeignKey(nameof(Calisan))]
+        public int CalisanId {get; set;} //foreign key
+        public Calisan Calisan {get; set;} //nav prop
+    }
+    // veya
+    public class CalisanAdresi
+    {
+        public int Id {get; set;}
+        public string Adres {get; set;}
+
+        [ForeignKey(nameof(Calisan))]
+        public int X {get; set;} //Data Annotation kullandığımızda artık bu property'e istediğimiz ismi verebiliriz.
+        public Calisan Calisan {get; set;} //nav prop
+    }
+    // veya
+    public class CalisanAdresi
+    {
+        [Key, ForeignKey(nameof(Calisan))] // Hem key hem de foreignkey olarak tanımladığımızda hem 1-1 ilişkiyi garanti altına almış oluruz, hem ekstra olarak bir kolon daha oluşturmamış oluruz hem de ekstra olarak database'de bir index tanımlanmamış olur.
+        public int Id {get; set;}
+        public string Adres {get; set;}
+             .
+        public Calisan Calisan {get; set;} //nav prop
+    }
+    ```
+
+- `Fluent Api:`
+
+    Her iki entity'de de birbirlerini tekil olarak referans eden **navigation property'ler** olmalıdır.
+
+    Bu yöntemde entity'ler arasındaki ilişki **Context** sınıfı içerisinde ki **OnModelCreating()** fonksiyonunu override ederek bu fonksiyonun içerisinde tasarlanır.
+
+    ```cs
+    public class Calisan
+    {
+        public int Id {get; set;}
+        public string Adi {get; set;}
+
+        public CalisanAdresi CalisanAdresi {get; set;} //nav prop        
+    }
+
+    public class CalisanAdresi
+    {
+        public int Id {get; set;}
+        public string Adres {get; set;}
+
+        public Calisan Calisan {get; set;} //nav prop
+    }
+
+    public class MyDbContext : DbContext
+    {
+        public DbSet<Calisan> Calisanlar {get; set;}
+        public DbSet<Calisan> CalisanAdresleri {get; set;}
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optBuilder)
+        {
+            optBuilder.UseSqlServer(CfgExtensions.GetConnectionString());
+        }
+
+        // Entity'lerin database'de oluşturulacak olan ilişkileri/yapıları bu fonksiyon içerisinde konfigüre edilir.
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CalisanAdresi>()         
+                .HasKey(c => c.Id);
+            
+            modelBuilder.Entity<Calisan>()
+                .HasOne(c => c.CalisanAdresi)
+                .WithOne(c => c.Calisan)
+                .HasForeignKey<CalisanAdresi>(c => c.Id);
+        }
+    }
+    ```  
+
+
