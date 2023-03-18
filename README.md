@@ -11,6 +11,8 @@ Derslerde, eğitimlerde veya yaptığım araştırmalarda ve çalışmalarda ön
 
 - [Docker](https://github.com/AhmetOsmn/Notebook/tree/main/Docker)
 
+- [EF Core](https://github.com/AhmetOsmn/Notebook/tree/main/Entity%20Framework%20Core)
+
 - [Github](https://github.com/AhmetOsmn/Notebook/tree/main/GitHub)
 
 - [MassTransit](https://github.com/AhmetOsmn/Notebook/tree/main/MassTransit)
