@@ -804,22 +804,22 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
         27 COPY --from=publish /app .
         28 ENTRYPOINT ["dotnet", "Catalog.API.dll"]
         ```
-        1. Stage'e **base** ismiyle küçük bir image'i tanımlayarak başlar.
-        2. Image içerisinde **/app** klasörü oluşturur.
-        3. 80 Portunu açık hale getirir.
-        5. Yeni bir Stage'e başlar ve burada **building/publishing** işlemleri için kullanılacak büyük bir image tanımlar ve bu image'i **build** olarak isimlendirir.
-        6. Image içerisinde **/src** klasörü oluşturur.
-        7. - 16. Bu aralıkta daha sonrasında restore edebilmek için **.csproj** dosyalarının kopyalarını alır.
-        17. Catalog.API ve referans aldığı projelerin paketlerini restore eder.
-        18. **/src** klasörünün içerisine (dockerignore dosyasında belirtilen dosyalar hariç) solution içerisindeki bütün her şeyi kopyalar.
-        19. Current klasörü **Catalog.API** olarak günceller.
-        20. Projeyi build eder (bağımlılıkları ile birlikte) ve sonrasında **/app** klasörüne çıktı alır.
-        22. Yeni bir Stage'e başlar ve **build**', **publish** olarak değiştirir. 
-        23. Projeyi publish eder (bağımlılıkları ile birlikte) ve **/app** klasörüne çıktı alır.
-        25. Yeni bir Stage'e başlar ve **base**'i **final** olarak değiştirir.
-        26. Current klasörü **/app** olarak günceller.
-        27. Publish Stage'i içerisindeki **/app** klasörünü current klasöre kopyalar.
-        28. Container başlatıldığında çalıştırılacak komutu tanımlar.
+        1: Stage'e **base** ismiyle küçük bir image'i tanımlayarak başlar.<br> 
+        2: Image içerisinde **/app** klasörü oluşturur.<br>
+        3: 80 Portunu açık hale getirir.<br>
+        5: Yeni bir Stage'e başlar ve burada **building/publishing** işlemleri için kullanılacak büyük bir image tanımlar ve bu image'i **build** olarak isimlendirir.<br>
+        6: Image içerisinde **/src** klasörü oluşturur.<br>
+        7 - 16: Bu aralıkta daha sonrasında restore edebilmek için **.csproj** dosyalarının kopyalarını alır.<br>
+        17: Catalog.API ve referans aldığı projelerin paketlerini restore eder.<br>
+        18: **/src** klasörünün içerisine (dockerignore dosyasında belirtilen dosyalar hariç) solution içerisindeki bütün her şeyi kopyalar.<br>
+        19: Current klasörü **Catalog.API** olarak günceller.<br>
+        20: Projeyi build eder (bağımlılıkları ile birlikte) ve sonrasında **/app** klasörüne çıktı alır.<br>
+        22: Yeni bir Stage'e başlar ve **build**', **publish** olarak değiştirir.<br> 
+        23: Projeyi publish eder (bağımlılıkları ile birlikte) ve **/app** klasörüne çıktı alır.<br>
+        25: Yeni bir Stage'e başlar ve **base**'i **final** olarak değiştirir.<br>
+        26: Current klasörü **/app** olarak günceller.<br>
+        27: Publish Stage'i içerisindeki **/app** klasörünü current klasöre kopyalar.<br>
+        28: Container başlatıldığında çalıştırılacak komutu tanımlar.<br>
 
         Burada docker'ın cache mekanizmasından faydalanılabilir. Daha önce çalıştırılan bir komut tekrar çalıştırılacağı zaman, bu komutu tekrar çalıştırmaz önceki katmanı kullanır. Bu sayede zamandan kazanç elde etmeyi sağlar.
 
@@ -827,10 +827,10 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
         Sonraki optimizasyon için **17.** satırdaki restore işlemini düzenleyebiliriz. Eski hali ile paketleri 15 kez restore eder. Onun yerine orada **RUN dotnet restore** komutu olsaydı sadece 1 kez restore işlemi yapılırdı. Burada şöyle bir işlem daha yapılması gerekiyor: bu komut sadece tek bir proje veya solution varsa çalışacaktır. Bu nedenle alt kısımdaki gibi **dockerignore** dosyası içerisine ekleme yapmamız gerekir:
 
-            ```cs
-            *.sln
-            !eShopOnContainers-ServicesAndWebApps.sln // sadece 1 sln kalmış olacak.
-            ```
+        ```cs
+        *.sln
+        !eShopOnContainers-ServicesAndWebApps.sln // sadece 1 sln kalmış olacak.
+        ```
          Bir de restore komutuna **/ignoreprojectextensions:.dcproj** ifadesini de dahil edersek **docker-compose** projesini de ignore'lamış oluruz ve sadece üst kısımda bıraktığımız sln restore edilir.
 
          Son optimizasyon olarak **20.** satır gereksizdir. Burayı da kaldırdıktan sonra **dockerfile**'ın son hali alt kısımdaki gibi olur:
@@ -855,5 +855,111 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
    
     3. Create your custom Docker images and embed your application or service in them:
 
-        
+        Eğer uygulamamız birden fazla servisten oluşuyorsa, her servisin image'ini oluşturmalıyız. Eğer uygulama tek parça ise o zaman bir image'yeterlidir.
 
+    4. Define your services in docker-compose.yml when building a multi-container Docker application:
+
+        **Docker-compose.yml** dosyası içeriside ilişkili olan servisleri ve bunların bağımlılıklarını tanımlarız. Örnek olarak:
+
+        ```cs
+        version: '3.4'
+
+        services:
+            webmvc:
+                image: eshop/web
+                environment:
+                - CatalogUrl=http://catalog-api
+                - OrderingUrl=http://ordering-api
+                ports:
+                - "80:80"
+                depends_on:
+                - catalog-api
+                - ordering-api
+
+            catalog-api:
+                image: eshop/catalog-api
+                environment:
+                - ConnectionString=Server=sqldata;Port=1433;Database=CatalogDB;...
+                ports:
+                - "81:80"
+                depends_on:
+                - sqldata
+
+            ordering-api:
+                image: eshop/ordering-api
+                environment:
+                - ConnectionString=Server=sqldata;Database=OrderingDb;...
+                ports:
+                - "82:80"
+                extra_hosts:
+                - "CESARDLBOOKVHD:10.0.75.1"
+                depends_on:
+                - sqldata
+
+            sqldata:
+                image: mcr.microsoft.com/mssql/server:latest
+                environment:
+                - SA_PASSWORD=Pass@word
+                - ACCEPT_EULA=Y
+                ports:
+                - "5433:1433"
+        ```
+
+        Yukarıdaki compose dosyası birden fazla container için statik konfigürasyonları içeriyor. İlerleyen kısımlarda bu tür compose dosyalarını nasıl nasıl parçalara ayırabileceğimizi göreceğiz.
+
+        Hazırladığımız compose dosyası sayesinde birbirine bağlı/bağsız servisleri sadece **docker-compose up** komutu ile çalıştırabiliriz.
+
+    5.  Build and run your Docker application:
+        
+        Eğer tek bir container'dan oluşan bir uygulamamız varsa, bu uygulamayı **docker run** komut ile aşağıdaki örnekteki gibi çalıştırabiliriz:
+
+            docker run -t -d -p 80:5000 cesardl/netcore-webapi-microservice-docker:first
+
+        Yukarıdaki komut belirtilen image'den yeni bir instance oluşturur. Var olan bir container'ı sonrasında kolayca tekrar çalıştırmak için *--name* parametresi ile bu instance'lara isim verebiliriz (container Id'lerini veya otomatik verilen isimleri de kullanabiliriz, *--name* parametresi kullanılmazsa otomatik olarak random bir isim atanacaktır).
+
+        Eğer uygulama birden fazla container'dan oluşuyorsa, docker-compose.yml dosyası hazırlanmalı ve **docker-compose up** komutu çalıştırılmalı.
+
+    6. Geliştirdiğimiz uygulamaya bağlı olarak, çalıştırdığımız docker container'ları üzerinden uygulamanın kendisinden istenenleri yerine doğru bir şekilde getirip getirmediğini test ederiz.
+
+<br>
+
+# 5 - Designing and Developing Multi-Container and Microservice-Based .NET Applications
+
+### Benefits of a microservice-based solution
+
+- Developer'ların servisleri daha kolay anlamasını ve hızlı bir başlangıç yapmasını sağlar.
+- Container'lar hızlı bir şekilde başlarlar, bu sayede developer'ın üretkenliği artar.
+- IDE'ler küçük olan projeleri/servisleri hızlı yüklerler.
+- Her servis birbirinden bağımsız olduğundan servisin tasarlanması, geliştirmesi, deploy edilmesi, yeni versiyonlarının çıkartılması daha kolaydır.
+- Uygulama içerisindeki belirli servislerin ölçeklendirilebiliyor olması da avantajdır. Örnek olarak X servisi daha çok kullanıldığı için bütün uygulamayı veya X servisi ile ilgisi olmayan servislerin instance'larını da arrtırmak yerine sadece X servisinin instance'larını arttırabiliriz.
+- Eğer yeterli developer kaynağımız varsa, servislerin hepsini ayrı takımlara dağıtabiliriz.
+- Bir sorun oluştuğunda sorunun bulunması ve çözülmesi daha kolaydır. Ayrıca diğer servisler bu sorundan etkilenmeden çalışmalarına devam edebilirler.
+
+<br>
+
+### Downsides of a microservice-based solution
+
+- Developer'ların daha kompleks işlemler yapması gerekecektir. Diğer servislerle olan entegrasyonları başarılı bir şekilde kurabilmeli, kuyruk sistemlerini iyi yönetebilmeli, test aşamalarında ve exception handling alanlarında daha ileri çalışmalar yapmalı.
+  
+- Çok çok fazla servis olduğunda, bu servislerin deploy edilmeleri ve ölçeklendirilmeleri de daha kompleks hale gelecektir. Burada IT operasyonlarında ve bu servislerin yönetiminde ekstra çalışmalara ihtiyaç duyulabilir. 
+- Microservice'ler arasında atomik işlemler mümkün değildir. Servisler birbirlerindeki değişiklikleri takip edebilmelidir.
+- Tek parça olan bir uygulama microservice tabanlı bir uygulamaya dönüştürüldüğünde kaynak tüketiminde artış olacaktır. Burada bir dezavantaj oluşur fakat uygulama genelinde microservice yapısının getirdiği diğer avantajlara bakıldığında kaynak tüketiminde ki bu artış genellikle kabul edilebilir düzeydedir.
+- Bir uygulamayı servislere ayırmak da ayrıca bir sorun olabilir. Servislerin kapsamlarını belirlemek dikkat ve çalışma isteyebilir. Servisler belirlenirken bir çok şeye bakılır fakat temel anlamda olabildiğince az ve hafif bağımlılık olacak şekilde hem de en küçük boyutta kendi başına çalışabilecek şekilde oluşturulmalıdır.
+
+<br>
+
+### Docker-compose File
+
+- Basit düzeyde uygulamalar için tek bir compose dosyası kullanabiliriz fakat bu önerilmez. Default olarak compose 2 dosyayı okur, **docker-compose.yml** ve **docker-compose.override.yml**.
+
+    **docker-compose.yml** dosyası mikroservisleri oluşturmak için kullanılır. 
+
+    **docker-compose.override.yml** dosyası mikroservislerin environment'larını detaylı bir şekilde konfigüre etmek için kullanılır.    
+
+- Compose dosyasını farklı amaçlara yönelik kullanabiliriz. Örnek olarak:
+
+    ![](images/multiplecomposefile.png)
+
+- Birden fazla compose dosyayını çalıştırmak istersek alt kısımdaki gibi bir komut çalıştırabiliriz:
+
+        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
