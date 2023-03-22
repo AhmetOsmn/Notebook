@@ -963,3 +963,130 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 - Birden fazla compose dosyayını çalıştırmak istersek alt kısımdaki gibi bir komut çalıştırabiliriz:
 
         docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+- Compose dosyalarında environment variable'lardan yararlanabiliriz. Bunları hem okuyabilir, hem de override edebiliriz. Genelde bu variable'lara erişim **.env** dosyası üzerinden sağlanır. Örnek bir kullanım:
+
+    ```cs
+    IdentityUrl=http://${ESHOP_PROD_EXTERNAL_DNS_NAME_OR_IP}:5105    
+    ```
+    ```cs
+    # .env file
+    ESHOP_EXTERNAL_DNS_NAME_OR_IP=host.docker.internal
+    ESHOP_PROD_EXTERNAL_DNS_NAME_OR_IP=10.121.122.92    
+    ```
+
+<br>
+
+### Implementing event-based communication between microservices (integration events)
+
+- Event-based communication kullandığımızda, servisler diğer servisleri ilgilendiren işlemler yaptığında bu işlemleri ilişkili oldukları servisler ile paylaşırlar. Örnek olarak servis içerisindeki bir şey değişirse/güncellenirse bu işlem diğer servislere bir **event publish edilerek** bildirilir. Bu sayede diğer servisler de kendi içlerinde gerekli operasyonları gerçekleştirirler. Bu sırada bir çok servisten arka arkaya event'lar publish edilebilir. 
+
+    Yukarıdaki açıklama aslında **Eventual Consistency Concept** kavramının özetidir.
+
+- Event'lerin paylaşması message broker'lar ile veya event bus'lar ile yapılabilir. Örnek olarka alt kısımı inceleyebiliriz:
+
+    ![](images/implementeventbus.png)
+
+    Development için message broker'lar yeterlidir fakat ürün aşamasında veya kritik işlemlerin yapıldığı uygulamalarda event bus'ların kullanılması daha uygundur. Bu bus'lar da kendi aralarında seviye olarak farklılık gösterirler. İhtiyacımıza göre içlerinden uygun gördüğümüzü tercih edebiliriz.
+
+- Integration event'ler mikroservislerin veya dışarıdaki sistemlerin senkron duruma getirilebilmesi/gelebilmesi için paylaşılan event'lerdir. Bu event'ler her mikroservisin kendi içerisinde tanımlanmalıdır. Ortak bir yerden/kütüphaneden aynı event class'ın kullanılması önerilmez çünkü mikroservisler tamamen bağımsız/özerk durumda olmalıdır.
+
+- Pub/Sub pattern'i ile Observer pattern'i arasında şöyle bir fark vardır. Observer pattern'de iki taraf (Observable/Observers) birbirlerinden haberdardır ve direkt olarak iletişim kurarlar. Pub/Sub pattern'de ise iki taraf arasında (publisher/subscriber) ekstra olarak bir aracı (message broker, event bus vb.) vardır. Bu iki taraf birbirlerini tanımazlar, direkt olarak iletişime geçmezler. İkiside bu aracıyı tanır ve bu aracı üzerinden iletişime geçerler.
+
+- Bu tarz çalışmalarda karşımıza çıkabilecek bir sorun var. Örnek olarak bir fiyat güncellemesi geldiğinde, database'i güncelledikten hemen sonra ve güncelleme işlemi ile ilgili olan eventi publish etmeden hemen önce uygulama kırılırsa ne olur? Database'de güncel veri var evet fakat diğer servisler hala eski veriyi kullanıyor olacaklar, yani bir tutarsızlık meydana gelir. Böyle durumlara uygun olarak **Event Sourcing** yaklaşımını kullanabiliriz.
+
+    Event Sourcing basit anlamda gerçekleştirilen eventlerin database'de tutularak uygulamanın çalışmasıdır. Normal veriler yerine gerçekleşen event'leri database'e kaydederiz ve gerektiği zamanlarda bu event'leri analiz ederek sorunları çözebiliriz. Bu yöntem sorunları çözmek için uygundur fakat uygulaması kolay değildir, ekstra efor gerektririr.
+
+    Dengeli bir yaklaşım olarak transactional database'i ve event sourcing'i birlikte kullanabiliriz. Örnek olarak yayınlanan bir event'ın durumunu database'de "*ready*" olarak tutarken, publish işlemi başarılı döndüğünde "*already published*" olarak değiştirebiliriz. Tanımlanan bir job ile, durumu "*ready*" olan event'lar tekrar denemeye alınır. Yukarıdaki fiyat güncelleme örneğindeki soruna tekrar baktığımızda, event'ın durumu "*already published*" durumuna geçmeyeceğinden bu evet job tarafından sonrasında tekrar publish edilmeye çalışılacak. 
+
+<br>
+
+### Implement background tasks in microservices with IHostedService and the BackgroundService class
+
+- Uygulamamıza arka planda çalışacak bazı işler tanımlamak için **IHost** veya **IWebHost** interface'lerini kullanabiliriz.
+
+    ![](images/webhost.png)
+
+    Yukarıdan da görüldüğü gibi bu iki interface arasında HTTP ile ilgili işlemleri gerçekleştirme ve MVC yapıları için hazırlanan özellikleri kullanabilme açısından farklılıklar vardır.
+
+- WebHost veya Host yapılarına yeni **IHostedService**'lerini eklemek için **AddHostedService<>()** extension fonksiyonundan faydalanabiliriz. Örnek olarak:
+
+    ![](images/addhostedservice.png)
+
+- Eğer istersek yukarıdaki gibi bir extension fonksiyonu kullanmadan da background thread'i çalıştırabiliriz. Aralarındaki fark uygulama kapanırken thread'in düzgün bir şekilde öldürülmesi ilgili işlemlerdir.
+
+- IHostedService ile kendi servislerimizi oluştururken kullanılan yapının diagramı alt kısımdaki gibidir:
+
+    ![](images/classdiagram.png)
+
+<br>
+
+### Implement API Gateways with Ocelot
+
+- Uygulamamıza Ocelot entegrasyonu yaparken bir configurasyon dosyası tanımlamak zorundayız (configuration.json). Bu dosya 2 ana kısımdan oluşur:
+
+    ```cs
+    {
+        "ReRoutes": [],
+        "GlobalConfiguration": {}   
+    }
+    ```
+    
+    **ReRoutes:** Ocelot'a upstream isteklerini nasıl yönlendirileceğini belirten nesneleri içerir.
+    **GlobalConfiguration:** Genel konfigürasyonları içerir.
+
+    Örnek olarak:
+
+    ```cs
+    {
+        "ReRoutes": [
+            {
+                "DownstreamPathTemplate": "/api/{version}/{everything}",
+                "DownstreamScheme": "http",
+                "DownstreamHostAndPorts": [
+                    {
+                        "Host": "catalog-api",
+                        "Port": 80
+                    }
+                ],
+                "UpstreamPathTemplate": "/api/{version}/c/{everything}",
+                "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+            },
+            {
+                "DownstreamPathTemplate": "/api/{version}/{everything}",
+                "DownstreamScheme": "http",
+                "DownstreamHostAndPorts": [
+                    {
+                        "Host": "basket-api",
+                        "Port": 80
+                    }
+                ],
+                "UpstreamPathTemplate": "/api/{version}/b/{everything}",
+                "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+                "AuthenticationOptions": {
+                    "AuthenticationProviderKey": "IdentityApiKey",
+                    "AllowedScopes": []
+                }
+            }
+        ],
+        "GlobalConfiguration": {
+            "RequestIdKey": "OcRequestId",
+            "AdministrationPath": "/administration"
+        }
+    }
+    ```
+
+<br>
+
+### Using Kubernetes Ingress plus Ocelot API Gateways
+
+- Uygulama içerisinde Kubernates kullanılıyorsa, genellikle tüm HTTP isteklerini **Nginx** tabanlı **Kubernates Ingress** olarak isimlendirilen katman aracılığı ile birleştiririz.
+
+    Eğer Kubernates ile birlikte bu **Ingress** katmanını kullanmazsak, servisler sadece cluster network'ü tarafından yönlendirilebilir duruma gelirler. Eğer **Ingress** katmanını kullanırsak, bu katman internet ile uygulamamızın servisleri arasında ters proxy olarak çalışan bir middleware oluşturmuş oluruz.
+
+- **Ingress** aslında gelen istekler için oluşturulmuş kuralları içeren bir şeydir. Bu kurallara uyan istekler gerekli şekilde işlenirler. Örnek olarak alt kısımdaki modellemeye bakabiliriz:
+
+    ![](images/ingresslayer.png)
+
+<br>
+
