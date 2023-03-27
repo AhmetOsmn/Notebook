@@ -1090,3 +1090,75 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
 <br>
 
+# 6 - Tackle Business Complexity in a Microservice with DDD and CQRS Patterns
+
+### Apply simplified CQRS and DDD patterns in a microservice
+
+- CQRS'i basit anlamda sistemdeki işlemleri ikiye ayırır:
+
+    1. Query'ler: Sistem'de herhangi bir değişikliğe neden olmazlar, var olanı okurlar.
+    2. Command'lar: Sistemde değişikliğe sebep olurlar.
+
+-  İleri seviye CQRS çalışmalarında fazlaca detaylar bulunur en basitinden Query'lerin çalıştığı database ile Command'ların çalıştığı database'in ayrılması gibi. Bu şekilde bir çalışma yapılacağı zaman data consistency için de ekstra olarak çalışmalar yapılmalı. Ama basit anlamda kullanımlarda sadece Query ve Command modellerin ayrılması da bir yaklaşımdır. Ortak database içerisinden farklı modeller ile işlemler yürütülür. Örnek olarak alt kısımdaki modellemeye bakabiliriz:
+
+    ![](images/basiccqrs.png)
+
+- Query'lerde çalışırken 2 şekilde çalışabiliriz. Örnek olarak query'ler için **Dapper** kullanıyorsak ekstra olarak bir model tanımlamadan query sonuçlarını döndürebiliriz:
+
+    ```cs
+    return await connection.QueryAsync<dynamic>(
+        @"SELECT 
+            o.[Id] as ordernumber,
+            o.[OrderDate] as [date]
+        FROM [ordering].[Orders] o");
+    ```
+
+    Yukarıdaki işlemde görüldüğü gibi **dynamic** ile bir model tanımlamadan, sorgu neticesinde dönen değerler kullanılabilir. Avantaj olarak ekstra class'lar tanımlamamıza gerek kalmaz, değişiklikler için sadece sorguyu değiştirmek yeterlidir. Dezavantaj olarak uzun dönemde client'lar ile iletişimde netliği sağlamakta zorlanabilir. Ekstra olarak bazı middleware yazılımları için uyuşmazlık oluşturabilir.
+
+    ```cs
+    return await connection.QueryAsync<OrderSummary>(
+        @"SELECT 
+            o.[Id] as ordernumber,
+            o.[OrderDate] as [date]
+        FROM [ordering].[Orders] o");
+    ```
+
+    Bu şekilde model kullanarak da aynı işlemi yapabiliriz. Model kullanımının avantajı olarak client-service iletişimlerinde netlik sağlar. Dezavantajı olarak sorgu değiştiğinde class'ın da değiştirilmesi gerekir.
+
+    Ayrıca ek olarak API'lerin geri dönüş değerlerini dışardaki kullanıcılarına belirtirken kullanılan 
+
+    ```cs
+    // Diğer attribute'ler    
+    [ProducesResponseType(typeof(IEnumerable<OrderSummary>),(int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetOrders()
+    {
+    var userid = _identityService.GetUserIdentity();
+    var orders = await _orderQueries
+    .GetOrdersFromUserAsync(Guid.Parse(userid));
+    return Ok(orders);
+    }
+    ```
+
+    **ProducesResponseType** attribute'unu kullanabilmek için de geri dönüş tipi açık (explicit type) olarak  belirtilebiliyor olmalıdır. Eğer **dynamic** türünde dönüş yapıyor isek bu attribute'u kullanamayız.
+
+<br>
+
+### Design a DDD-oriented microservice
+
+- DDD sorunlarımızı domainler'e ayırarak işlemeyi savunur. Problemleri **Bounded Context (Sınırlı Bağlamlar)**'ler olarak ayırarak problem alanları oluşturur. Ek olarak da ayrıştırılan bu problemleri birbirleri ile aynı dilde konuşmalarını/iletişim kurmalarını sağlar.
+
+- Ana problemi olabildiğince küçük parçalara ayırarak microservice'ler şeklinde çözmek istiyoruz, bu BC ayrımları bizim bu microservice'leri oluşturmamızı sağlar.
+
+- Eğer iki microservice'in birbirleri ile çok fazla iş birliği yapması gerekiyorsa büyük ihtimalle o ikisi birleşip tek bir microservice olmalıdır.
+
+    Ayrıca bir microservice'in bir isteğe cevap verirken başka bir servise bağlı olması gerekiyorsa o servis gerçekten özerk değildir.
+
+<br>
+
+### Layers in DDD microservices
+
+![](images/dddlayers.png)
+
+- Domain katmanın hiçbir katmana bağımlı olmaması gerekir.
+
+
