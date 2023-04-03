@@ -1,5 +1,4 @@
 ﻿using DemandManagement.MessageContracts;
-using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemandManagement.Api.Controllers
