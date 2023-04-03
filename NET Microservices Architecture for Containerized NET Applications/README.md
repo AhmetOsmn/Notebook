@@ -1162,3 +1162,134 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 - Domain katmanın hiçbir katmana bağımlı olmaması gerekir.
 
 
+- Domain Model Layer:
+
+    - İş kavramlarını, iş durumu hakkındaki bilgileri ve iş kurallarını
+    temsil eder.
+
+    - Bir class library olarak domain entity'lerini içerecek şekilde geliştirilir.
+
+    - Veri kalıcılığını ilgilendiren herhangi bir şey yapılmaz. Bu konudan sorumlu olan katman **Infrastructure** katmanıdır. Domain katmanı direkt olarak **Infrastructure** ile bağlantılı olmamalıdır. Yani önemli bir kural olarak domain model entity'leri POCO olmalıdırlar.
+
+    - Domain entity'leri ayrıca EF gibi NGibernate gibi veri erişim framework'lerine de direkt bağımlı olmamalıdır. Yani kısaca domain entity'leri **Infrastructure** altında tanımlanan herhangi bir class'tan türetilmemeli ve uygulanmamalıdır.
+
+- Application Layer:
+
+    - Yazılımın yapması gereken işleri tanımlar. Ayrıca Expressive Domain nesnelerini sorunları çözmeleri için yönlendirir.
+
+    - Bu katman çok yoğun olmayacak şekilde hazırlanır. Herhangi bir iş kuralı vs. içermez. Sadece görevleri koordine eder ve sonraki katmanın domain modelleri ile ilgili olan işleri delege eder. 
+    - Genellikle .Net Core Web API olarak geliştirilir.
+    - CQRS yaklaşımı kullanılıyorsa query'leri, mikro servis tarafından kabul edilen command'ları ve bazen mikro servisler arasındaki event-driven communication'ı (integration event'ler) içerebilir.
+
+-  Infrastructure Layer:
+
+    - Infrastructure katmanı bellekte tutulan verilern veritabanlarında veya başka bir kalıcı depoda nasıl tutulduğu ile ilgilenir.
+
+- Katmanların birbirleri arasındaki bağımlılıkları:
+
+    ![](images/layerdependencies.png)
+
+<br>
+
+### Rich domain model vs. anemic domain model
+
+- Anemic modeller içerlerinde fonksiyon olmayan, sadece property'lerden oluşan modellerdir.
+
+    Servis eğer basit bir seviyedeyse (CRUD gibi) anemic modeller kullanılabilir.
+
+    Eğer servis basit değilse, fazlaca iş kuralı içeriyorsa anemic model kullanımı anti-pattern'e dönüşecektir. Bu tarz servislerde bu modellere fonksiyonellik katarak onları rich model şekline dönüştürebiliriz. Bu sayede DDD'nin diğer pattern'leri ile birlike faydalı bir şekle bürünebilir.
+
+<br>
+
+### The Value Object pattern
+
+- Bir entity var ise bir kimlik olmalıdır ama sistemde Value Object pattern'i gibi kimlik gerektirmeyen bir çok nesne vardır. Bir değer nesnesi (value object), etki alanı yönünü tanımlayan ve kavramsal kimliği olmayan bir nesnedir. 
+
+    Bu objeler sadece geçici olarak ilgilenmemiz gereken tasarım öğelerini temsil etmek için somutlaştırılan objelerdir.
+
+- Value obje'leri ilişkisel veri tabanlarında ve ORM'lerde yönetmek biraz zordur (EF Core ile gelen *Owned Entities* yapısı ile biraz daha kolaylaştırma sağlanmıştır). Bunun yerine document-oriented veritabanlarını kullanmak çok daha kolay olacaktır.
+
+<br>
+
+### The Aggregate pattern
+
+- Uyumlu bir birim olarak ele alınabilecek olan entitiy'lerin ve davranışların kümesini/grubunu tanımlayan DDD birimlerine **Aggregate** denir.
+
+- *Aggregate*'leri genellikle ihtiyaç duyduğumuz işlemlere/transaction'lara göre tanımlarız. Örnek olarak bir sipariş (order) içerisinde sipariş edilen ürünleri içerir (order items). Burada order item bir entity olacaktır. Order aggregate'i içerisinde ise child-enity olarak tanımlanır. Order Item içerisinde de Order root entity olarak tanımlanır ve buna **Aggregate Root** denir.
+
+- Aggregate'leri tanımlarken kafamıza göre nesneleri birleştirmeyiz. İki nesne domain içerisinde işlevsel olarak birlikte olmak zorunda mı bunu iyice düşündükten sonra birleştirme yaparız.
+
+- ![](images/aggregatepattern.png) 
+
+    Yukarıdan da görüldüğü gibi bir agregate içerisinde child'lara erişim nav-property'ler ile sağlanabilirken, farklı bir aggregate'e direkt olarak erişim yoktur. Sadece foreign key bilgisi vardır, bu direkt erişimi engellemek için uygulanan bir güvenliktir.
+
+<br>
+
+### Implement a microservice domain model with .NET
+
+-   ![](images/domainmodelonnet.png)
+
+     Yukarıdaki örnekte domain model içerisinde tanımlanan aggregate modelleri görebiliriz. Aggregate'ler içerisinde root entity ve child entity'lerin birlikte olduğunu, root entity ile yapılacak işlemlerin tanımlandığı bir repository interface'i olduğunu görebiliriz. Burada dikkat edilmesi gereken nokta interface'ler burada tanımlanır fakat bu interface'lerin uygulanması Infrastructure katmanında olacaktır. Aggregate içerisinde sadece hangi işlevlerin olması gerektiği tanımlanır.
+
+    ![](images/aggregatefolder.png)
+
+- Örnek root entity'e bakalım:
+
+    ```cs
+    public class Order : Entity, IAggregateRoot
+    {
+        private DateTime _orderDate;
+        public Address Address { get; private set; }
+        private int? _buyerId;
+
+        public OrderStatus OrderStatus { get; private set; }
+        private int _orderStatusId;
+
+        private string _description;
+        private int? _paymentMethodId;
+
+        private readonly List<OrderItem> _orderItems;
+        public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
+
+        public Order(
+            string userId, 
+            Address address, 
+            int cardTypeId, 
+            string cardNumber,
+            string cardSecurityNumber,
+            string cardHolderName,
+            DateTime cardExpiration,
+            int? buyerId = null,
+            int? paymentMethodId = null)
+        {
+            _orderItems = new List<OrderItem>();
+            _buyerId = buyerId;
+            _paymentMethodId = paymentMethodId;
+            _orderStatusId = OrderStatus.Submitted.Id;
+            _orderDate = DateTime.UtcNow;
+            Address = address;
+            // ...Additional code ...
+        }
+
+        public void AddOrderItem(
+            int productId,
+            string productName,
+            decimal unitPrice,
+            decimal discount,
+            string pictureUrl,
+            int units = 1)
+        {
+            //...
+            // Domain rules/logic for adding the OrderItem to the order
+            // ...
+            var orderItem = new OrderItem(productId, productName, unitPrice, discount,
+            pictureUrl, units);
+            _orderItems.Add(orderItem);
+        }
+        // ...
+        // Additional methods with domain rules/logic related to the Order aggregate
+        // ...
+    }
+    ```
+
+    Yukarıdaki sınıfın kalıtım aldığı **IAggregateRoot** interface'i içerisi boş olan, sadece işaretleme amaçlı kullanılan bir interface'dir.
