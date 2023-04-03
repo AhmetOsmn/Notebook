@@ -980,3 +980,132 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
     }
     ```  
 <br>
+
+# 25 - İlişkisel Tablolarda Veri Eklemek
+
+- 1-1 İlişkide principal entity üzerinden eklemek:
+
+    ```cs
+    Person person = new();
+    person.Name = "Ahmet";
+    person.Address = new () { PersonAddress = "Istanbul" }; // dependent entity verilmek zorunda değildir.
+
+    await context.AddAsync(person);
+    await context.SaveChangesAsync();
+    ```
+
+- 1-1 İlişkide dependent entity üzerinden eklemek:
+
+    ```cs
+    Address address = new()
+    {
+        PersonAddress = "Istanbul",
+        Person = new() { Name = "Ahmet" } // principal entity verilmek zorundadır.
+    };
+
+    await context.AddAsync(address);
+    await context.SaveChangesAsync();
+    ```
+
+- 1-n İlişkide principal entity üzerinden, nesne referansını kullanarak eklemek:
+
+    ```cs
+    Blog blog  = new() { Name = "test blog" };
+    blog.Posts.Add(new() { Title = "Post 1" }); // Bu şekilde Post nesnesi eklerken, Posts property'sinin null olmaması gerekir, null olursa bu şekilde erişildiğinde NullReferenceException fırlatılacaktır.
+    blog.Posts.Add(new() { Title = "Post 2" }); // Bu önlemi Blog sınıfının ctor'unda Posts property'sini ilgili tipte set ederek, new'leyerek alırız.
+    blog.Posts.Add(new() { Title = "Post 3" }); 
+
+    await context.AddAsync(blog);
+    await context.SaveChangesAsync();
+    ```
+
+- 1-n İlişkide principal entity üzerinden, object initializer kullanarak eklemek:
+
+    ```cs
+    Blog blog = new()
+    {
+        Name = "test blog", 
+        Posts = new HashSet<Post>() 
+        { 
+            new() { Title = "Post 1" }, 
+            new() { Title = "Post 2" }, 
+            new() { Title = "Post 3" } 
+        }
+    };
+
+    await context.AddAsync(blog);
+    await context.SaveChangesAsync();
+    ```
+
+- 1-n İlişkide dependent entity üzerinden eklemek:
+
+    Bu yöntem kullanıldığında 1-1 gibi davranış sergilenir, n olan kısım da sadece 1 adet eklenebilir.
+
+    ```cs
+    Post post = new()
+    {
+        Title = "Post 1",
+        Blog = new() { Name = "test blog" }
+    };
+
+    await context.AddAsync(post);
+    await context.SaveChangesAsync();
+    ```
+
+- 1-n İlişkide foreignkey üzerinden eklemek:
+
+    Bu yöntemi kullanabilmek için foreignkey property'si class içerisinde fiziksel olarak tanımlanmalıdır.
+    Ayrıca bu yöntemde principal entity'nin daha önceden var olması gerekiyor.
+
+    ```cs
+    Post post = new()
+    {
+        BlogId = 1, // eklenmek istenen blog'un id'si bir şekilde elde edilir ve post nesnesindeki property'e set edilir.
+        Title = "Post 1"
+    };
+
+    await context.AddAsync(post);
+    await context.SaveChangesAsync();
+    ```
+
+- Default convention ile tasarlanan  n-n ilişkide veri eklemek:
+
+    Hangi entity üzerinden eklendiğinin bir önemi yoktur.
+
+    ```cs
+    Book book = new()
+    {
+        BookName = "test kitabı",
+        Authors = new HashSet<Author>()
+        {
+            new(){ AuthorName = "Ali" },
+            new(){ AuthorName = "Veli" }
+        }
+    };
+
+    await context.AddAsync(book);
+    await context.SaveChangesAsync();
+    ```
+
+- Fluent api ile tasarlanan n-n ilişkide veri eklemek:
+
+    ```cs
+    Author author = new()
+    {
+        AuthorName = "Ahmet",
+        Books = new HashSet<Book>()
+        {
+            new(){ BookId = 1 }, // var olan bir kitaba yeni yazar eklemek.
+            new(){ Book = new() { BookName = "A Kitabı" } } // hem yeni bir kitap, hem de bu kitaba yeni bir yazar eklemek
+        }
+    };
+
+    await context.AddAsync(author);
+    await context.SaveChangesAsync();
+    ```
+
+<br>
+
+# 26 - İlişkisel Tablolarda İlişkileri  Güncellemek
+
+- 
