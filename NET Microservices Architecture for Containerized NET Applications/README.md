@@ -1293,3 +1293,146 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
     ```
 
     Yukarıdaki sınıfın kalıtım aldığı **IAggregateRoot** interface'i içerisi boş olan, sadece işaretleme amaçlı kullanılan bir interface'dir.
+
+<br>
+
+### Encapsulate data in the Domain Entities
+
+- Entity modellerinde navigation property'lerin public bir şekilde bırakılması, başka bir developer'ın o navigation property'nin ilişkili olduğu tabloda/koleksiyonda değişiklik yapabilmesine izin veriyer olmak demektir. Bunun yerine bu property'leri sadece class içerisindeki fonksiyonlar ile manipüle edilebilecek şekilde oluşturursak, developer bizim belirlediğimiz kurallar çerçevesinde hareket edebiliyor olacaktır.
+
+    Örnek olarak, yapılmaması/yapılamaması gereken bir işlemi alt kısımdan inceleyebiliriz:
+
+    ```cs
+    OrderItem myNewOrderItem = new OrderItem(
+        orderId,
+        productId,
+        productName,
+        pictureUrl,
+        unitPrice,
+        discount,
+        units);
+
+    myOrder.OrderItems.Add(myNewOrderItem);
+    ```
+    Bu örnekte developer `myOrder` nesnesi üzerinden `OrderItems` navigation property'sini kullanarak **OrderItems** koleksiyonuna direkt olarak yeni bir item ekliyor. Bunun yerine daha korunaklı bir şekilde yeni bir item eklemesini alt kısımdaki gibi sağlayabiliriz:
+
+    ```cs
+    myOrder.AddOrderItem(productId, productName, pictureUrl, unitPrice, discount, units);
+    ```
+
+    Yukarıdaki şekilde ekleme yapılmasını sağladığımızda **OrderItems** koleksiyonu ile direkt olarak bağlantı kurmadan yeni bir item eklenmesini sağlamış oluyoruz. 
+
+    Ayrıca yukarıdaki doğru kullanım örneğinde, mantıksal işlemlerin ve ilgili işlemi ilgilendiren validasyonların/doğrulama işlemlerinin çoğu aggregate root içerisinden tek bir yerden sağlanmış olur. Aggregate root pattern'inin nihai amacı budur.
+
+<br>
+
+### Seedwork (reusable base classes and interfaces for your domain model)
+
+- Solution içerisinde **SeedWork** isimli bir klasör bulunur. Bu klasör içerisinde özel olarak tanımlanan base class'lar bulunur.
+
+    ![](./images/seedworks.png)
+
+    Bu class'lar domain class'larında gereksiz kod yazılmasının önüne geçer. Interface'ler ise neylerin implement edilmesi gerektiği hakkında bilgiler verir, ayrıca application layer tarafında DI için kullanılırlar.
+
+    Örnek bir base entity class'ına bakalım:
+
+    ```cs
+    public abstract class Entity
+    {
+        int? _requestedHashCode;
+        int _Id;
+        private List<INotification> _domainEvents;
+
+        public virtual int Id
+        {
+            get { return _Id; }
+            protected set { _Id = value; }        
+        }
+    
+        public List<INotification> DomainEvents => _domainEvents;
+        
+        public void AddDomainEvent(INotification eventItem)
+        {
+            _domainEvents = _domainEvents ?? new List<INotification>();
+            _domainEvents.Add(eventItem);
+        }
+
+        public void RemoveDomainEvent(INotification eventItem)
+        {
+            if (_domainEvents is null) return;
+            _domainEvents.Remove(eventItem);
+        }
+
+        public bool IsTransient()
+        {
+            return this.Id == default(Int32);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is Entity)) return false;
+            if (Object.ReferenceEquals(this, obj)) return true;
+            if (this.GetType() != obj.GetType())return false;
+            Entity item = (Entity)obj;
+            if (item.IsTransient() || this.IsTransient()) return false;
+            else return item.Id == this.Id;
+        }
+        
+        public override int GetHashCode()
+        {
+            if (!IsTransient())
+            {
+                if (!_requestedHashCode.HasValue) _requestedHashCode = this.Id.GetHashCode() ^ 31;
+                return _requestedHashCode.Value;
+            }
+            else return base.GetHashCode();
+        }
+
+        public static bool operator ==(Entity left, Entity right)
+        {
+            if (Object.Equals(left, null)) return (Object.Equals(right, null));
+            else return left.Equals(right);
+        }
+
+        public static bool operator !=(Entity left, Entity right)
+        {
+            return !(left == right);
+        }
+    }    
+    ```
+
+<br>
+
+### Repository contracts (interfaces) in the domain model layer
+
+- Repository contract'ları her aggregate içerisindeki repository'lerin neleri içermesi gerektiğini belirtirler.
+
+- Repository'ler herhangi bir domain modeldeki bir class'ı implement etmemelidir. Sadece domain model içerisindeki interface'leri implement edebilirler.
+
+    Örnek olarak alt kısımdaki interface, `OrderRepository` class'ının Infrastructure katmanında neleri implement etmesi gerektiğini tanımlar.
+
+    ```cs
+    public interface IOrderRepository : IRepository<Order>
+    {
+        Order Add(Order order);
+        void Update(Order order);
+        Task<Order> GetAsync(int orderId);
+    }
+
+    public interface IRepository<T> where T : IAggregateRoot
+    {
+        IUnitOfWork UnitOfWork { get; }
+    }
+    ```
+<br>
+
+### Implement value objects
+
+- Bazen sadece veri tutmak tutmak için objeleri kullanırız. Örnek olarak bir **Person** class'ındaki **Address** property'si düz bir metine göre daha karmaşık bir yapı olduğundan, genellikle *string* vb. değil ayrı bir obje olarak tutulur.
+
+- Value objelerinin 2 temel özelliği vardır:
+
+    - Kimlikleri (identity) yoktur,
+    - Değişmezler (immutable)
+
+    Buradaki değişmezleri şöyle açıklayabiliriz: value obje'leri oluşturulurken gerekli değerler verilir ve objenin lifecycle'ı boyunca değişmezler, buna izin verilmemelidir.
