@@ -1,6 +1,7 @@
 # Kaynaklar
 
-- https://youtube.com/playlist?list=PL8IHDq7oEkgFKYIoNuubfZMuhhgEukkAg
+- [React Dersleri](https://youtube.com/playlist?list=PL8IHDq7oEkgFKYIoNuubfZMuhhgEukkAg)
+- [PROTOTURK](https://youtube.com/playlist?list=PLfAfrKyDRWrGXWpnJdyC4yXIW6v-PcFu-)
 
 # JSX Nedir?
 
@@ -148,3 +149,128 @@
 - Eğer bir state parçası birden fazla bileşen tarafından kullanılıyorsa, en yakın bir üst ortak bileşene taşınmalıdır. 
 
     Üst bileşende bulunan ve alt bileşenler tarafından kullanılan state için `single source of truth (doğrunun tek kaynağı)` denir.
+
+# useRef() ve forwardRef()
+
+- Bir JSX elementini referans etmek istediğimizde `useRef()` kullanabiliriz. Örnek olarak:
+
+    ```js
+    function UseRefUsage() {
+
+        const inputRef = useRef();
+
+        const focusInput = () => {
+            inputRef.current.focus();
+        }
+
+        return (
+            <>
+                <input type="text" ref={inputRef} />
+                <button onClick={focusInput}>Focus</button>
+            </>
+        );
+    }
+    ```
+
+- Eğer bir component'i referans etmek istersek ise `forwardRef()` kullanabiliriz. Örnek olarak:
+
+    ```js
+    function Input(props, ref){
+        return <input type="text" ref={ref} {...props} />
+    }
+
+    Input = forwardRef(Input);
+
+    //veya 👇 
+
+    //const Input = forwardRef((props, ref) => {
+    //    return <input ref={ref} type="text" {...props} />
+    //}) 
+
+
+    function ForwardRefUsage() {
+
+        const inputRef = useRef();
+
+        const focusInput = () => {
+            inputRef.current.focus();
+        }
+
+        return (
+            <>         
+                <Input ref={inputRef} />
+                <button onClick={focusInput}>Focus</button>
+            </>
+        );
+    }
+
+    ```
+
+# useReducer()
+
+- Karmaşık projelerde özellikle çok fazla state kullanılmaya başlanıldığında, bu yönetimi daha düzenli geliştirme yapabilmek için tercih edilir.
+
+    ```js
+    // const [todos, setTodos] = useState([]);
+    // const [todo, setTodo] = useState('');
+
+    // 👆 yerine 👇 
+
+    const [state, dispatch] = useReducer(reducer, {
+        todos: [],
+        todo: ""
+    });
+    ```
+
+    ***useReducer(`reducer`, {})*** kısmındaki `reducer` bir fonksiyondur. Bu fonksiyon içerisine **state ve action** gönderilerek yönetim sağlanır.  
+
+    ***useReducer(reducer, `{}`)*** kısmındaki `{}` ise. Normalde state kullanarak kontrol ettiğimiz state parçalarının initial değerleridir.
+
+    Örnek bir `reducer` fonksiyonu:
+
+    ```js
+    function reducer(state, action) {
+        switch (action.type) {
+            case 'SET_TODO':
+                return {
+                    ...state,
+                    todo: action.value
+                }
+
+            case 'ADD_TODO':
+                return {
+                    ...state,
+                    todo: '',
+                    todos: [
+                        ...state.todos,
+                        action.todo
+                    ]
+                }
+        }
+    }
+    ```
+
+# Memoization
+
+- Bir component'in performanslı bir biçimde render edilmesini sağlar. Örnek olarak X component'i içerisinde Y component'i kullanılıyor olsun. X component'i her state değişikliğinde render edileceğinden Y componentinde bir değişiklik yapılmasa bile (Y component'ine bir state gönderimi olmadığını düşünüyoruz) gereksiz olarak render edilecek. 
+
+    Bu gibi durumlarda `memo` ile Y nin gereksiz yere render edilmesini önleyebiliriz. Örnek olarak:
+
+    ```js
+    import { memo } from "react";
+
+    function Y() {
+
+        console.log("Y rendered");
+
+        return (
+            <div>test</div>
+        );
+    }
+
+    export default memo(Y);
+    ```
+
+    Yukarıdaki şekilde olduğu gibi kullanımda artık X component'i her render edildiğinde Y render edilmeyecektir.
+
+- Eğer biz bir component'e prop olarak fonksiyon gönderirsek bu sefer `memo` işlevsiz kalacaktır. Değişmediğini düşündüğüm fonksiyonları da bellekte tutmak için `useCallBack()` fonksiyonunu kullanmalıyız.
