@@ -2,6 +2,12 @@
 
 Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [şu](https://youtube.com/playlist?list=PLQVXoXFVVtp1DFmoTL4cPTWEWiqndKexZ) eğitim serisinden çıkartılmıştır. 
 
+<br>
+
+# 1.Ders
+
+<br>
+
 # 2.Ders
 
 ## Onion Architecture vs N Layer Architecture
@@ -68,3 +74,36 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [şu](https://youtube
   - Son kullanıcının uygulama ile iletişime geçtiği katmandır.
   - Örnek olarak Web App, Web API, MVC vb. bir tiptedir.
 
+
+<br>
+
+# 3.Ders
+
+## IoC Container İçin Katman Referansları
+
+- Bir önceki kısımda en dışarıdaki 3 katmanın birbirleri arasında bir ilişkisi olmadığını belirtmiştik. Aslında *Presentation Katmanı* bu durumu biraz çiğneyebilir. Sonuç olarak *Presentation Katmanı* içerisinde bir *IoC Container* oluşturup bu container'da interface'leri ve servis class'larını tanımlamamız gerekeceğinden ve bu container'da *Presentation Katmanı*'nda oluşturulacağından *Presentation Katmanı* *Infrastructure Katmanı*'nı ve *Persistence Katmanı*'nı referans edebilir.
+
+<br>
+
+## Onion Architecture Temel Solution Düzeni
+
+ ![onion-solution](Images/MiniETicaret/onionarch-solution.png)
+
+<br>
+
+## Projelerin Örnek Klasör Düzenleri
+
+ ![all-projects](Images/MiniETicaret/all-projects.png)
+
+<br>
+
+## Onion Architecture Temel Olarak Akış Düzeni Örneği
+
+ ![all-projects](Images/MiniETicaret/onionarch-flow.png)
+
+
+<br>
+
+# 4.Ders
+
+- 
