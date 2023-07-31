@@ -791,7 +791,7 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
 - `Fluent Api:`
 
     ```cs
-     public class Calisan // Dependent Entity 
+    public class Calisan // Dependent Entity 
     {
         public int Id {get; set;}
         public string Adi {get; set;}
@@ -902,7 +902,7 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
         public Yazar Yazar {get; set;}
     }
 
-     public class MyDbContext : DbContext
+    public class MyDbContext : DbContext
     {
         public DbSet<Yazar> Yazarlar {get; set;}
         public DbSet<Kitap> Kitaplar {get; set;}
@@ -980,3 +980,292 @@ Eğer oluşturulan sorgulardan herhangibi birisi başarısız olursa, bu işlemd
     }
     ```  
 <br>
+
+# 25 - İlişkisel Tablolarda Veri Ekleme
+
+- 1-1 ilişkili tablolarda veri eklemek:
+
+    Eğer principal nesne üzerinden ekleme gerçekleştiriliyorsa dependent entity verilmek zorunda değildir. Fakat dependent nesnesi üzerinden ekleme yapılıyorsa, principal nesne verilmek zorundadır.
+
+    EF Core alt kısımdaki 2 yöntemde de ilk önce principal nesneyi ekler, sonrasında dependent nesneyi ekler. 
+
+    ```cs
+    public class Person
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        
+        public Address Address { get; set; }
+    }
+
+    public class Address
+    {
+        public int Id { get; set; }
+        public string PersonAddress { get; set; }
+        
+        public Person Person { get; set; }
+    }
+    ```   
+
+    1. Principal entity üzerinden eklemek:
+        ```cs
+        public class Program
+        {
+            public void Main(string[] args)
+            {
+                Person person = new();
+                person.Name = "Ahmet";
+                person.Address = new(){ PersonAddress = "Istanbul" };
+
+                await context.AddAsync(person);
+                await context.SaveChangesAsync();
+            }
+        }  
+        ``` 
+
+    2. Dependent entity üzerinden eklemek:
+        ```cs
+        public class Program
+        {
+            public void Main(string[] args)
+            {
+                Address address = new()
+                {
+                    PersonAddress = "Istanbul",
+                    Person = new(){ Name = "Ahmet" }
+                };
+
+                await context.AddAsync(address);
+                await context.SaveChangesAsync();
+            }
+        }             
+        ```
+
+- 1-n ilişkili tablolarda veri eklemek:
+
+    ```cs
+    public class Blog
+    {
+        public Blog()
+        {
+            // HashSet olarak new'lenmesi performans içindir. 
+            // Herhangi bir koleksiyon tipi de tercih edilebilir.
+            Posts = new HashSet<Post>();
+        }
+
+        public int Id { get; set; }
+        public string Name { get; set; }
+
+        public ICollection<Post> Posts { get; set; }
+    }
+
+    public class Post
+    {
+        public int Id { get; set; }
+        public int BlogId { get; set; }
+        public string Title { get; set; }
+
+        public Blog Blog { get; set; }
+    }
+    ```
+
+    1. Principal entity ile
+        - nesne referansı üzerinden eklemek:            
+            ```cs           
+            public class Program
+            {
+                public void Main(string[] args)
+                {
+                    Blog blog = new() { Name = "Ahmet's Blog" };
+
+                    // Bu şekilde ekleme yaparken, Posts'un kesinlikle null olmadığından emin olmalıyız. 
+                    // Emin olmak için de ilgili class'ın ctor'unda ilgili property new'lenir (Blog class'ının ctor'u).
+                    blog.Posts.Add(new() { Title = "Post 1" });
+                    blog.Posts.Add(new() { Title = "Post 2" });
+                    blog.Posts.Add(new() { Title = "Post 3" });
+
+                    await context.AddAsync(blog);
+                    await context.SaveChangesAsync();
+                }
+            }                       
+            ```
+
+        - object initializer üzerinden eklemek:
+            ```cs
+            public class Program
+            {
+                public void Main(string[] args)
+                {   
+                    // Bu şekilde ekleme yapılacağında, ctor içerisinde new'leme yapılmasına gerek kalmaz.
+                    Blog blog = new()
+                    {
+                        Name = "Blog 1",
+                        Posts = new HashSet<Post>()
+                        {
+                            new() { Title = "Post 10" },
+                            new() { Title = "Post 11" }
+                        }
+                    };
+
+                    await context.AddAsync(blog);
+                    await context.SaveChangesAsync();
+                }
+            }   
+            ``` 
+    
+    2. Dependent entity ile eklemek:
+        ```cs
+        public class Program
+        {
+            public void Main(string[] args)
+            {   
+                // Bu şekilde de (dependent'tan başlayarak) ekleme yapabiliriz fakat burada 1-n ilişki olmasına rağman 1-1 ilişki gibi ekleme yapılır, yani sadece 1'er adet veri girişi sağlanabilir.
+                Post post = new()
+                {
+                    Title = "Post 20",
+                    Blog = new() { Name = "N Blog" }
+                };
+
+                await context.AddAsync(post);
+                await context.SaveChangesAsync();
+            }
+        }          
+        ``` 
+
+    3. Foreign Key kolonu ile eklemek:
+        ```cs
+        public class Program
+        {
+            public void Main(string[] args)
+            {   
+                Post post = new()
+                {
+                    Title = "Post 42",
+                    BlogId = 1 // Var olan principal verisinin id'sini belirterek, var olan bir principal veriye dependent veri ekleyebiliriz.
+                };
+
+                await context.AddAsync(post);
+                await context.SaveChangesAsync();
+            }
+        }   
+        ``` 
+
+- n-n ilişkili tablolarda veri eklemek:   
+
+    1. Default convention ile tasarlanan ilişkilerde kullanılır:
+        ```cs
+        public class Book
+        {
+            public Book()
+            {
+                Authors = new HashSet<Author>();
+            }
+
+            public int Id { get; set; }
+            public string BookName { get; set; }
+
+            public ICollection<Author> Authors { get; set; }
+        }
+
+        public class Author
+        {
+            public Author()
+            {
+                Books = new HashSet<Book>();
+            }
+
+            public int Id { get; set; }
+            public string AuthorName { get; set; }
+
+            public ICollection<Book> Books { get; set; }
+        }
+
+        public class Program
+        {
+            public void Main(string[] args)
+            {   
+                Book book = new()
+                {
+                    BookName = "A Kitabı",
+                    Authors = new HashSet<Author>()
+                    {
+                        new (){ AuthorName = "Ali" },
+                        new (){ AuthorName = "Veli" }                        
+                    }
+                };
+
+                await context.Books.AddAsync(book);
+                await context.Books.SaveChangesAsync();
+            }
+        }   
+        ```
+
+    2. Fluent Api ile tasarlanan ilişkilerde kullanılır:
+
+        ```cs
+        public class Book
+        {
+            public Book()
+            {
+                Authors = new HashSet<AuthorBook>();
+            }
+
+            public int Id { get; set; }
+            public string BookName { get; set; }
+
+            public ICollection<AuthorBook> Authors { get; set; }
+        }
+
+        public class Author
+        {
+            public Author()
+            {
+                Books = new HashSet<AuthorBook>();
+            }
+
+            public int Id { get; set; }
+            public string AuthorName { get; set; }
+
+            public ICollection<AuthorBook> Books { get; set; }
+        }
+
+        public class AuthorBook
+        {
+            public int BookId { get; set; }
+            public int AuthorId { get; set; }
+
+            public Book Book { get; set; }
+            public Author Author { get; set; }
+        }
+
+        // Context sınıfının hazır olduğunu düşünelim.
+
+        public class Program
+        {
+            public void Main(string[] args)
+            {   
+                Author author = new()
+                {
+                    AuthorName = "Can",
+                    Books = new HashSet<AuthorBook>()
+                    {
+                        new() { BookId = 1 }, // var olan bir kitap için yeni bir yazar ve cross table'a ilişki eklemek.
+                        new() 
+                        { 
+                            Book = new () { BookName = "B Kitap" } // hem yeni kitabı, hem yeni yazarı hem de cross table'a ilişkiyi eklemek.
+                        }
+                    } 
+                };
+
+                await context.Books.AddAsync(book);
+                await context.Books.SaveChangesAsync();
+            }
+        }   
+        ```
+
+<br>
+
+# 26 - Entity'lerde İlişkilerin Güncellenmesi
+
+
+
