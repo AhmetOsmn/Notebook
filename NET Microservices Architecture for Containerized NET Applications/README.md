@@ -804,22 +804,22 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
         27 COPY --from=publish /app .
         28 ENTRYPOINT ["dotnet", "Catalog.API.dll"]
         ```
-        1. Stage'e **base** ismiyle küçük bir image'i tanımlayarak başlar.
-        2. Image içerisinde **/app** klasörü oluşturur.
-        3. 80 Portunu açık hale getirir.
-        5. Yeni bir Stage'e başlar ve burada **building/publishing** işlemleri için kullanılacak büyük bir image tanımlar ve bu image'i **build** olarak isimlendirir.
-        6. Image içerisinde **/src** klasörü oluşturur.
-        7. - 16. Bu aralıkta daha sonrasında restore edebilmek için **.csproj** dosyalarının kopyalarını alır.
-        17. Catalog.API ve referans aldığı projelerin paketlerini restore eder.
-        18. **/src** klasörünün içerisine (dockerignore dosyasında belirtilen dosyalar hariç) solution içerisindeki bütün her şeyi kopyalar.
-        19. Current klasörü **Catalog.API** olarak günceller.
-        20. Projeyi build eder (bağımlılıkları ile birlikte) ve sonrasında **/app** klasörüne çıktı alır.
-        22. Yeni bir Stage'e başlar ve **build**', **publish** olarak değiştirir. 
-        23. Projeyi publish eder (bağımlılıkları ile birlikte) ve **/app** klasörüne çıktı alır.
-        25. Yeni bir Stage'e başlar ve **base**'i **final** olarak değiştirir.
-        26. Current klasörü **/app** olarak günceller.
-        27. Publish Stage'i içerisindeki **/app** klasörünü current klasöre kopyalar.
-        28. Container başlatıldığında çalıştırılacak komutu tanımlar.
+        1: Stage'e **base** ismiyle küçük bir image'i tanımlayarak başlar.<br> 
+        2: Image içerisinde **/app** klasörü oluşturur.<br>
+        3: 80 Portunu açık hale getirir.<br>
+        5: Yeni bir Stage'e başlar ve burada **building/publishing** işlemleri için kullanılacak büyük bir image tanımlar ve bu image'i **build** olarak isimlendirir.<br>
+        6: Image içerisinde **/src** klasörü oluşturur.<br>
+        7 - 16: Bu aralıkta daha sonrasında restore edebilmek için **.csproj** dosyalarının kopyalarını alır.<br>
+        17: Catalog.API ve referans aldığı projelerin paketlerini restore eder.<br>
+        18: **/src** klasörünün içerisine (dockerignore dosyasında belirtilen dosyalar hariç) solution içerisindeki bütün her şeyi kopyalar.<br>
+        19: Current klasörü **Catalog.API** olarak günceller.<br>
+        20: Projeyi build eder (bağımlılıkları ile birlikte) ve sonrasında **/app** klasörüne çıktı alır.<br>
+        22: Yeni bir Stage'e başlar ve **build**', **publish** olarak değiştirir.<br> 
+        23: Projeyi publish eder (bağımlılıkları ile birlikte) ve **/app** klasörüne çıktı alır.<br>
+        25: Yeni bir Stage'e başlar ve **base**'i **final** olarak değiştirir.<br>
+        26: Current klasörü **/app** olarak günceller.<br>
+        27: Publish Stage'i içerisindeki **/app** klasörünü current klasöre kopyalar.<br>
+        28: Container başlatıldığında çalıştırılacak komutu tanımlar.<br>
 
         Burada docker'ın cache mekanizmasından faydalanılabilir. Daha önce çalıştırılan bir komut tekrar çalıştırılacağı zaman, bu komutu tekrar çalıştırmaz önceki katmanı kullanır. Bu sayede zamandan kazanç elde etmeyi sağlar.
 
@@ -827,10 +827,10 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
 
         Sonraki optimizasyon için **17.** satırdaki restore işlemini düzenleyebiliriz. Eski hali ile paketleri 15 kez restore eder. Onun yerine orada **RUN dotnet restore** komutu olsaydı sadece 1 kez restore işlemi yapılırdı. Burada şöyle bir işlem daha yapılması gerekiyor: bu komut sadece tek bir proje veya solution varsa çalışacaktır. Bu nedenle alt kısımdaki gibi **dockerignore** dosyası içerisine ekleme yapmamız gerekir:
 
-            ```cs
-            *.sln
-            !eShopOnContainers-ServicesAndWebApps.sln // sadece 1 sln kalmış olacak.
-            ```
+        ```cs
+        *.sln
+        !eShopOnContainers-ServicesAndWebApps.sln // sadece 1 sln kalmış olacak.
+        ```
          Bir de restore komutuna **/ignoreprojectextensions:.dcproj** ifadesini de dahil edersek **docker-compose** projesini de ignore'lamış oluruz ve sadece üst kısımda bıraktığımız sln restore edilir.
 
          Son optimizasyon olarak **20.** satır gereksizdir. Burayı da kaldırdıktan sonra **dockerfile**'ın son hali alt kısımdaki gibi olur:
@@ -855,5 +855,584 @@ Birkaç farklı mikro servisten veri alan sorgular nasıl oluşturulur? Bunun i�
    
     3. Create your custom Docker images and embed your application or service in them:
 
-        
+        Eğer uygulamamız birden fazla servisten oluşuyorsa, her servisin image'ini oluşturmalıyız. Eğer uygulama tek parça ise o zaman bir image'yeterlidir.
 
+    4. Define your services in docker-compose.yml when building a multi-container Docker application:
+
+        **Docker-compose.yml** dosyası içeriside ilişkili olan servisleri ve bunların bağımlılıklarını tanımlarız. Örnek olarak:
+
+        ```cs
+        version: '3.4'
+
+        services:
+            webmvc:
+                image: eshop/web
+                environment:
+                - CatalogUrl=http://catalog-api
+                - OrderingUrl=http://ordering-api
+                ports:
+                - "80:80"
+                depends_on:
+                - catalog-api
+                - ordering-api
+
+            catalog-api:
+                image: eshop/catalog-api
+                environment:
+                - ConnectionString=Server=sqldata;Port=1433;Database=CatalogDB;...
+                ports:
+                - "81:80"
+                depends_on:
+                - sqldata
+
+            ordering-api:
+                image: eshop/ordering-api
+                environment:
+                - ConnectionString=Server=sqldata;Database=OrderingDb;...
+                ports:
+                - "82:80"
+                extra_hosts:
+                - "CESARDLBOOKVHD:10.0.75.1"
+                depends_on:
+                - sqldata
+
+            sqldata:
+                image: mcr.microsoft.com/mssql/server:latest
+                environment:
+                - SA_PASSWORD=Pass@word
+                - ACCEPT_EULA=Y
+                ports:
+                - "5433:1433"
+        ```
+
+        Yukarıdaki compose dosyası birden fazla container için statik konfigürasyonları içeriyor. İlerleyen kısımlarda bu tür compose dosyalarını nasıl nasıl parçalara ayırabileceğimizi göreceğiz.
+
+        Hazırladığımız compose dosyası sayesinde birbirine bağlı/bağsız servisleri sadece **docker-compose up** komutu ile çalıştırabiliriz.
+
+    5.  Build and run your Docker application:
+        
+        Eğer tek bir container'dan oluşan bir uygulamamız varsa, bu uygulamayı **docker run** komut ile aşağıdaki örnekteki gibi çalıştırabiliriz:
+
+            docker run -t -d -p 80:5000 cesardl/netcore-webapi-microservice-docker:first
+
+        Yukarıdaki komut belirtilen image'den yeni bir instance oluşturur. Var olan bir container'ı sonrasında kolayca tekrar çalıştırmak için *--name* parametresi ile bu instance'lara isim verebiliriz (container Id'lerini veya otomatik verilen isimleri de kullanabiliriz, *--name* parametresi kullanılmazsa otomatik olarak random bir isim atanacaktır).
+
+        Eğer uygulama birden fazla container'dan oluşuyorsa, docker-compose.yml dosyası hazırlanmalı ve **docker-compose up** komutu çalıştırılmalı.
+
+    6. Geliştirdiğimiz uygulamaya bağlı olarak, çalıştırdığımız docker container'ları üzerinden uygulamanın kendisinden istenenleri yerine doğru bir şekilde getirip getirmediğini test ederiz.
+
+<br>
+
+# 5 - Designing and Developing Multi-Container and Microservice-Based .NET Applications
+
+### Benefits of a microservice-based solution
+
+- Developer'ların servisleri daha kolay anlamasını ve hızlı bir başlangıç yapmasını sağlar.
+- Container'lar hızlı bir şekilde başlarlar, bu sayede developer'ın üretkenliği artar.
+- IDE'ler küçük olan projeleri/servisleri hızlı yüklerler.
+- Her servis birbirinden bağımsız olduğundan servisin tasarlanması, geliştirmesi, deploy edilmesi, yeni versiyonlarının çıkartılması daha kolaydır.
+- Uygulama içerisindeki belirli servislerin ölçeklendirilebiliyor olması da avantajdır. Örnek olarak X servisi daha çok kullanıldığı için bütün uygulamayı veya X servisi ile ilgisi olmayan servislerin instance'larını da arrtırmak yerine sadece X servisinin instance'larını arttırabiliriz.
+- Eğer yeterli developer kaynağımız varsa, servislerin hepsini ayrı takımlara dağıtabiliriz.
+- Bir sorun oluştuğunda sorunun bulunması ve çözülmesi daha kolaydır. Ayrıca diğer servisler bu sorundan etkilenmeden çalışmalarına devam edebilirler.
+
+<br>
+
+### Downsides of a microservice-based solution
+
+- Developer'ların daha kompleks işlemler yapması gerekecektir. Diğer servislerle olan entegrasyonları başarılı bir şekilde kurabilmeli, kuyruk sistemlerini iyi yönetebilmeli, test aşamalarında ve exception handling alanlarında daha ileri çalışmalar yapmalı.
+  
+- Çok çok fazla servis olduğunda, bu servislerin deploy edilmeleri ve ölçeklendirilmeleri de daha kompleks hale gelecektir. Burada IT operasyonlarında ve bu servislerin yönetiminde ekstra çalışmalara ihtiyaç duyulabilir. 
+- Microservice'ler arasında atomik işlemler mümkün değildir. Servisler birbirlerindeki değişiklikleri takip edebilmelidir.
+- Tek parça olan bir uygulama microservice tabanlı bir uygulamaya dönüştürüldüğünde kaynak tüketiminde artış olacaktır. Burada bir dezavantaj oluşur fakat uygulama genelinde microservice yapısının getirdiği diğer avantajlara bakıldığında kaynak tüketiminde ki bu artış genellikle kabul edilebilir düzeydedir.
+- Bir uygulamayı servislere ayırmak da ayrıca bir sorun olabilir. Servislerin kapsamlarını belirlemek dikkat ve çalışma isteyebilir. Servisler belirlenirken bir çok şeye bakılır fakat temel anlamda olabildiğince az ve hafif bağımlılık olacak şekilde hem de en küçük boyutta kendi başına çalışabilecek şekilde oluşturulmalıdır.
+
+<br>
+
+### Docker-compose File
+
+- Basit düzeyde uygulamalar için tek bir compose dosyası kullanabiliriz fakat bu önerilmez. Default olarak compose 2 dosyayı okur, **docker-compose.yml** ve **docker-compose.override.yml**.
+
+    **docker-compose.yml** dosyası mikroservisleri oluşturmak için kullanılır. 
+
+    **docker-compose.override.yml** dosyası mikroservislerin environment'larını detaylı bir şekilde konfigüre etmek için kullanılır.    
+
+- Compose dosyasını farklı amaçlara yönelik kullanabiliriz. Örnek olarak:
+
+    ![](images/multiplecomposefile.png)
+
+- Birden fazla compose dosyayını çalıştırmak istersek alt kısımdaki gibi bir komut çalıştırabiliriz:
+
+        docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+
+- Compose dosyalarında environment variable'lardan yararlanabiliriz. Bunları hem okuyabilir, hem de override edebiliriz. Genelde bu variable'lara erişim **.env** dosyası üzerinden sağlanır. Örnek bir kullanım:
+
+    ```cs
+    IdentityUrl=http://${ESHOP_PROD_EXTERNAL_DNS_NAME_OR_IP}:5105    
+    ```
+    ```cs
+    # .env file
+    ESHOP_EXTERNAL_DNS_NAME_OR_IP=host.docker.internal
+    ESHOP_PROD_EXTERNAL_DNS_NAME_OR_IP=10.121.122.92    
+    ```
+
+<br>
+
+### Implementing event-based communication between microservices (integration events)
+
+- Event-based communication kullandığımızda, servisler diğer servisleri ilgilendiren işlemler yaptığında bu işlemleri ilişkili oldukları servisler ile paylaşırlar. Örnek olarak servis içerisindeki bir şey değişirse/güncellenirse bu işlem diğer servislere bir **event publish edilerek** bildirilir. Bu sayede diğer servisler de kendi içlerinde gerekli operasyonları gerçekleştirirler. Bu sırada bir çok servisten arka arkaya event'lar publish edilebilir. 
+
+    Yukarıdaki açıklama aslında **Eventual Consistency Concept** kavramının özetidir.
+
+- Event'lerin paylaşması message broker'lar ile veya event bus'lar ile yapılabilir. Örnek olarka alt kısımı inceleyebiliriz:
+
+    ![](images/implementeventbus.png)
+
+    Development için message broker'lar yeterlidir fakat ürün aşamasında veya kritik işlemlerin yapıldığı uygulamalarda event bus'ların kullanılması daha uygundur. Bu bus'lar da kendi aralarında seviye olarak farklılık gösterirler. İhtiyacımıza göre içlerinden uygun gördüğümüzü tercih edebiliriz.
+
+- Integration event'ler mikroservislerin veya dışarıdaki sistemlerin senkron duruma getirilebilmesi/gelebilmesi için paylaşılan event'lerdir. Bu event'ler her mikroservisin kendi içerisinde tanımlanmalıdır. Ortak bir yerden/kütüphaneden aynı event class'ın kullanılması önerilmez çünkü mikroservisler tamamen bağımsız/özerk durumda olmalıdır.
+
+- Pub/Sub pattern'i ile Observer pattern'i arasında şöyle bir fark vardır. Observer pattern'de iki taraf (Observable/Observers) birbirlerinden haberdardır ve direkt olarak iletişim kurarlar. Pub/Sub pattern'de ise iki taraf arasında (publisher/subscriber) ekstra olarak bir aracı (message broker, event bus vb.) vardır. Bu iki taraf birbirlerini tanımazlar, direkt olarak iletişime geçmezler. İkiside bu aracıyı tanır ve bu aracı üzerinden iletişime geçerler.
+
+- Bu tarz çalışmalarda karşımıza çıkabilecek bir sorun var. Örnek olarak bir fiyat güncellemesi geldiğinde, database'i güncelledikten hemen sonra ve güncelleme işlemi ile ilgili olan eventi publish etmeden hemen önce uygulama kırılırsa ne olur? Database'de güncel veri var evet fakat diğer servisler hala eski veriyi kullanıyor olacaklar, yani bir tutarsızlık meydana gelir. Böyle durumlara uygun olarak **Event Sourcing** yaklaşımını kullanabiliriz.
+
+    Event Sourcing basit anlamda gerçekleştirilen eventlerin database'de tutularak uygulamanın çalışmasıdır. Normal veriler yerine gerçekleşen event'leri database'e kaydederiz ve gerektiği zamanlarda bu event'leri analiz ederek sorunları çözebiliriz. Bu yöntem sorunları çözmek için uygundur fakat uygulaması kolay değildir, ekstra efor gerektririr.
+
+    Dengeli bir yaklaşım olarak transactional database'i ve event sourcing'i birlikte kullanabiliriz. Örnek olarak yayınlanan bir event'ın durumunu database'de "*ready*" olarak tutarken, publish işlemi başarılı döndüğünde "*already published*" olarak değiştirebiliriz. Tanımlanan bir job ile, durumu "*ready*" olan event'lar tekrar denemeye alınır. Yukarıdaki fiyat güncelleme örneğindeki soruna tekrar baktığımızda, event'ın durumu "*already published*" durumuna geçmeyeceğinden bu evet job tarafından sonrasında tekrar publish edilmeye çalışılacak. 
+
+<br>
+
+### Implement background tasks in microservices with IHostedService and the BackgroundService class
+
+- Uygulamamıza arka planda çalışacak bazı işler tanımlamak için **IHost** veya **IWebHost** interface'lerini kullanabiliriz.
+
+    ![](images/webhost.png)
+
+    Yukarıdan da görüldüğü gibi bu iki interface arasında HTTP ile ilgili işlemleri gerçekleştirme ve MVC yapıları için hazırlanan özellikleri kullanabilme açısından farklılıklar vardır.
+
+- WebHost veya Host yapılarına yeni **IHostedService**'lerini eklemek için **AddHostedService<>()** extension fonksiyonundan faydalanabiliriz. Örnek olarak:
+
+    ![](images/addhostedservice.png)
+
+- Eğer istersek yukarıdaki gibi bir extension fonksiyonu kullanmadan da background thread'i çalıştırabiliriz. Aralarındaki fark uygulama kapanırken thread'in düzgün bir şekilde öldürülmesi ilgili işlemlerdir.
+
+- IHostedService ile kendi servislerimizi oluştururken kullanılan yapının diagramı alt kısımdaki gibidir:
+
+    ![](images/classdiagram.png)
+
+<br>
+
+### Implement API Gateways with Ocelot
+
+- Uygulamamıza Ocelot entegrasyonu yaparken bir configurasyon dosyası tanımlamak zorundayız (configuration.json). Bu dosya 2 ana kısımdan oluşur:
+
+    ```cs
+    {
+        "ReRoutes": [],
+        "GlobalConfiguration": {}   
+    }
+    ```
+    
+    **ReRoutes:** Ocelot'a upstream isteklerini nasıl yönlendirileceğini belirten nesneleri içerir.
+    **GlobalConfiguration:** Genel konfigürasyonları içerir.
+
+    Örnek olarak:
+
+    ```cs
+    {
+        "ReRoutes": [
+            {
+                "DownstreamPathTemplate": "/api/{version}/{everything}",
+                "DownstreamScheme": "http",
+                "DownstreamHostAndPorts": [
+                    {
+                        "Host": "catalog-api",
+                        "Port": 80
+                    }
+                ],
+                "UpstreamPathTemplate": "/api/{version}/c/{everything}",
+                "UpstreamHttpMethod": [ "POST", "PUT", "GET" ]
+            },
+            {
+                "DownstreamPathTemplate": "/api/{version}/{everything}",
+                "DownstreamScheme": "http",
+                "DownstreamHostAndPorts": [
+                    {
+                        "Host": "basket-api",
+                        "Port": 80
+                    }
+                ],
+                "UpstreamPathTemplate": "/api/{version}/b/{everything}",
+                "UpstreamHttpMethod": [ "POST", "PUT", "GET" ],
+                "AuthenticationOptions": {
+                    "AuthenticationProviderKey": "IdentityApiKey",
+                    "AllowedScopes": []
+                }
+            }
+        ],
+        "GlobalConfiguration": {
+            "RequestIdKey": "OcRequestId",
+            "AdministrationPath": "/administration"
+        }
+    }
+    ```
+
+<br>
+
+### Using Kubernetes Ingress plus Ocelot API Gateways
+
+- Uygulama içerisinde Kubernates kullanılıyorsa, genellikle tüm HTTP isteklerini **Nginx** tabanlı **Kubernates Ingress** olarak isimlendirilen katman aracılığı ile birleştiririz.
+
+    Eğer Kubernates ile birlikte bu **Ingress** katmanını kullanmazsak, servisler sadece cluster network'ü tarafından yönlendirilebilir duruma gelirler. Eğer **Ingress** katmanını kullanırsak, bu katman internet ile uygulamamızın servisleri arasında ters proxy olarak çalışan bir middleware oluşturmuş oluruz.
+
+- **Ingress** aslında gelen istekler için oluşturulmuş kuralları içeren bir şeydir. Bu kurallara uyan istekler gerekli şekilde işlenirler. Örnek olarak alt kısımdaki modellemeye bakabiliriz:
+
+    ![](images/ingresslayer.png)
+
+<br>
+
+# 6 - Tackle Business Complexity in a Microservice with DDD and CQRS Patterns
+
+### Apply simplified CQRS and DDD patterns in a microservice
+
+- CQRS'i basit anlamda sistemdeki işlemleri ikiye ayırır:
+
+    1. Query'ler: Sistem'de herhangi bir değişikliğe neden olmazlar, var olanı okurlar.
+    2. Command'lar: Sistemde değişikliğe sebep olurlar.
+
+-  İleri seviye CQRS çalışmalarında fazlaca detaylar bulunur en basitinden Query'lerin çalıştığı database ile Command'ların çalıştığı database'in ayrılması gibi. Bu şekilde bir çalışma yapılacağı zaman data consistency için de ekstra olarak çalışmalar yapılmalı. Ama basit anlamda kullanımlarda sadece Query ve Command modellerin ayrılması da bir yaklaşımdır. Ortak database içerisinden farklı modeller ile işlemler yürütülür. Örnek olarak alt kısımdaki modellemeye bakabiliriz:
+
+    ![](images/basiccqrs.png)
+
+- Query'lerde çalışırken 2 şekilde çalışabiliriz. Örnek olarak query'ler için **Dapper** kullanıyorsak ekstra olarak bir model tanımlamadan query sonuçlarını döndürebiliriz:
+
+    ```cs
+    return await connection.QueryAsync<dynamic>(
+        @"SELECT 
+            o.[Id] as ordernumber,
+            o.[OrderDate] as [date]
+        FROM [ordering].[Orders] o");
+    ```
+
+    Yukarıdaki işlemde görüldüğü gibi **dynamic** ile bir model tanımlamadan, sorgu neticesinde dönen değerler kullanılabilir. Avantaj olarak ekstra class'lar tanımlamamıza gerek kalmaz, değişiklikler için sadece sorguyu değiştirmek yeterlidir. Dezavantaj olarak uzun dönemde client'lar ile iletişimde netliği sağlamakta zorlanabilir. Ekstra olarak bazı middleware yazılımları için uyuşmazlık oluşturabilir.
+
+    ```cs
+    return await connection.QueryAsync<OrderSummary>(
+        @"SELECT 
+            o.[Id] as ordernumber,
+            o.[OrderDate] as [date]
+        FROM [ordering].[Orders] o");
+    ```
+
+    Bu şekilde model kullanarak da aynı işlemi yapabiliriz. Model kullanımının avantajı olarak client-service iletişimlerinde netlik sağlar. Dezavantajı olarak sorgu değiştiğinde class'ın da değiştirilmesi gerekir.
+
+    Ayrıca ek olarak API'lerin geri dönüş değerlerini dışardaki kullanıcılarına belirtirken kullanılan 
+
+    ```cs
+    // Diğer attribute'ler    
+    [ProducesResponseType(typeof(IEnumerable<OrderSummary>),(int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetOrders()
+    {
+    var userid = _identityService.GetUserIdentity();
+    var orders = await _orderQueries
+    .GetOrdersFromUserAsync(Guid.Parse(userid));
+    return Ok(orders);
+    }
+    ```
+
+    **ProducesResponseType** attribute'unu kullanabilmek için de geri dönüş tipi açık (explicit type) olarak  belirtilebiliyor olmalıdır. Eğer **dynamic** türünde dönüş yapıyor isek bu attribute'u kullanamayız.
+
+<br>
+
+### Design a DDD-oriented microservice
+
+- DDD sorunlarımızı domainler'e ayırarak işlemeyi savunur. Problemleri **Bounded Context (Sınırlı Bağlamlar)**'ler olarak ayırarak problem alanları oluşturur. Ek olarak da ayrıştırılan bu problemleri birbirleri ile aynı dilde konuşmalarını/iletişim kurmalarını sağlar.
+
+- Ana problemi olabildiğince küçük parçalara ayırarak microservice'ler şeklinde çözmek istiyoruz, bu BC ayrımları bizim bu microservice'leri oluşturmamızı sağlar.
+
+- Eğer iki microservice'in birbirleri ile çok fazla iş birliği yapması gerekiyorsa büyük ihtimalle o ikisi birleşip tek bir microservice olmalıdır.
+
+    Ayrıca bir microservice'in bir isteğe cevap verirken başka bir servise bağlı olması gerekiyorsa o servis gerçekten özerk değildir.
+
+<br>
+
+### Layers in DDD microservices
+
+![](images/dddlayers.png)
+
+- Domain katmanın hiçbir katmana bağımlı olmaması gerekir.
+
+
+- Domain Model Layer:
+
+    - İş kavramlarını, iş durumu hakkındaki bilgileri ve iş kurallarını
+    temsil eder.
+
+    - Bir class library olarak domain entity'lerini içerecek şekilde geliştirilir.
+
+    - Veri kalıcılığını ilgilendiren herhangi bir şey yapılmaz. Bu konudan sorumlu olan katman **Infrastructure** katmanıdır. Domain katmanı direkt olarak **Infrastructure** ile bağlantılı olmamalıdır. Yani önemli bir kural olarak domain model entity'leri POCO olmalıdırlar.
+
+    - Domain entity'leri ayrıca EF gibi NGibernate gibi veri erişim framework'lerine de direkt bağımlı olmamalıdır. Yani kısaca domain entity'leri **Infrastructure** altında tanımlanan herhangi bir class'tan türetilmemeli ve uygulanmamalıdır.
+
+- Application Layer:
+
+    - Yazılımın yapması gereken işleri tanımlar. Ayrıca Expressive Domain nesnelerini sorunları çözmeleri için yönlendirir.
+
+    - Bu katman çok yoğun olmayacak şekilde hazırlanır. Herhangi bir iş kuralı vs. içermez. Sadece görevleri koordine eder ve sonraki katmanın domain modelleri ile ilgili olan işleri delege eder. 
+    - Genellikle .Net Core Web API olarak geliştirilir.
+    - CQRS yaklaşımı kullanılıyorsa query'leri, mikro servis tarafından kabul edilen command'ları ve bazen mikro servisler arasındaki event-driven communication'ı (integration event'ler) içerebilir.
+
+-  Infrastructure Layer:
+
+    - Infrastructure katmanı bellekte tutulan verilern veritabanlarında veya başka bir kalıcı depoda nasıl tutulduğu ile ilgilenir.
+
+- Katmanların birbirleri arasındaki bağımlılıkları:
+
+    ![](images/layerdependencies.png)
+
+<br>
+
+### Rich domain model vs. anemic domain model
+
+- Anemic modeller içerlerinde fonksiyon olmayan, sadece property'lerden oluşan modellerdir.
+
+    Servis eğer basit bir seviyedeyse (CRUD gibi) anemic modeller kullanılabilir.
+
+    Eğer servis basit değilse, fazlaca iş kuralı içeriyorsa anemic model kullanımı anti-pattern'e dönüşecektir. Bu tarz servislerde bu modellere fonksiyonellik katarak onları rich model şekline dönüştürebiliriz. Bu sayede DDD'nin diğer pattern'leri ile birlike faydalı bir şekle bürünebilir.
+
+<br>
+
+### The Value Object pattern
+
+- Bir entity var ise bir kimlik olmalıdır ama sistemde Value Object pattern'i gibi kimlik gerektirmeyen bir çok nesne vardır. Bir değer nesnesi (value object), etki alanı yönünü tanımlayan ve kavramsal kimliği olmayan bir nesnedir. 
+
+    Bu objeler sadece geçici olarak ilgilenmemiz gereken tasarım öğelerini temsil etmek için somutlaştırılan objelerdir.
+
+- Value obje'leri ilişkisel veri tabanlarında ve ORM'lerde yönetmek biraz zordur (EF Core ile gelen *Owned Entities* yapısı ile biraz daha kolaylaştırma sağlanmıştır). Bunun yerine document-oriented veritabanlarını kullanmak çok daha kolay olacaktır.
+
+<br>
+
+### The Aggregate pattern
+
+- Uyumlu bir birim olarak ele alınabilecek olan entitiy'lerin ve davranışların kümesini/grubunu tanımlayan DDD birimlerine **Aggregate** denir.
+
+- *Aggregate*'leri genellikle ihtiyaç duyduğumuz işlemlere/transaction'lara göre tanımlarız. Örnek olarak bir sipariş (order) içerisinde sipariş edilen ürünleri içerir (order items). Burada order item bir entity olacaktır. Order aggregate'i içerisinde ise child-enity olarak tanımlanır. Order Item içerisinde de Order root entity olarak tanımlanır ve buna **Aggregate Root** denir.
+
+- Aggregate'leri tanımlarken kafamıza göre nesneleri birleştirmeyiz. İki nesne domain içerisinde işlevsel olarak birlikte olmak zorunda mı bunu iyice düşündükten sonra birleştirme yaparız.
+
+- ![](images/aggregatepattern.png) 
+
+    Yukarıdan da görüldüğü gibi bir agregate içerisinde child'lara erişim nav-property'ler ile sağlanabilirken, farklı bir aggregate'e direkt olarak erişim yoktur. Sadece foreign key bilgisi vardır, bu direkt erişimi engellemek için uygulanan bir güvenliktir.
+
+<br>
+
+### Implement a microservice domain model with .NET
+
+-   ![](images/domainmodelonnet.png)
+
+     Yukarıdaki örnekte domain model içerisinde tanımlanan aggregate modelleri görebiliriz. Aggregate'ler içerisinde root entity ve child entity'lerin birlikte olduğunu, root entity ile yapılacak işlemlerin tanımlandığı bir repository interface'i olduğunu görebiliriz. Burada dikkat edilmesi gereken nokta interface'ler burada tanımlanır fakat bu interface'lerin uygulanması Infrastructure katmanında olacaktır. Aggregate içerisinde sadece hangi işlevlerin olması gerektiği tanımlanır.
+
+    ![](images/aggregatefolder.png)
+
+- Örnek root entity'e bakalım:
+
+    ```cs
+    public class Order : Entity, IAggregateRoot
+    {
+        private DateTime _orderDate;
+        public Address Address { get; private set; }
+        private int? _buyerId;
+
+        public OrderStatus OrderStatus { get; private set; }
+        private int _orderStatusId;
+
+        private string _description;
+        private int? _paymentMethodId;
+
+        private readonly List<OrderItem> _orderItems;
+        public IReadOnlyCollection<OrderItem> OrderItems => _orderItems;
+
+        public Order(
+            string userId, 
+            Address address, 
+            int cardTypeId, 
+            string cardNumber,
+            string cardSecurityNumber,
+            string cardHolderName,
+            DateTime cardExpiration,
+            int? buyerId = null,
+            int? paymentMethodId = null)
+        {
+            _orderItems = new List<OrderItem>();
+            _buyerId = buyerId;
+            _paymentMethodId = paymentMethodId;
+            _orderStatusId = OrderStatus.Submitted.Id;
+            _orderDate = DateTime.UtcNow;
+            Address = address;
+            // ...Additional code ...
+        }
+
+        public void AddOrderItem(
+            int productId,
+            string productName,
+            decimal unitPrice,
+            decimal discount,
+            string pictureUrl,
+            int units = 1)
+        {
+            //...
+            // Domain rules/logic for adding the OrderItem to the order
+            // ...
+            var orderItem = new OrderItem(productId, productName, unitPrice, discount,
+            pictureUrl, units);
+            _orderItems.Add(orderItem);
+        }
+        // ...
+        // Additional methods with domain rules/logic related to the Order aggregate
+        // ...
+    }
+    ```
+
+    Yukarıdaki sınıfın kalıtım aldığı **IAggregateRoot** interface'i içerisi boş olan, sadece işaretleme amaçlı kullanılan bir interface'dir.
+
+<br>
+
+### Encapsulate data in the Domain Entities
+
+- Entity modellerinde navigation property'lerin public bir şekilde bırakılması, başka bir developer'ın o navigation property'nin ilişkili olduğu tabloda/koleksiyonda değişiklik yapabilmesine izin veriyer olmak demektir. Bunun yerine bu property'leri sadece class içerisindeki fonksiyonlar ile manipüle edilebilecek şekilde oluşturursak, developer bizim belirlediğimiz kurallar çerçevesinde hareket edebiliyor olacaktır.
+
+    Örnek olarak, yapılmaması/yapılamaması gereken bir işlemi alt kısımdan inceleyebiliriz:
+
+    ```cs
+    OrderItem myNewOrderItem = new OrderItem(
+        orderId,
+        productId,
+        productName,
+        pictureUrl,
+        unitPrice,
+        discount,
+        units);
+
+    myOrder.OrderItems.Add(myNewOrderItem);
+    ```
+    Bu örnekte developer `myOrder` nesnesi üzerinden `OrderItems` navigation property'sini kullanarak **OrderItems** koleksiyonuna direkt olarak yeni bir item ekliyor. Bunun yerine daha korunaklı bir şekilde yeni bir item eklemesini alt kısımdaki gibi sağlayabiliriz:
+
+    ```cs
+    myOrder.AddOrderItem(productId, productName, pictureUrl, unitPrice, discount, units);
+    ```
+
+    Yukarıdaki şekilde ekleme yapılmasını sağladığımızda **OrderItems** koleksiyonu ile direkt olarak bağlantı kurmadan yeni bir item eklenmesini sağlamış oluyoruz. 
+
+    Ayrıca yukarıdaki doğru kullanım örneğinde, mantıksal işlemlerin ve ilgili işlemi ilgilendiren validasyonların/doğrulama işlemlerinin çoğu aggregate root içerisinden tek bir yerden sağlanmış olur. Aggregate root pattern'inin nihai amacı budur.
+
+<br>
+
+### Seedwork (reusable base classes and interfaces for your domain model)
+
+- Solution içerisinde **SeedWork** isimli bir klasör bulunur. Bu klasör içerisinde özel olarak tanımlanan base class'lar bulunur.
+
+    ![](./images/seedworks.png)
+
+    Bu class'lar domain class'larında gereksiz kod yazılmasının önüne geçer. Interface'ler ise neylerin implement edilmesi gerektiği hakkında bilgiler verir, ayrıca application layer tarafında DI için kullanılırlar.
+
+    Örnek bir base entity class'ına bakalım:
+
+    ```cs
+    public abstract class Entity
+    {
+        int? _requestedHashCode;
+        int _Id;
+        private List<INotification> _domainEvents;
+
+        public virtual int Id
+        {
+            get { return _Id; }
+            protected set { _Id = value; }        
+        }
+    
+        public List<INotification> DomainEvents => _domainEvents;
+        
+        public void AddDomainEvent(INotification eventItem)
+        {
+            _domainEvents = _domainEvents ?? new List<INotification>();
+            _domainEvents.Add(eventItem);
+        }
+
+        public void RemoveDomainEvent(INotification eventItem)
+        {
+            if (_domainEvents is null) return;
+            _domainEvents.Remove(eventItem);
+        }
+
+        public bool IsTransient()
+        {
+            return this.Id == default(Int32);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is Entity)) return false;
+            if (Object.ReferenceEquals(this, obj)) return true;
+            if (this.GetType() != obj.GetType())return false;
+            Entity item = (Entity)obj;
+            if (item.IsTransient() || this.IsTransient()) return false;
+            else return item.Id == this.Id;
+        }
+        
+        public override int GetHashCode()
+        {
+            if (!IsTransient())
+            {
+                if (!_requestedHashCode.HasValue) _requestedHashCode = this.Id.GetHashCode() ^ 31;
+                return _requestedHashCode.Value;
+            }
+            else return base.GetHashCode();
+        }
+
+        public static bool operator ==(Entity left, Entity right)
+        {
+            if (Object.Equals(left, null)) return (Object.Equals(right, null));
+            else return left.Equals(right);
+        }
+
+        public static bool operator !=(Entity left, Entity right)
+        {
+            return !(left == right);
+        }
+    }    
+    ```
+
+<br>
+
+### Repository contracts (interfaces) in the domain model layer
+
+- Repository contract'ları her aggregate içerisindeki repository'lerin neleri içermesi gerektiğini belirtirler.
+
+- Repository'ler herhangi bir domain modeldeki bir class'ı implement etmemelidir. Sadece domain model içerisindeki interface'leri implement edebilirler.
+
+    Örnek olarak alt kısımdaki interface, `OrderRepository` class'ının Infrastructure katmanında neleri implement etmesi gerektiğini tanımlar.
+
+    ```cs
+    public interface IOrderRepository : IRepository<Order>
+    {
+        Order Add(Order order);
+        void Update(Order order);
+        Task<Order> GetAsync(int orderId);
+    }
+
+    public interface IRepository<T> where T : IAggregateRoot
+    {
+        IUnitOfWork UnitOfWork { get; }
+    }
+    ```
+<br>
+
+### Implement value objects
+
+- Bazen sadece veri tutmak tutmak için objeleri kullanırız. Örnek olarak bir **Person** class'ındaki **Address** property'si düz bir metine göre daha karmaşık bir yapı olduğundan, genellikle *string* vb. değil ayrı bir obje olarak tutulur.
+
+- Value objelerinin 2 temel özelliği vardır:
+
+    - Kimlikleri (identity) yoktur,
+    - Değişmezler (immutable)
+
+    Buradaki değişmezleri şöyle açıklayabiliriz: value obje'leri oluşturulurken gerekli değerler verilir ve objenin lifecycle'ı boyunca değişmezler, buna izin verilmemelidir.

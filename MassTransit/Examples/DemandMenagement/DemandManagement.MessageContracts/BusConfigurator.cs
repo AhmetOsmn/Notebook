@@ -1,6 +1,4 @@
 ﻿using MassTransit;
-using MassTransit.RabbitMqTransport;
-using static MassTransit.MessageHeaders;
 
 namespace DemandManagement.MessageContracts
 {

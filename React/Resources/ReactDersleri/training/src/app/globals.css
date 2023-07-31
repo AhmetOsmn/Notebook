@@ -1,0 +1,67 @@
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  padding: 10%;
+}
+
+.myForm {
+  font-size: larger;
+  display: flex;
+  flex-direction: column;
+}
+
+.myForm input {
+  margin-bottom: 10px;
+}
+
+.myForm select {
+  margin-bottom: 10px;
+}
+
+.myForm textarea {
+  margin-bottom: 10px;
+  resize: none;
+}
+
+.myForm button {
+  height: 40px;
+  cursor: pointer;
+}
+
+.country {
+  border: 1px solid #CCC;
+  margin-bottom: 10px;
+  align-items: center;
+  display: flex;
+  padding: 1%;
+  background-color: bisque;
+}
+
+.country img {
+  height: 100px;
+}
+
+.imginfo {
+  width: 200px;
+}
+
+.cinfo {
+  margin-left: 5%;
+}
+
+.search {
+  margin-bottom: 5%;
+}
