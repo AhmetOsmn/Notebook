@@ -20,9 +20,9 @@
 
     Anonim tipi,yazdığımız kod içerisinde bir property oluştururken kullanamayız. Örnek olarak: 
 
-    ![sayi](../Images/AnonymousTypes/ss1.png)
+    ![sayi](./Images/AnonymousTypes/ss1.png)
 
-    ![sayi](../Images/AnonymousTypes/ss2.png)
+    ![sayi](./Images/AnonymousTypes/ss2.png)
 
 
 - Oluşturulan anonim tipin içerisindeki property'lere, bir class'tan türetilmiş nesnenin property'lerine ulaştığımız gibi ulaşabiliriz. Örnek olarak:
@@ -89,7 +89,7 @@
 
     Yukarıdaki alan çalıştırıldığında artık bizden istenen raporu ekrana veriyor olacağız:
 
-    ![raporciktisi](../Images/AnonymousTypes/ss3.png)
+    ![raporciktisi](./Images/AnonymousTypes/ss3.png)
 
  -   Buraya bir dipnot atmak istiyorum. İstenen rapor farklı tabloların birleştirilmesi ile hazırlanabiliyor olsaydı, yukarıdaki `Linq` sorgusunda `join`'ler devreye girecekti. Böyle bir durumda **anonim tipler** yine kullanılabilir. Bu durumda select içerisinde, `join` edilen tabloların kolonlarından da alt kısımdaki gibi veri çekebiliyor olacaktık. 
 
