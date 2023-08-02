@@ -158,3 +158,109 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [şu](https://youtube
   4. Son olarak `ReadRepository` içerisinde bir context beklendiğinden, `ProductReadRepository` içerisinden base ctor'a bir context gönderilmesi gerekir. Bu context de DI ile talep edilir.
 
 <br>
+
+# 6.Ders
+
+<br>
+
+# 7.Ders
+## EF Tracking
+
+- EF kullanılarak veri tabanındaki verilere eriştiğimiz zaman, EF'nin `Tracking` mekanizması default olarak aktif edilir.
+
+  Daha optimize edilmiş bir şekilde çalışabilmek için bu Tracking mekanizmasını gerekli olmayan operasyonlar için (read operasyonları) kapatabiliriz.
+
+  Örnek olarak **Product** verilerini sadece listelemek için kullandığımız bir fonksiyon örneğine bakalım:
+
+  ```cs
+  public DbSet<T> Table => _context.Set<T>();
+
+  public IQueryable<T> GetProducts(bool isTrackingActive = true)
+  {
+    var query = Table.AsQueryable();
+
+    return isTrackingActive ? query : query.AsNoTracking(); 
+  }
+  ```
+
+<br>
+
+# 8.Ders
+  
+## Interceptors
+
+- `Interceptor`: Yaptığımız işin başlangıcı ile bitişi arasına giren yapıdır.
+
+  ![interceptor](Images/MiniETicaret/interceptor.png)
+
+- Interceptor dediğimiz şeyin sabit bir tipi yoktur. Bir fonksiyon, bir class, bir attribute vb. tip olabilir. Interceptor olarak tanımlanması için bir operasyonun başlangıcı ile bitişi arasında o operasyona müdahale etmesi yeterlidir.
+
+- Bir context class'ı içerisinden örneği inceleyelim:
+
+  ```cs
+  public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+  {
+      // BaseEntity tipindeki track edilen bütün objeler yakalandı.
+      var datas = ChangeTracker.Entries<BaseEntity>();
+
+      foreach(var data in datas)
+      {
+        // obje üzerinde yapılan işlem ne ise, o işlem ile ilgili olan değer set edildi.
+        _ = data.State switch
+        {
+          EntityState.Added => data.Entity.CreatedDate = DateTime.UtcNow,
+          EntityState.Modified => data.Entity.UpdatedDate = DateTime.UtcNow,
+        };
+      }
+
+      return await base.SaveChangesAsync(cancellationToken);
+  }
+  ```
+
+  `SaveChangesAsync` fonksiyonunu override ederek bir interceptor oluşturmuş olduk. Artık eklenen veya güncellenen objelerin ilgili property'lerine değerler otomatik olarak eklenecek. Oluşturulan her obje için veya güncellenen her obje için tek tek değer atamaktan kurtulduk.
+
+- Bu arada yukarıdaki örnekte önemli bir detay var:
+
+  ```cs
+  _ = data.State switch
+    {
+      EntityState.Added => data.Entity.CreatedDate = DateTime.UtcNow,
+      EntityState.Modified => data.Entity.UpdatedDate = DateTime.UtcNow,
+    };
+  ```
+
+  Yaptığımız işlem geriye bir şey döndürüyorsa ve biz bu değeri kullanmayacaksak, bu değere ihtiyacımız yoksa `_ =` ataması yaparak döndürülen değer için bir allocate işleminin yapılmaması gerektiğini belirtmiş oluruz.
+
+<br>
+
+# 9.Ders (Angular)
+
+<br>
+
+# 10.Ders (Angular)
+
+<br>
+
+# 11.Ders (Angular)
+
+<br>
+
+# 12.Ders (Angular)
+
+<br>
+
+# 13.Ders (Angular)
+
+<br>
+
+# 14.Ders (Angular)
+
+<br>
+
+# 15.Ders (Angular)
+
+<br>
+
+# 16.Ders (Angular)
+
+<br>
