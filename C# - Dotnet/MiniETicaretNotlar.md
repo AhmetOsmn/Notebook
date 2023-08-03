@@ -1,6 +1,6 @@
 # Selamlar
 
-Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [şu](https://youtube.com/playlist?list=PLQVXoXFVVtp1DFmoTL4cPTWEWiqndKexZ) eğitim serisinden çıkartılmıştır. 
+Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [Mini E-Ticaret Uygulama Serisi](https://youtube.com/playlist?list=PLQVXoXFVVtp1DFmoTL4cPTWEWiqndKexZ)'ni takip ederek oluşturulmuştur. 
 
 <br>
 
