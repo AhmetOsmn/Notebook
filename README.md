@@ -7,7 +7,7 @@ Derslerde, eğitimlerde veya yaptığım araştırmalarda ve çalışmalarda ön
 
 # İçerik
 
-- [C#](https://github.com/AhmetOsmn/Notebook/tree/main/C%23)
+- [C# - Dotnet](https://github.com/AhmetOsmn/Notebook/tree/main/C%23%20-%20Dotnet)
 
 - [Docker](https://github.com/AhmetOsmn/Notebook/tree/main/Docker)
 
@@ -20,6 +20,8 @@ Derslerde, eğitimlerde veya yaptığım araştırmalarda ve çalışmalarda ön
 - [NET Microservices Architecture for Containerized NET Applications](https://github.com/AhmetOsmn/Notebook/tree/main/NET%20Microservices%20Architecture%20for%20Containerized%20NET%20Applications)
 
 - [RabbitMQ](https://github.com/AhmetOsmn/Notebook/tree/main/RabbitMQ)
+
+- [React](https://github.com/AhmetOsmn/Notebook/tree/main/React)
 
 - [Redis](https://github.com/AhmetOsmn/Notebook/tree/main/Redis)
 
