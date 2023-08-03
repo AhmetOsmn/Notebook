@@ -210,6 +210,7 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [şu](https://youtube
         {
           EntityState.Added => data.Entity.CreatedDate = DateTime.UtcNow,
           EntityState.Modified => data.Entity.UpdatedDate = DateTime.UtcNow,
+          _ => DateTime.UtcNow
         };
       }
 
@@ -264,3 +265,65 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [şu](https://youtube
 # 16.Ders (Angular)
 
 <br>
+
+# 17. Ders 
+
+## CORS
+
+- CORS politikaları uygulamanın server kısmı ile **browser tabanlı client**'ları arasında uygulanan politikalardır.
+
+- İlk olarak biraz hikayeleştirmeye çalışalım. Bizim bir web sitemiz olsun ve bu siteye gelen kullanıcılarımız olsun. Kullanıcılar sitemize kendi cihazlarındaki browser'ları kullanarak erişecekler. Yani bizim sitemizde oturum açtıklarında kullanıcın cihazındaki browser'da kullanıcının bazı bilgileri tutulmaya başlanır.
+
+  Eğer biz kötü niyetli bir geliştirici isek uygulamamızın içerisinden, kullanıcının browser'da tutulan bu verilerini kullanarak başka bir uygulamaya/siteye istek atabiliriz, eğer bu veriler karşı uygulamada da geçerli ise de başarılı yanıtlar alabiliriz. 
+  
+  Yani bir güvenlik açığı oluşmuş olur. Kullanıcı adına, kullanıcının haberi olmadan farklı sitelere erişim sağlanmaya çalışılabilir.
+
+  ![cors1](Images/MiniETicaret/cors-1.png)
+
+- Bu güvenlik açığını önleyebilmek adına ilk güvenlik tedbiri browser'ların kendileri tarafından yapılır. 
+
+  Bir browser sitenin kendi domain'inden farklı bir domain'e istek yapılırsa güvenlik amacıyla bu istek engellenir.
+
+  Eğer browser üzerinden yapılan istek ile isteğin gönderildiği yerin: `protocol`'ü veya `host`'u veya `port`'u farklı ise browser bu isteği henüz API'a gitmeden otomatik olarak durduracaktır.
+
+  ![](Images/MiniETicaret/cors-2.png)
+  
+  Browser'ların bu davranışı `Same-Origin Policy` olarak isimlendirilir. Bu policy zararlı sitelerin diğer sitelerden browser tabanlı veri okunmasını engelleyen önemli bir güvenlik tedbiridir.
+
+- Kötü amaçlı olmadan, gerçekten gerektiği için başka bir uygulamaya istek atıp veri almamız gerektiğinde ise, tarayıcı hedef adresten/siteden/origin'den/api'den bu site için onay aldıktan sonra isteği gerçekleştirir.
+
+- CORS politikaları dediğimiz kavram da bu ``Same-Origin Policy`'nin hafifletilmesini sağlayan yapıdır. API'ların içerisinde uygulamamıza hangi sitelerin istek yapabileceğini tanımlarız, browser API'dan onay almak için geldiğinde, eğer istek yapılan site kabul edilebilir site olarak tanımlandıysa isteğin gerçekleşmesine izin verir.
+
+- API içerisinde CORS politikalarını alt kısımdaki örnek gibi yönetebiliriz:
+
+  ```cs
+  // program.cs
+  builder.Services.AddCors(opt => opt.AddDefaultPolicy(policy => 
+  {
+      // gerekli policy'ler tanımlanır.
+
+      //policy.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin(); // gelen bütün istekleri onaylar.
+      policy.WithOrigins("http://wwww.test.com/","http://test.com/").AllowAnyHeader().AllowAnyMethod(); // belirtilen adreslerden gelen bütün istekleri kabul ediyoruz.
+  }));
+
+  // diğer kısımlar
+
+  app.UseCors(); // tanımladığımız policy'i devreye alan middleware.
+  ```
+
+<br>
+
+# 18. Ders
+
+## Contract 
+
+- Client ile Server arasında bir veri transferi yapılırken best practise olarak kabul edebileceğimiz bir yaklaşım vardır. Client tarafında, istekten gelecek olan cevabı karşılayacak bir model/class tanımlanır ve gelen json response bu model ile karşılanır. 
+
+  Bu yaklaşım ile tip güvenli ve daha anlaşılabilir bir geliştirme yapmış oluruz.
+
+<br>
+
+# 19.Ders (Angular)
+
+<br>
+
