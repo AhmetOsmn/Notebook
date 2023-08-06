@@ -327,3 +327,59 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [Mini E-Ticaret Uygul
 
 <br>
 
+# 20.Ders
+
+## Validation
+
+- Validation işlemlerini ViewModel'lerimiz üzerinde uygulayacağımız için, Create işlemi için ayrı, Update işlemi için ayrı olacak şekilde kaç tane farklı operasyonumuz ve modelimiz varsa bunların hepsinin validation sınıflarının ayrı ayrı tanımlanması doğru olan yaklaşımdır.
+  
+- Core altyapısında default olarak gelen bir filter mekanizması vardır. İstekler geldiğinde, henüz controller'a düşmeden bu filter'lar tetiklenir ve hatalı bir durum var ise client'a direkt olarak gerekli mesaj geri döndürülür.
+
+  Biz bu default filter'ı iptal edip bu validation işlemlerini kendimiz yönetmek isteyebiliriz ve bunun için custom bir filter tanımlayabiliriz. İlk olarak bu default gelen filter'ı kapatmak için alt kısımdaki örneği inceleyebiliriz:
+
+  ```cs
+  // program.cs
+
+  builder.Services.AddControllers().ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true);
+  ```
+
+  Yukarıdaki işlem sonrasında artık gelen veri belirlediğimiz validation kurallarına uygun olmasa bile controller'a düşecek ve bunun kontrolünü kendimiz yapabiliyor olacağız.
+
+- Validation'ları filter kullanarak yönetebilmek için alt kısımdaki gibi bir filter tanımlayabiliriz:
+
+  ```cs
+  public class ValidationFilter : IAsyncActionFilter
+  {
+      public Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
+      {
+          if(!context.ModelState.IsValid)
+          {
+              var errors = context.ModelState
+                .Where(x => x.Value.Errors.Any())
+                .ToDictionary(e => e.Key, e => e.Value.Errors.Select(e => e.ErrorMessage))
+                .ToArray();
+
+              context.Result = new BadRequestObjectResult(errors);
+              return;
+          }
+
+          await next();
+      }
+  }
+
+  // program.cs
+
+  builder.Services
+      .AddControllers(options => options.Filters.Add<ValidationFilter>())
+      .ConfigureApiBehaviorOptions(opt => opt.SuppressModelStateInvalidFilter = true);
+  ```
+
+<br>
+
+# 21.Ders (Angular)
+
+<br>
+
+# 22.Ders (Angular)
+
+<br>
