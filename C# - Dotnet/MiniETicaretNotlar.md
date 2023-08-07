@@ -383,3 +383,35 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [Mini E-Ticaret Uygul
 # 22.Ders (Angular)
 
 <br>
+
+# 23.Ders (Angular)
+
+<br>
+
+# 24.Ders (Angular)
+
+<br>
+
+# 25.Ders
+
+## File Upload
+
+- Sunucu içerisinde dosyaları tutmak istiyorsak bunun güvenli yollarından birisi `wwwroot` klasörüdür. Core ile birlikte bu klasöre dışarıdan erişemez fakat kod ile erişilebilir.
+
+- wwwroot içerisindeki dosyalara erişebilmek için **Program.cs** içerisinde `UseStaticFiles();` middleware'ini kullanmamız gerekir.
+
+- Dosyaları request içerisinden alabilmek için `Request.Form.Files` property'si kullanılabilir.
+
+ <br>
+
+# 26.Ders (Angular)
+
+<br>
+
+# 27.Ders
+
+## File Upload
+
+- Uygulama içerisindeki dosyaların isimlerinin anlamlı olması genel olarak gereksiz gibi görünebilir fakat SEO için durum biraz daha farklı. Yüklenen dosyaları uygun formata getirerek server'da tutmamız ekstra fayda sağlayacaktır.
+
+<br>
