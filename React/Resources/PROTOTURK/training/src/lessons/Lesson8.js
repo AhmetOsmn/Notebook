@@ -1,4 +1,4 @@
-import { useReducer, useState, useCallback } from "react";
+import { useReducer, useState, useMemo, useCallback } from "react";
 import Header from "../components/Header";
 import CustomTab from "../components/CustomTab";
 import AddTodo from "../components/AddTodo";
@@ -71,11 +71,9 @@ function EighthLesson() {
         })
     }
 
-    const filteredTodos = state.todos
-                                .filter(todo => 
-                                    todo
-                                    .toLocaleLowerCase('TR')
-                                    .includes(state.search.toLocaleLowerCase('TR')));
+    const filteredTodos = useMemo(() => {
+        return state.todos.filter(todo => todo.toLocaleLowerCase('TR').includes(state.search?.toLocaleLowerCase('TR')));
+    }, [state.todos, state.search]);
 
     return (
         <div>
@@ -83,7 +81,7 @@ function EighthLesson() {
             <CustomTab />
             <h3>{count}</h3>
             <button className="rounded bg-red-300" onClick={() => setCount(count => count + 1)}>Arttır</button>
-            <CustomTab />    
+            <CustomTab />
             <input className="bg-blue-300 rounded p-2" type="text" value={state.search} placeholder="search.." onChange={searchHandle} />
             <CustomTab />
             <h1>Todo App</h1>
