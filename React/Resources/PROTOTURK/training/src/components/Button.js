@@ -1,8 +1,9 @@
 import classNames from "classnames";
 
-function button({ text, variant = 'success', onClick, disabled }) {
+function button({ text, variant = 'success', onClick, disabled, type }) {
     return (
         <button
+            type={type || 'button'}
             disabled={disabled}
             onClick={onClick}
             className={classNames(
