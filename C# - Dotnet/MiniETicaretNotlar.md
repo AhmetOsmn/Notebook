@@ -463,3 +463,8 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [Mini E-Ticaret Uygul
 
 <br/>
 
+# 32. Ders (Angular)
+
+<br/>
+
+
