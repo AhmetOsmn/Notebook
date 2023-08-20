@@ -414,4 +414,52 @@ Selamlar, alt kısımdaki notlar Gençay Yıldız hocanın [Mini E-Ticaret Uygul
 
 - Uygulama içerisindeki dosyaların isimlerinin anlamlı olması genel olarak gereksiz gibi görünebilir fakat SEO için durum biraz daha farklı. Yüklenen dosyaları uygun formata getirerek server'da tutmamız ekstra fayda sağlayacaktır.
 
-<br>
+<br/>
+
+# 28. Ders
+
+<br/>
+
+# 29. Ders
+
+## Virtual Keyword
+
+- Ef ile çalışırken bir base class içerisindeki bir öğenin alt class'lar tarafından override edilebilir olmasını istiyorsak `virtual` keyword'ünü kullanırız.
+  Örnek olarak alt kısımdaki gibi bir base class'ımız olsun:
+
+  ```csharp
+  public class BaseEntity
+  {
+    public int Id { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime UpdatedDate { get; set; }
+  }
+  ```
+
+  Yukarıdaki base class'tan türettiğimiz bir **File** class'ımız olsun. Biz **File** class'ı içerisinde base'den gelen **UpdatedDate** property'sinin olmasını istemiyoruz diyelim. Bu tarz durumlarda base entity'deki bu alanı `virtual` olarak işaretleyip, alt class'içerisine override ederek **NotMapped** olarak belirtebiliriz.
+
+   ```csharp
+  public class BaseEntity
+  {
+    public int Id { get; set; }
+    public DateTime CreatedDate { get; set; }
+    virtual public DateTime UpdatedDate { get; set; }
+  }
+
+  public class File : BaseEntity
+  {
+    [NotMapped]
+    public override DateTime UpdatedDate { get => base.UpdatedDate; set => base.UpdatedDate = value; }
+  }
+  ```
+
+<br/>
+
+# 30. Ders
+
+<br/>
+
+# 31. Ders
+
+<br/>
+
