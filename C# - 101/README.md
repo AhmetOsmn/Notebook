@@ -1,12 +1,13 @@
 # İçindekiler
 
-- [Açıklama](#açıklama)
+- [İçindekiler](#i̇çindekiler)
+- [Açıklama \& Kaynak](#açıklama--kaynak)
 - [Genel Kısa Notlar](#genel-kısa-notlar)
 - [Tip Dönüşümleri](#tip-dönüşümleri)
 - [Bilinçli ve Bilinçsiz Tip Dönüşümleri](#bilinçli-ve-bilinçsiz-tip-dönüşümleri)
 - [Operatörler](#operatörler)
 - [Switch Case](#switch-case)
-- [İf Blokları](#if-blokları)
+- [İf Blokları](#i̇f-blokları)
 - [For Döngüsü](#for-döngüsü)
 - [Diziler](#diziler)
 - [Array Sınıfı Metotları](#array-sınıfı-metotları)
@@ -21,17 +22,18 @@
 - [This Keyword](#this-keyword)
 - [ArrayList ve List](#arraylist-ve-list)
 - [Kalıtım](#kalıtım)
+- [Override ve Virtual](#override-ve-virtual)
+- [Abstract Class](#abstract-class)
+- [Interface](#interface)
 
 
 <br>
 
-# Açıklama
+# Açıklama & Kaynak
 
-Gençay Yıldız youtube kanalında bulunan 40 derslik C# eğitimini takip ederken çıkardığım notlar alt kısımdadır. 
+Gençay Yıldız youtube kanalında bulunan [40 derslik C# eğitimini](https://youtube.com/playlist?list=PLQVXoXFVVtp2RYdXKWH2xnAGMjNp9oz9t&si=um7M3vEm0O8BVwWO) takip ederken çıkardığım notlar alt kısımdadır. 
 
 Eğitimde verilen her bilgiyi, her komutun nasıl çalıştığını veya ne demek olduğunu not almadım,sadece küçük trick olarak gördüğüm yerleri not aldım. Dersleri takip ederek daha temel bilgileri ve daha farklı bilgileri de bulabilirsiniz.
-
-İyi çalışmalar.
 
 <br>
 
