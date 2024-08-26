@@ -1,6 +1,6 @@
 # Kaynak
 
-- (Gençay Yıldız)[https://youtube.com/playlist?list=PLQVXoXFVVtp2eAq33DVNxeoXLXj4VMYpT&si=3lN54LR1JKoc8pzy]
+- [Gençay Yıldız - Design Principles](https://youtube.com/playlist?list=PLQVXoXFVVtp2eAq33DVNxeoXLXj4VMYpT&si=3lN54LR1JKoc8pzy)
 
 # Loose Coupling (Esnek Bağ) Nedir?
 
